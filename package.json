@@ -5,10 +5,10 @@
   "scripts": {
     "preinstall": "npm config set legacy-peer-deps true",
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && rm -rf .next/cache",
     "preview": "next build && next-on-pages preview",
     "start": "next start",
-    "pages:build": "npx @cloudflare/next-on-pages"
+    "pages:build": "npx @cloudflare/next-on-pages && rm -rf .next_custom_build/cache"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.107.0",
