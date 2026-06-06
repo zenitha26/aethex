@@ -3,9 +3,18 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Search, CheckCircle2, Package, Truck, Compass, Copy, Check } from "lucide-react";
+import { ArrowLeft, Search, CheckCircle2, Package, Truck, Compass, Copy, Check, Loader2 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import { supabase } from "../../lib/supabase";
+
+const formatLKR = (amount: number) => {
+  return new Intl.NumberFormat("en-LK", {
+    style: "currency",
+    currency: "LKR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
 
 function TrackOrderContent() {
   const searchParams = useSearchParams();

@@ -120,7 +120,7 @@ export async function PUT(request: Request) {
     // 3. Automated Resend Notification on order dispatch (shipped)
     if (order_status === "shipped" && tracking_number) {
       try {
-        const { sendEmail } = await import("../../../services/email");
+        const { sendEmail } = await import("@/services/email");
 
         const { data: orderDetails } = await supabaseAdmin
           .from("orders")
