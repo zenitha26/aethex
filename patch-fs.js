@@ -54,6 +54,10 @@ fs.readlink = function (path, options, callback) {
     callback(null, linkString);
   });
 };
+const descReadlink = Object.getOwnPropertyDescriptors(originalReadlink);
+delete descReadlink.name;
+delete descReadlink.length;
+Object.defineProperties(fs.readlink, descReadlink);
 
 const originalReadlinkSync = fs.readlinkSync;
 fs.readlinkSync = function (path, options) {
@@ -67,6 +71,10 @@ fs.readlinkSync = function (path, options) {
     throw finalErr;
   }
 };
+const descReadlinkSync = Object.getOwnPropertyDescriptors(originalReadlinkSync);
+delete descReadlinkSync.name;
+delete descReadlinkSync.length;
+Object.defineProperties(fs.readlinkSync, descReadlinkSync);
 
 // Generic patch helper for other fs operations
 function patchFn(obj, name, isSync) {
@@ -108,6 +116,10 @@ function patchFn(obj, name, isSync) {
       }
     };
   }
+  const desc = Object.getOwnPropertyDescriptors(original);
+  delete desc.name;
+  delete desc.length;
+  Object.defineProperties(obj[name], desc);
 }
 
 function patchPromiseFn(obj, name) {
@@ -128,6 +140,10 @@ function patchPromiseFn(obj, name) {
       throw finalErr;
     }
   };
+  const desc = Object.getOwnPropertyDescriptors(original);
+  delete desc.name;
+  delete desc.length;
+  Object.defineProperties(obj[name], desc);
 }
 
 // Patch fs functions (excluding readlink, since we manually handle it above)
