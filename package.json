@@ -33,6 +33,4 @@
     "tailwindcss": "^4.3.0",
     "typescript": "^5"
   }
-}git add package.json
-git commit -m "fix: resolve infinite build loop in package scripts"
-git push origin main
+}
