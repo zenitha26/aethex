@@ -1,7 +1,8 @@
 "use client";
 
-import { useCartStore } from "../store/useCartStore";
-import { X, Plus, Minus, Trash2, ShieldCheck } from "lucide-react";
+import { useEffect } from "react";
+import { useCartStore, CartItem } from "../store/useCartStore";
+import { X, Plus, Minus, Trash2, ShieldCheck, MessageCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 
@@ -11,8 +12,18 @@ export default function CartDrawer() {
 
   const router = useRouter();
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isCartOpen) {
+        setCartOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isCartOpen, setCartOpen]);
+
   const subtotal = cart.reduce(
-    (acc, item) => acc + item.product.price * item.quantity,
+    (acc: number, item: CartItem) => acc + item.product.price * item.quantity,
     0
   );
 
@@ -20,7 +31,7 @@ export default function CartDrawer() {
     return new Intl.NumberFormat("en-LK", {
       style: "currency",
       currency: "LKR",
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
     }).format(amount);
   };
 
@@ -53,6 +64,9 @@ export default function CartDrawer() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Shopping Bag"
             className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-[#0d0d0d] border-l border-white/10 z-50 shadow-2xl flex flex-col justify-between"
           >
             {/* HEADER */}
@@ -60,9 +74,9 @@ export default function CartDrawer() {
               <h2 className="text-white text-lg font-bold">
                 Shopping Bag ({cart.length})
               </h2>
-
               <button
                 onClick={() => setCartOpen(false)}
+                aria-label="Close Shopping Bag"
                 className="p-2 text-white/60 hover:text-white"
               >
                 <X className="h-5 w-5" />
@@ -76,10 +90,7 @@ export default function CartDrawer() {
                   <div className="p-4 bg-white/5 rounded-full mb-4">
                     <ShieldCheck className="h-8 w-8 text-white/40" />
                   </div>
-                  <p className="text-white/60 text-sm mb-6">
-                    Your cart is empty
-                  </p>
-
+                  <p className="text-white/60 text-sm mb-6">Your cart is empty</p>
                   <button
                     onClick={() => setCartOpen(false)}
                     className="px-4 py-2 border border-white/20 rounded-xl text-white"
@@ -89,60 +100,49 @@ export default function CartDrawer() {
                 </div>
               ) : (
                 <div className="flex flex-col gap-6">
-                  {cart.map((item) => {
+                  {cart.map((item: CartItem) => {
                     const id = getItemUniqueId(item);
-
                     return (
                       <div
                         key={id}
                         className="flex gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl"
                       >
-                        {/* IMAGE */}
                         <div className="w-16 h-16 bg-black/40 rounded-xl flex items-center justify-center">
                           <div className="w-10 h-10 bg-white/10 rounded-lg" />
                         </div>
-
-                        {/* INFO */}
                         <div className="flex-grow">
                           <h4 className="text-white text-sm font-semibold">
                             {item.product.title}
                           </h4>
-
                           <p className="text-xs text-white/40 mt-1">
                             LKR {item.product.price}
                           </p>
-
-                          {/* QTY */}
                           <div className="flex items-center justify-between mt-3">
                             <div className="flex items-center gap-2 bg-white/5 px-2 py-1 rounded-full">
                               <button
                                 onClick={() => updateQuantity(id, -1)}
+                                aria-label="Decrease quantity"
                               >
                                 <Minus className="h-3 w-3 text-white" />
                               </button>
-
                               <span className="text-white text-xs w-6 text-center">
                                 {item.quantity}
                               </span>
-
                               <button
                                 onClick={() => updateQuantity(id, 1)}
+                                aria-label="Increase quantity"
                               >
                                 <Plus className="h-3 w-3 text-white" />
                               </button>
                             </div>
-
                             <span className="text-white font-bold text-sm">
-                              {formatLKR(
-                                item.product.price * item.quantity
-                              )}
+                              {formatLKR(item.product.price * item.quantity)}
                             </span>
                           </div>
                         </div>
-
-                        {/* REMOVE */}
                         <button
                           onClick={() => removeFromCart(id)}
+                          aria-label="Remove item from bag"
                           className="text-white/40 hover:text-red-400"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -166,8 +166,9 @@ export default function CartDrawer() {
 
                 <button
                   onClick={handleCheckout}
-                  className="w-full bg-white text-black py-3 rounded-xl font-medium"
+                  className="w-full bg-white text-black py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-gray-200 transition font-display uppercase tracking-widest text-xs"
                 >
+                  <ShieldCheck className="h-4 w-4" />
                   Proceed to Checkout
                 </button>
 

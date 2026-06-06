@@ -31,19 +31,10 @@ export default function CheckoutForm({ onBack, totalAmount }: CheckoutFormProps)
     setError(null);
 
     try {
-      // Post to our secure payhere-init Supabase Edge Function
-      // Note: In local development, replace URL with your project domain or local Deno serve port
-      const edgeFunctionUrl =
-        process.env.NEXT_PUBLIC_SUPABASE_URL
-          ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/payhere-init`
-          : "http://localhost:54321/functions/v1/payhere-init"; // local fallback
-
-      const response = await fetch(edgeFunctionUrl, {
+      const response = await fetch("/api/checkout/payhere", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          // Send anonymous key if configured
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""}`
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           customer_name: name,
@@ -72,7 +63,7 @@ export default function CheckoutForm({ onBack, totalAmount }: CheckoutFormProps)
         merchant_id: paymentData.merchant_id,
         return_url: `${window.location.origin}/success?order_id=${paymentData.order_id}`,
         cancel_url: `${window.location.origin}/`,
-        notify_url: "https://your-app-domain.supabase.co/functions/v1/payhere-webhook", // Replace with actual live webhook url
+        notify_url: `${window.location.origin}/api/webhook/payhere`,
         order_id: paymentData.order_id,
         items: cart.map(i => i.product.title).join(", "),
         currency: paymentData.currency,

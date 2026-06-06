@@ -3,7 +3,7 @@
 import Navbar from "../../components/Navbar";
 import CartDrawer from "../../components/CartDrawer";
 import Link from "next/link";
-import { Compass, Shield, Cpu, RotateCcw } from "lucide-react";
+import { Compass, Cpu } from "lucide-react";
 
 export default function AboutUsPage() {
   return (
@@ -18,7 +18,9 @@ export default function AboutUsPage() {
         <div className="max-w-4xl mx-auto relative z-10 space-y-16">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-[10px] text-silver/40 uppercase tracking-widest font-semibold mb-6">
-            <Link href="/" className="hover:text-white transition-colors">Home</Link>
+            <Link href="/" className="hover:text-white transition-colors">
+              Home
+            </Link>
             <span>/</span>
             <span className="text-white/80">About Us</span>
           </div>
@@ -37,10 +39,10 @@ export default function AboutUsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
             <div className="space-y-6 text-sm text-silver/70 font-light leading-relaxed">
               <p>
-                Founded on the principles of modernist industrial design, AETHEX represents the intersection of luxury craftsmanship and computing peripherals. Every custom setup, keyboard plate, and sound-absorbing desk module we curate is calculated to deliver absolute aesthetic harmony.
+                Founded on the principles of modernist industrial design, AETHEX represents the intersection of luxury craftsmanship and computing peripherals.
               </p>
               <p>
-                Our vision is simple: to create workspace objects that look, feel, and sound like precision-milled physical sculpture. By bridging international dropshipping supply chains with manual verification and dedicated customer service, we deliver elite products to your doorstep without high markup stress.
+                Our vision is to create workspace objects that feel like precision-milled physical sculpture while maintaining affordability through smart sourcing.
               </p>
             </div>
 
@@ -49,15 +51,19 @@ export default function AboutUsPage() {
               <h3 className="text-lg font-bold font-display tracking-tight border-b border-white/5 pb-3">
                 Core Pillars
               </h3>
-              
+
               <div className="space-y-4">
                 <div className="flex gap-4">
                   <div className="p-2.5 bg-white/5 border border-white/10 rounded-xl h-10 w-10 flex items-center justify-center flex-shrink-0">
                     <Cpu className="h-4 w-4" />
                   </div>
                   <div>
-                    <h4 className="text-white text-sm font-semibold">Technical Precision</h4>
-                    <p className="text-silver/40 text-xs font-light mt-0.5">Optimized case materials, custom switch profiles, and zero-compromise stabilizers.</p>
+                    <h4 className="text-white text-sm font-semibold">
+                      Technical Precision
+                    </h4>
+                    <p className="text-silver/40 text-xs font-light mt-0.5">
+                      Optimized materials and precision engineering.
+                    </p>
                   </div>
                 </div>
 
@@ -66,8 +72,12 @@ export default function AboutUsPage() {
                     <Compass className="h-4 w-4" />
                   </div>
                   <div>
-                    <h4 className="text-white text-sm font-semibold">Minimal Design</h4>
-                    <p className="text-silver/40 text-xs font-light mt-0.5">Apple-inspired aesthetics, subtle matte finishes, and clean geometric profiles.</p>
+                    <h4 className="text-white text-sm font-semibold">
+                      Minimal Design
+                    </h4>
+                    <p className="text-silver/40 text-xs font-light mt-0.5">
+                      Apple-inspired aesthetics and clean design language.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -84,12 +94,18 @@ export default function AboutUsPage() {
           <div className="text-white text-lg font-bold tracking-widest font-display">
             AETHEX<span className="text-white/40">STORE</span>
           </div>
+
           <p className="text-silver/40 text-xs font-light">
-            &copy; {new Date().getFullYear()} AETHEX Store. All rights reserved. Handcrafted dropshipping platform.
+            &copy; {new Date().getFullYear()} AETHEX Store. All rights reserved.
           </p>
+
           <div className="flex gap-6 text-xs text-silver/40">
-            <Link href="/policies" className="hover:text-white transition-colors">Policies</Link>
-            <Link href="/about-us" className="hover:text-white transition-colors">About Us</Link>
+            <Link href="/policies" className="hover:text-white transition-colors">
+              Policies
+            </Link>
+            <Link href="/about-us" className="hover:text-white transition-colors">
+              About Us
+            </Link>
           </div>
         </div>
       </footer>

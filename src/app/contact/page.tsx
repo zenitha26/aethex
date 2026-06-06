@@ -4,22 +4,50 @@ import React, { useState } from "react";
 import Navbar from "../../components/Navbar";
 import CartDrawer from "../../components/CartDrawer";
 import Link from "next/link";
-import { MessageSquare, Mail, Send, CheckCircle2 } from "lucide-react";
+import { MessageSquare, Mail, Send, CheckCircle2, AlertCircle } from "lucide-react";
+import Turnstile from "../../components/Turnstile";
+import { z } from "zod";
+
+const contactFormSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Please enter a valid email address"),
+  message: z.string().min(10, "Message must be at least 10 characters long"),
+  turnstileToken: z.string().min(1, "Bot verification is required"),
+});
 
 export default function ContactPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (name && email && message) {
-      setSubmitted(true);
-      setName("");
-      setEmail("");
-      setMessage("");
+    setFormErrors({});
+
+    const result = contactFormSchema.safeParse({
+      name,
+      email,
+      message,
+      turnstileToken,
+    });
+
+    if (!result.success) {
+      const errors: Record<string, string> = {};
+      result.error.issues.forEach((issue) => {
+        errors[issue.path[0] as string] = issue.message;
+      });
+      setFormErrors(errors);
+      return;
     }
+
+    setSubmitted(true);
+    setName("");
+    setEmail("");
+    setMessage("");
+    setTurnstileToken("");
   };
 
   const handleWhatsAppContact = () => {
@@ -75,6 +103,13 @@ export default function ContactPage() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  {Object.keys(formErrors).length > 0 && (
+                    <div className="p-3 bg-red-950/40 border border-red-500/20 rounded-xl text-xs text-red-400 flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                      <span>Form contains validation errors. Please review the inputs below.</span>
+                    </div>
+                  )}
+
                   <div>
                     <label className="block text-[10px] text-silver/50 uppercase tracking-wider mb-1.5 font-bold">
                       Your Name
@@ -87,6 +122,9 @@ export default function ContactPage() {
                       onChange={(e) => setName(e.target.value)}
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-silver/20 focus:outline-none focus:border-white/30 transition-colors"
                     />
+                    {formErrors.name && (
+                      <span className="text-[10px] text-red-400 mt-1 block font-mono">{formErrors.name}</span>
+                    )}
                   </div>
 
                   <div>
@@ -101,6 +139,9 @@ export default function ContactPage() {
                       onChange={(e) => setEmail(e.target.value)}
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-silver/20 focus:outline-none focus:border-white/30 transition-colors"
                     />
+                    {formErrors.email && (
+                      <span className="text-[10px] text-red-400 mt-1 block font-mono">{formErrors.email}</span>
+                    )}
                   </div>
 
                   <div>
@@ -115,11 +156,20 @@ export default function ContactPage() {
                       onChange={(e) => setMessage(e.target.value)}
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-silver/20 focus:outline-none focus:border-white/30 transition-colors resize-none"
                     />
+                    {formErrors.message && (
+                      <span className="text-[10px] text-red-400 mt-1 block font-mono">{formErrors.message}</span>
+                    )}
                   </div>
+
+                  <Turnstile onVerify={(token) => setTurnstileToken(token)} />
+                  {formErrors.turnstileToken && (
+                    <span className="text-[10px] text-red-400 text-center block font-mono">{formErrors.turnstileToken}</span>
+                  )}
 
                   <button
                     type="submit"
-                    className="apple-btn w-full justify-center text-xs py-3.5 mt-2"
+                    disabled={!turnstileToken}
+                    className={`apple-btn w-full justify-center text-xs py-3.5 mt-2 ${!turnstileToken ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     <Send className="h-4 w-4 text-black" /> Send Message
                   </button>

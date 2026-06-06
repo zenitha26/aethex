@@ -102,14 +102,48 @@ export default function ProductDetailsPage({ params }: PageProps) {
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [whatsappNumber, setWhatsappNumber] = useState("94771234567");
   
   // Customization choices
   const [selectedSwitches, setSelectedSwitches] = useState("Linear Red Switches");
   const [selectedKeycaps, setSelectedKeycaps] = useState("Double-Shot PBT Stealth");
   const [selectedCase, setSelectedCase] = useState("Space Gray Anodized Aluminium");
 
+  // Reviews states
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewName, setReviewName] = useState("");
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewSuccess, setReviewSuccess] = useState(false);
+
   useEffect(() => {
     async function fetchProduct() {
+      try {
+        if (supabase) {
+          // Fetch settings whatsapp_number
+          const { data: settingData } = await supabase
+            .from("settings")
+            .select("value")
+            .eq("key", "whatsapp_number")
+            .maybeSingle();
+          if (settingData?.value) {
+            setWhatsappNumber(settingData.value.replace(/[^0-9]/g, ""));
+          }
+
+          // Fetch approved reviews
+          const { data: revs } = await supabase
+            .from("reviews")
+            .select("*")
+            .eq("product_id", id)
+            .eq("is_approved", true)
+            .order("created_at", { ascending: false });
+          setReviews(revs || []);
+        }
+      } catch (err) {
+        console.warn("Could not query dynamic settings in details page:", err);
+      }
+
       try {
         if (!supabase) {
           const defaultProd = defaultProducts.find((p) => p.id === id);
@@ -178,21 +212,47 @@ export default function ProductDetailsPage({ params }: PageProps) {
   };
 
   const handleWhatsAppDirectBuy = () => {
-    const phoneNumber = "94771234567";
     const customText = product.id === "9912001" 
       ? ` (${selectedSwitches}, ${selectedKeycaps}, ${selectedCase})` 
       : "";
     const message = `Hello AETHEX Store 👋
-
+ 
 I am interested in buying this item directly:
 - ${product.title}${customText} x1
-
+ 
 Price: ${formatLKR(product.price)}
-
+ 
 Please confirm the delivery details and manual confirmation process.`;
 
     const encoded = encodeURIComponent(message);
-    window.open(`https://wa.me/${phoneNumber}?text=${encoded}`, "_blank");
+    window.open(`https://wa.me/${whatsappNumber}?text=${encoded}`, "_blank");
+  };
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewName.trim() || !reviewComment.trim()) return;
+    setSubmittingReview(true);
+    try {
+      if (supabase) {
+        const { error: revErr } = await supabase
+          .from("reviews")
+          .insert({
+            product_id: id,
+            customer_name: reviewName,
+            rating: reviewRating,
+            comment: reviewComment,
+            is_approved: false // Requires admin moderation
+          });
+        if (revErr) throw revErr;
+        setReviewSuccess(true);
+        setReviewName("");
+        setReviewComment("");
+      }
+    } catch (err) {
+      console.error("Failed to insert review:", err);
+    } finally {
+      setSubmittingReview(false);
+    }
   };
 
   const relatedProducts = defaultProducts.filter((p) => p.id !== product.id).slice(0, 3);
@@ -335,6 +395,97 @@ Please confirm the delivery details and manual confirmation process.`;
                   <ShieldCheck className="h-4 w-4 text-green-400" /> Quality Guarantee
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Reviews Section */}
+          <div className="mt-20 border-t border-white/5 pt-16 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            {/* Reviews List (Left Cols 7) */}
+            <div className="lg:col-span-7 space-y-6">
+              <h3 className="text-xl font-bold font-display text-white">Customer Experiences ({reviews.length})</h3>
+              
+              {reviews.length === 0 ? (
+                <p className="text-silver/40 text-xs font-light py-4">No verified reviews for this accessory item yet.</p>
+              ) : (
+                <div className="space-y-4">
+                  {reviews.map((r) => (
+                    <div key={r.id} className="p-5 bg-white/[0.01] border border-white/5 rounded-2xl space-y-2">
+                      <div className="flex justify-between items-baseline">
+                        <span className="text-white text-xs font-bold font-display">{r.customer_name}</span>
+                        <span className="text-yellow-400 font-bold text-[10px]">{r.rating} ★</span>
+                      </div>
+                      <p className="text-silver/60 text-xs font-light leading-relaxed">{r.comment}</p>
+                      <span className="text-[9px] text-silver/30 font-mono block">
+                        {new Date(r.created_at).toLocaleDateString("en-LK")}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Write a Review Form (Right Cols 5) */}
+            <div className="lg:col-span-5 luxury-glass p-6 rounded-3xl space-y-4 border border-white/10">
+              <h3 className="text-sm font-bold uppercase tracking-wider border-b border-white/5 pb-2.5">Submit Review</h3>
+              
+              {reviewSuccess ? (
+                <div className="p-4 bg-green-950/20 border border-green-500/10 rounded-xl text-center space-y-2">
+                  <CheckCircle className="h-6 w-6 text-green-400 mx-auto" />
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">Review Submitted</h4>
+                  <p className="text-[10px] text-silver/50 font-light leading-relaxed">
+                    Thank you. We have logged your feedback. Your review will publish pending moderator approval.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleReviewSubmit} className="space-y-4 text-xs">
+                  <div>
+                    <label className="block text-[9px] text-silver/50 uppercase tracking-widest mb-1.5 font-bold">Your Name</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Enter name"
+                      value={reviewName}
+                      onChange={(e) => setReviewName(e.target.value)}
+                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-white/20"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[9px] text-silver/50 uppercase tracking-widest mb-1.5 font-bold">Rating Score</label>
+                    <select
+                      value={reviewRating}
+                      onChange={(e) => setReviewRating(Number(e.target.value))}
+                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-white/20"
+                    >
+                      <option value={5}>5 Stars (Excellent)</option>
+                      <option value={4}>4 Stars (Very Good)</option>
+                      <option value={3}>3 Stars (Good)</option>
+                      <option value={2}>2 Stars (Fair)</option>
+                      <option value={1}>1 Star (Poor)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[9px] text-silver/50 uppercase tracking-widest mb-1.5 font-bold">Feedback Comments</label>
+                    <textarea
+                      required
+                      rows={3}
+                      placeholder="Write your product experience details..."
+                      value={reviewComment}
+                      onChange={(e) => setReviewComment(e.target.value)}
+                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white resize-none focus:outline-none focus:border-white/20"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={submittingReview}
+                    className="apple-btn w-full py-2.5 text-[10px] uppercase font-bold tracking-widest"
+                  >
+                    {submittingReview ? "Submitting..." : "Send Feedback"}
+                  </button>
+                </form>
+              )}
             </div>
           </div>
 
