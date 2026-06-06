@@ -1,5 +1,0 @@
-name = "aethexstore"
-compatibility_date = "2024-05-29"
-
-[pages_build_output_dir]
-exclude = [".next_custom_build/cache", "cache"]
