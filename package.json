@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "preinstall": "npm config set legacy-peer-deps true",
     "dev": "next dev",
     "build": "next build && next-on-pages",
     "preview": "next build && next-on-pages preview",
@@ -24,8 +25,8 @@
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.16",
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10",
     "eslint": "^8",
     "postcss": "^8",
