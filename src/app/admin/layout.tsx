@@ -11,7 +11,8 @@ import {
   Settings,
   Menu,
   X,
-  LineChart
+  LineChart,
+  LogOut
 } from "lucide-react";
 import { createClient } from "../../lib/supabase/client";
 

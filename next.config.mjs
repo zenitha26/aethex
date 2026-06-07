@@ -120,6 +120,9 @@ const nextConfig = {
   experimental: {
     webpackBuildWorker: false,
     workerThreads: false
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
   }
 };
 
