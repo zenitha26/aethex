@@ -53,6 +53,16 @@ export default function CheckoutPage() {
               <h2 className="text-xl font-bold tracking-tight border-b border-white/5 pb-4">Order Summary</h2>
               
               <CartSummary />
+              
+              {/* Custom Import Policy Warning */}
+              <div className="bg-[#ff9f0a]/5 border border-[#ff9f0a]/20 rounded-xl p-4 text-xs text-[#ff9f0a]/90 leading-relaxed font-medium">
+                <p className="mb-2"><strong className="text-[#ff9f0a]">Important Notice regarding Custom Imports:</strong></p>
+                <ul className="list-disc pl-4 space-y-1">
+                  <li>Due to the custom nature of these imported luxury goods, all sales are final.</li>
+                  <li>No refunds or returns are accepted once the order has been processed.</li>
+                  <li>Delivery typically takes between 10-14 business days.</li>
+                </ul>
+              </div>
 
               <div className="pt-4 border-t border-white/5">
                 <ShopifyCheckoutButton />

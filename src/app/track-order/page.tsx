@@ -67,15 +67,15 @@ function TrackOrderContent() {
 
       setOrder(orderData);
 
-      // Query tracking update info if any
-      const { data: trackingData } = await supabase
-        .from("tracking_updates")
-        .select("*")
-        .eq("order_id", idToSearch)
-        .maybeSingle();
-
-      if (trackingData) {
-        setTracking(trackingData);
+      // Query masked tracking update info from our internal AfterShip API wrapper
+      try {
+        const trackingRes = await fetch(`/api/tracking?order_id=${idToSearch}`);
+        if (trackingRes.ok) {
+          const trackingData = await trackingRes.json();
+          setTracking(trackingData);
+        }
+      } catch (e) {
+        console.error("Failed to fetch tracking data", e);
       }
     } catch (err: any) {
       console.error(err);
@@ -255,18 +255,38 @@ function TrackOrderContent() {
 
           {/* Shipment Details & Courier */}
           {tracking && (
-            <div className="luxury-glass p-6 rounded-3xl space-y-4 border border-white/10">
+            <div className="luxury-glass p-6 rounded-3xl space-y-6 border border-white/10">
               <h3 className="text-sm font-bold uppercase tracking-wider border-b border-white/5 pb-3">Shipment Tracking</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                 <div>
                   <span className="text-silver/40 block text-[9px] uppercase font-bold mb-1">Carrier Courier</span>
-                  <span className="text-white text-sm font-semibold">{tracking.courier}</span>
+                  <span className="text-white text-sm font-semibold">{tracking.masked_courier || tracking.courier || "Aethex Premium Logistics"}</span>
                 </div>
                 <div>
                   <span className="text-silver/40 block text-[9px] uppercase font-bold mb-1">Tracking Number</span>
                   <span className="text-white text-sm font-mono font-bold select-all">{tracking.tracking_number}</span>
                 </div>
               </div>
+              
+              {tracking.checkpoints && tracking.checkpoints.length > 0 && (
+                <div className="mt-6 pt-4 border-t border-white/5 space-y-4">
+                  <h4 className="text-xs font-semibold text-silver/60 uppercase tracking-widest mb-4">Latest Updates</h4>
+                  <div className="space-y-4">
+                    {tracking.checkpoints.slice(0, 5).map((cp: any, idx: number) => (
+                      <div key={idx} className="flex gap-4 relative">
+                        {idx !== tracking.checkpoints.slice(0, 5).length - 1 && (
+                          <div className="absolute left-[7px] top-4 bottom-[-16px] w-[2px] bg-white/10" />
+                        )}
+                        <div className="w-4 h-4 rounded-full bg-[#121212] border-2 border-[#ff9f0a] z-10 flex-shrink-0 mt-0.5" />
+                        <div className="space-y-1 pb-2">
+                          <p className="text-white text-xs font-medium">{cp.message}</p>
+                          <p className="text-silver/40 text-[10px] uppercase">{new Date(cp.date).toLocaleString()} • {cp.location}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

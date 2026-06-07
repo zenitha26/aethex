@@ -1,4 +1,4 @@
-﻿export const runtime = 'edge';
+export const runtime = 'edge';
 
 import Link from "next/link";
 import { ArrowRight, Mail, SendHorizonal, Truck, ShieldCheck, RotateCcw, MessageSquare, ChevronRight } from "lucide-react";
@@ -10,12 +10,39 @@ import Footer from "../components/Footer";
 import { cn } from "@/lib/utils";
 import { getProducts } from "@/lib/products";
 import { SITE_CONTACT } from "@/constants";
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "AETHEX Store | Premium E-Commerce",
+  description: "Discover precision-crafted mechanical systems, acoustic modules, and refined workspace peripherals.",
+  openGraph: {
+    title: "AETHEX Store | Premium E-Commerce",
+    description: "Discover precision-crafted mechanical systems, acoustic modules, and refined workspace peripherals.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AETHEX Store | Premium E-Commerce",
+    description: "Discover precision-crafted mechanical systems, acoustic modules, and refined workspace peripherals.",
+  }
+};
 
 export default async function Home() {
   const products = await getProducts();
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "AETHEX Store",
+            "url": "https://aethexstore.com"
+          })
+        }}
+      />
       {/* Background blobs */}
       <div className="ambient-blob blob-1"></div>
       <div className="ambient-blob blob-2"></div>

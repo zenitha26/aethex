@@ -3,6 +3,7 @@ import { Outfit, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import PageTransition from "../components/PageTransition";
 import AdminShortcut from "../components/AdminShortcut";
+import FloatingWhatsApp from "../components/FloatingWhatsApp";
 
 // --- Fonts Configuration ---
 const outfit = Outfit({
@@ -70,6 +71,8 @@ export default function RootLayout({
           <PageTransition>
             {children}
           </PageTransition>
+          
+          <FloatingWhatsApp />
         </div>
       </body>
     </html>
