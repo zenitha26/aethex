@@ -3,12 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "preinstall": "npm config set legacy-peer-deps true",
     "dev": "next dev",
-    "build": "NEXT_PUBLIC_SUPABASE_URL=https://hprjdgowiisjtxzdsuqq.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhwcmpkZ293aWlzanR4emRzdXFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Mjg2ODUsImV4cCI6MjA5NjMwNDY4NX0.8ljASGHnYM0MnuvYuaSdSUcsvrdqORN7EC_7HDTuQVU SHOPIFY_STORE_DOMAIN=aethex-store.myshopify.com npx @cloudflare/next-on-pages",
-    "preview": "next build && next-on-pages preview",
+    "build": "next build",
     "start": "next start",
-    "pages:build": "npx @cloudflare/next-on-pages && rm -rf .next_custom_build/cache"
+    "lint": "next lint"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.5",
