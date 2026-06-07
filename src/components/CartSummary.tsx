@@ -120,7 +120,20 @@ export default function CartSummary() {
       </div>
 
       {/* Subtotal Display */}
-      <div className="border-t border-white/5 pt-4 space-y-2.5">
+      <div className="border-t border-white/5 pt-4 space-y-4">
+        {/* Discount Code Input */}
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Discount Code"
+            className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-silver/30 focus:outline-none focus:border-white/30 transition-colors"
+          />
+          <button className="px-5 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-bold uppercase tracking-wider transition-colors">
+            Apply
+          </button>
+        </div>
+
+        <div className="space-y-2.5 pt-2">
         <div className="flex justify-between items-center text-sm">
           <span className="text-silver/60 font-light">Subtotal</span>
           <span className="text-white font-medium">{formatLKR(subtotal)}</span>
@@ -132,6 +145,7 @@ export default function CartSummary() {
         <div className="border-t border-white/5 pt-3 flex justify-between items-center">
           <span className="text-silver/90 text-sm font-semibold">Total</span>
           <span className="text-white text-lg font-bold font-display">{formatLKR(subtotal)}</span>
+        </div>
         </div>
       </div>
     </div>

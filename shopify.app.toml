@@ -1,0 +1,28 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "51fc8d7a93af4492f3e786d6bc1568df"
+name = "Aethex-NextJS"
+application_url = "http://aethexstore.com/"
+embedded = true
+
+[webhooks]
+api_version = "2026-04"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_customers,write_customers,write_draft_orders,read_draft_orders,read_fulfillments,write_fulfillments,write_inventory,read_inventory,read_orders,read_products,write_products,read_shipping,write_shipping"
+optional_scopes = [
+  "read_app_proxy",
+  "write_app_proxy",
+  "read_cart_transforms",
+  "write_cart_transforms",
+  "read_all_cart_transforms",
+  "read_validations",
+  "write_validations",
+  "read_channels",
+  "write_channels"
+]
+use_legacy_install_flow = false
+
+[auth]
+redirect_urls = [ ]

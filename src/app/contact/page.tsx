@@ -7,6 +7,7 @@ import Link from "next/link";
 import { MessageSquare, Mail, Send, CheckCircle2, AlertCircle } from "lucide-react";
 import Turnstile from "../../components/Turnstile";
 import { z } from "zod";
+import { SITE_CONTACT } from "../../constants";
 
 const contactFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -51,7 +52,7 @@ export default function ContactPage() {
   };
 
   const handleWhatsAppContact = () => {
-    const number = "94771234567";
+    const number = SITE_CONTACT.WHATSAPP_NUMBER;
     const text = encodeURIComponent("Hello AETHEX Store 👋, I need customer support regarding a premium product.");
     window.open(`https://wa.me/${number}?text=${text}`, "_blank");
   };

@@ -4,17 +4,30 @@ import { useEffect, useState } from "react";
 import { useCartStore } from "../store/useCartStore";
 import { ShoppingBag, Search, Compass, Layers } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function Navbar() {
   const { cart, setCartOpen, searchQuery, setSearchQuery } = useCartStore();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
+    const { createClient } = require("../lib/supabase/client");
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }: any) => setUser(data.user));
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
+      setUser(session?.user || null);
+    });
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
@@ -34,14 +47,23 @@ export default function Navbar() {
   };
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled
-          ? "py-3 bg-[#050505]/80 backdrop-blur-md border-b border-white/5"
-          : "py-5 bg-transparent"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+    <>
+      {/* Announcement Bar */}
+      <div className="fixed top-0 left-0 right-0 z-[100] bg-black text-white text-xs md:text-sm py-2 text-center border-b border-neutral-800 tracking-wide">
+        🚚 FREE SHIPPING ON YOUR FIRST ORDER
+      </div>
+
+      <motion.nav
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className={`fixed left-0 right-0 z-50 transition-all duration-500 top-8 md:top-9 ${
+          isScrolled
+            ? "py-3 bg-[#050505]/90 backdrop-blur-xl border-b border-white/5"
+            : "py-4 md:py-5 bg-transparent"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Brand Logo */}
         <Link
           href="/"
@@ -64,12 +86,7 @@ export default function Navbar() {
           >
             Catalog
           </Link>
-          <Link
-            href="/custom-lab"
-            className="hover:text-white transition-colors"
-          >
-            Custom Lab
-          </Link>
+
           <Link
             href="/about-us"
             className="hover:text-white transition-colors"
@@ -98,8 +115,15 @@ export default function Navbar() {
             />
           </div>
 
+          {/* Auth Button */}
+          <Link href={user ? "/account" : "/login"} className="relative p-2 text-white/80 hover:text-white transition-colors">
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          </Link>
+
           {/* Cart Bag */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setCartOpen(true)}
             className="relative p-2 text-white/80 hover:text-white transition-colors"
             aria-label="Open Cart"
@@ -111,9 +135,10 @@ export default function Navbar() {
                 {totalItems}
               </span>
             )}
-          </button>
+          </motion.button>
         </div>
       </div>
-    </nav>
+    </motion.nav>
+    </>
   );
 }

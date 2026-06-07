@@ -1,4 +1,6 @@
+// @ts-ignore
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.7";
+declare const Deno: any;
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -79,7 +81,7 @@ Deno.serve(async () => {
 
         processedJobs.push({ job_id: job.id, order_id: job.order_id, status: "completed", tracking: trackingNumber });
 
-      } catch (jobErr) {
+      } catch (jobErr: any) {
         console.error(`Error processing job ${job.id}:`, jobErr.message);
         
         // Mark job as failed and increment retry count
@@ -97,7 +99,7 @@ Deno.serve(async () => {
       headers: { "Content-Type": "application/json" }
     });
 
-  } catch (err) {
+  } catch (err: any) {
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: { "Content-Type": "application/json" }

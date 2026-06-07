@@ -1,16 +1,12 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabaseAdmin } from "../../../../lib/supabase";
-import { defaultProducts } from "../../../../lib/products";
+
+const defaultProducts: any[] = [];
 
 export async function GET() {
   try {
-    // 1. Authorize Admin Session (await cookies in Next.js 15)
-    const cookieStore = await cookies();
-    const adminSession = cookieStore.get("aethex_admin_session")?.value;
-    if (!adminSession) {
-      return NextResponse.json({ error: "Unauthorized access." }, { status: 401 });
-    }
+    // 1. Authorize Admin Session handled by Middleware
 
     if (!supabaseAdmin) {
       return NextResponse.json({ error: "Database configuration error." }, { status: 500 });
@@ -29,7 +25,7 @@ export async function GET() {
 
     // 3. Auto-seed default products if empty
     if (!products || products.length === 0) {
-      const seedData = defaultProducts.map((p) => ({
+      const seedData = defaultProducts.map((p: any) => ({
         title: p.title,
         description: p.description,
         price: p.price,
@@ -60,11 +56,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = await cookies();
-    const adminSession = cookieStore.get("aethex_admin_session")?.value;
-    if (!adminSession) {
-      return NextResponse.json({ error: "Unauthorized access." }, { status: 401 });
-    }
+    // Admin auth handled by Middleware
 
     if (!supabaseAdmin) {
       return NextResponse.json({ error: "Database configuration error." }, { status: 500 });
@@ -84,7 +76,7 @@ export async function POST(request: Request) {
         price: parseFloat(price),
         original_price: original_price ? parseFloat(original_price) : null,
         image_url: image_url || "p1",
-        source: source || "shopify",
+        source: source || "in-house",
         stock: stock !== undefined ? parseInt(stock, 10) : 10,
       })
       .select()
@@ -104,11 +96,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const cookieStore = await cookies();
-    const adminSession = cookieStore.get("aethex_admin_session")?.value;
-    if (!adminSession) {
-      return NextResponse.json({ error: "Unauthorized access." }, { status: 401 });
-    }
+    // Admin auth handled by Middleware
 
     if (!supabaseAdmin) {
       return NextResponse.json({ error: "Database configuration error." }, { status: 500 });
@@ -149,11 +137,7 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const cookieStore = await cookies();
-    const adminSession = cookieStore.get("aethex_admin_session")?.value;
-    if (!adminSession) {
-      return NextResponse.json({ error: "Unauthorized access." }, { status: 401 });
-    }
+    // Admin auth handled by Middleware
 
     if (!supabaseAdmin) {
       return NextResponse.json({ error: "Database configuration error." }, { status: 500 });

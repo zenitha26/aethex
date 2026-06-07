@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "../../../lib/supabase";
 import { env } from "../../../lib/env";
 import { z } from "zod";
+import { SITE_CONTACT } from "@/constants";
 
 const orderSchema = z.object({
   cart: z.array(
@@ -118,7 +119,11 @@ export async function POST(req: Request) {
       };
     });
 
-    // 3. Customer profile check & update or insert
+    // 3. Customer profile check & User Auth Check
+    const { createClient } = await import("../../../lib/supabase/server");
+    const supabaseServer = await createClient();
+    const { data: { user } } = await supabaseServer.auth.getUser();
+    
     let customerId = null;
     const { data: existingCustomer } = await supabaseAdmin
       .from("customers")
@@ -160,6 +165,7 @@ export async function POST(req: Request) {
     const { data: order, error: orderErr } = await supabaseAdmin
       .from("orders")
       .insert({
+        user_id: user?.id || null,
         customer_id: customerId,
         customer_name: customer.name,
         customer_email: customer.email || null,
@@ -196,23 +202,29 @@ export async function POST(req: Request) {
     }
 
     // 6. Async email notification
-    if (customer.email && customer.email.trim() !== "") {
-      try {
-        const { sendEmail, generateOrderConfirmationHtml } = await import("../../../services/email");
-        const listText = verifiedItems
-          .map((i) => {
-            const options = i.customization
-              ? ` [Switches: ${i.customization.switches}, Caps: ${i.customization.keycaps}, Frame: ${i.customization.caseStyle}]`
-              : "";
-            return `- ${i.title}${options} x${i.quantity}`;
-          })
-          .join("\n");
+    try {
+      const { sendEmail, generateOrderConfirmationHtml, generateAdminNotificationHtml } = await import("../../../services/email");
+      const listText = verifiedItems
+        .map((i) => {
+          const options = i.customization
+            ? ` [Switches: ${i.customization.switches}, Caps: ${i.customization.keycaps}, Frame: ${i.customization.caseStyle}]`
+            : "";
+          return `- ${i.title}${options} x${i.quantity}`;
+        })
+        .join("\n");
 
+      const whatsappMsg = `Hi AETHEX, confirming my order ${order.id} for LKR ${total}.`;
+      // Use the generic WhatsApp API link if no custom text is needed, but we'll append custom text here.
+      const whatsappUrl = `https://wa.me/${SITE_CONTACT.WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMsg)}`;
+
+      if (customer.email && customer.email.trim() !== "") {
         const htmlContent = generateOrderConfirmationHtml(
           order.id,
           customer.name,
+          customer.phone,
           total,
-          listText
+          listText,
+          whatsappUrl
         );
 
         await sendEmail({
@@ -220,9 +232,24 @@ export async function POST(req: Request) {
           subject: `AETHEX Store Order Logged — Ref #${order.id.slice(0, 8)}`,
           html: htmlContent,
         });
-      } catch (mailErr) {
-        console.error("⚠️ Async Resend order receipt failed:", mailErr);
       }
+
+      const adminHtml = generateAdminNotificationHtml(
+        order.id,
+        customer.name,
+        customer.phone,
+        total,
+        listText,
+        whatsappUrl
+      );
+
+      await sendEmail({
+        to: "orders@aethex.store",
+        subject: `New Order ${order.id}`,
+        html: adminHtml,
+      });
+    } catch (mailErr) {
+      console.error("⚠️ Async Resend order receipt failed:", mailErr);
     }
 
     return NextResponse.json({

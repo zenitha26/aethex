@@ -1,11 +1,13 @@
-"use client";
-
 import Navbar from "../../components/Navbar";
 import ProductGrid from "../../components/ProductGrid";
 import CartDrawer from "../../components/CartDrawer";
+import Footer from "../../components/Footer";
 import Link from "next/link";
+import { getProducts } from "@/lib/products";
 
-export default function ProductsCatalogPage() {
+export default async function ProductsCatalogPage() {
+  const products = await getProducts();
+
   return (
     <>
       <Navbar />
@@ -24,8 +26,8 @@ export default function ProductsCatalogPage() {
           </div>
 
           <div className="mb-12">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight font-display mb-4">
-              THE <span className="silver-gradient-text">SYSTEMS</span>
+            <h1 className="text-white font-bold tracking-tighter text-6xl md:text-8xl mb-4">
+              CATALOG
             </h1>
             <p className="text-silver/60 text-sm md:text-base max-w-lg font-light leading-relaxed">
               Curated precision gear, mechanical keyboards, custom audio setups, and desk modules built for elite workspaces.
@@ -33,27 +35,12 @@ export default function ProductsCatalogPage() {
           </div>
 
           {/* Product list grid */}
-          <ProductGrid />
+          <ProductGrid initialProducts={products} />
         </div>
       </main>
 
       <CartDrawer />
-
-      {/* Footer */}
-      <footer className="border-t border-white/5 py-12 bg-[#050505]">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-white text-lg font-bold tracking-widest font-display">
-            AETHEX<span className="text-white/40">STORE</span>
-          </div>
-          <p className="text-silver/40 text-xs font-light">
-            &copy; {new Date().getFullYear()} AETHEX Store. All rights reserved. Handcrafted dropshipping platform.
-          </p>
-          <div className="flex gap-6 text-xs text-silver/40">
-            <Link href="/policies" className="hover:text-white transition-colors">Policies</Link>
-            <Link href="/about-us" className="hover:text-white transition-colors">About Us</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }

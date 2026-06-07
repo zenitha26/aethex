@@ -23,7 +23,7 @@ create table if not exists products (
   original_price numeric,
   image_url text,
   source text default 'aliexpress', -- 'aliexpress' | 'shopify' | 'customizer'
-  external_id text,
+  external_id text unique,
   product_url text,
   stock int default 10,
   created_at timestamp with time zone default now(),
@@ -44,11 +44,12 @@ create table if not exists customers (
 -- 4. Orders Table
 create table if not exists orders (
   id uuid primary key default gen_random_uuid(),
+  external_id text unique,
   customer_id uuid references customers(id) on delete set null,
   customer_name text not null,
   customer_email text,
-  customer_phone text not null,
-  customer_address text not null,
+  customer_phone text,
+  customer_address text,
   subtotal numeric not null,
   total numeric not null,
   payment_status text default 'pending', -- 'pending' | 'confirmed'

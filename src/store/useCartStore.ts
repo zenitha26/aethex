@@ -12,6 +12,7 @@ export interface Product {
   external_id?: string;
   product_url?: string;
   stock?: number;
+  variant_id?: string;
 }
 
 export interface CartItem {

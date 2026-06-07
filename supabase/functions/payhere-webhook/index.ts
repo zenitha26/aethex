@@ -1,4 +1,6 @@
+// @ts-ignore
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.7";
+declare const Deno: any;
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -12,7 +14,7 @@ async function md5(text: string): Promise<string> {
   return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-Deno.serve(async (req) => {
+Deno.serve(async (req: any) => {
   try {
     // PayHere sends webhook as urlencoded form data
     const formData = await req.formData();
@@ -89,7 +91,7 @@ Deno.serve(async (req) => {
 
     return new Response("OK", { status: 200 });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error("Webhook processing error:", err.message);
     return new Response(err.message, { status: 500 });
   }

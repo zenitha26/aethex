@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { ShoppingBag, Sparkles } from "lucide-react";
+import { staggerContainer, fadeInUp, hoverScale } from "../lib/animations";
+import { SITE_CONTACT } from "../constants";
 
 export default function HeroSection() {
   const router = useRouter();
@@ -17,13 +19,16 @@ export default function HeroSection() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="relative z-10 text-center px-6 max-w-4xl">
+      <motion.div
+        variants={staggerContainer(0.15, 0.15)}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 text-center px-6 max-w-4xl"
+      >
 
         {/* SMALL BADGE */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          variants={fadeInUp}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/70 text-xs tracking-widest backdrop-blur-xl"
         >
           <Sparkles className="h-3 w-3" />
@@ -32,9 +37,7 @@ export default function HeroSection() {
 
         {/* MAIN TITLE */}
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
+          variants={fadeInUp}
           className="mt-6 text-4xl md:text-6xl font-light text-white leading-tight tracking-wide"
         >
           Discover Premium Products
@@ -44,9 +47,7 @@ export default function HeroSection() {
 
         {/* SUB TEXT */}
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          variants={fadeInUp}
           className="mt-6 text-white/60 text-sm md:text-base max-w-2xl mx-auto leading-relaxed"
         >
           Luxury curated dropshipping products delivered to Sri Lanka with
@@ -55,29 +56,33 @@ export default function HeroSection() {
 
         {/* CTA BUTTONS */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
+          variants={fadeInUp}
           className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
         >
 
           {/* SHOP BUTTON */}
-          <button
+          <motion.button
+            variants={hoverScale}
+            whileHover="hover"
+            whileTap="tap"
             onClick={() => router.push("/products")}
             className="flex items-center gap-2 px-6 py-3 bg-white text-black rounded-xl hover:bg-gray-200 transition font-medium"
           >
             <ShoppingBag className="h-4 w-4" />
             Shop Now
-          </button>
+          </motion.button>
 
           {/* WHATSAPP BUTTON */}
-          <a
-            href="https://wa.me/94771234567?text=Hi%20AETHEX%20Store%2C%20I%20want%20to%20know%20more"
+          <motion.a
+            variants={hoverScale}
+            whileHover="hover"
+            whileTap="tap"
+            href={SITE_CONTACT.WHATSAPP_LINK}
             target="_blank"
             className="px-6 py-3 border border-white/20 text-white rounded-xl hover:bg-white/5 transition"
           >
             Order via WhatsApp
-          </a>
+          </motion.a>
         </motion.div>
 
         {/* STATS */}
@@ -102,7 +107,7 @@ export default function HeroSection() {
             <p className="text-white/40 text-xs">Delivery</p>
           </div>
         </motion.div>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Outfit, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import PageTransition from "../components/PageTransition";
+import AdminShortcut from "../components/AdminShortcut";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -47,13 +49,14 @@ export default function RootLayout({
         }} />
       </head>
       <body>
+        <AdminShortcut />
         <div className="main-wrapper">
           <div className="background-glows">
             <div className="glow-circle-1"></div>
             <div className="glow-circle-2"></div>
             <div className="glow-circle-3"></div>
           </div>
-          {children}
+          <PageTransition>{children}</PageTransition>
         </div>
       </body>
     </html>

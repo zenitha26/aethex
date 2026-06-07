@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { updateSession } from "./lib/supabase/middleware";
 
 // In-memory rate limiting (per V8 isolate)
 const ipRequestCounts = new Map<string, { count: number; resetTime: number }>();
@@ -25,21 +26,94 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
-export function middleware(request: NextRequest) {
-  const response = NextResponse.next();
+export async function middleware(request: NextRequest) {
+  // 1. Supabase Session Validation
+  const { supabaseResponse, user } = await updateSession(request);
+  const response = supabaseResponse;
+
   const url = request.nextUrl;
 
-  // Admin routing protection checks
-  const isAdminDashboard = url.pathname.startsWith("/admin/dashboard");
-  const isAdminLogin = url.pathname === "/admin";
-  const adminSession = request.cookies.get("aethex_admin_session")?.value;
+  // 2. Customer Routing Protection
+  const isAccountRoute = url.pathname.startsWith("/account");
+  const isCheckoutRoute = url.pathname.startsWith("/checkout");
+  const isAuthRoute = url.pathname.startsWith("/login") || url.pathname.startsWith("/register");
 
-  if (isAdminDashboard && !adminSession) {
-    return NextResponse.redirect(new URL("/admin", request.url));
+  if ((isAccountRoute || isCheckoutRoute) && !user) {
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (isAdminLogin && adminSession) {
-    return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+  if (isAuthRoute && user) {
+    return NextResponse.redirect(new URL("/account", request.url));
+  }
+
+  // 3. Admin routing protection checks
+  const isAdminRoute = url.pathname.startsWith("/admin");
+
+  if (isAdminRoute) {
+    if (!user) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+    
+    // Check if the user has the 'admin' role in profiles
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    
+    if (supabaseUrl && supabaseAnonKey) {
+      try {
+        const profileRes = await fetch(
+          `${supabaseUrl}/rest/v1/profiles?id=eq.${user.id}&select=role`,
+          {
+            headers: {
+              apikey: supabaseAnonKey,
+              Authorization: `Bearer ${supabaseResponse.headers.get('Authorization') || request.cookies.get('sb-access-token') || ''}`,
+            },
+          }
+        );
+        const profiles = await profileRes.json();
+        
+        if (!profiles || !profiles.length || profiles[0].role !== 'admin') {
+          return NextResponse.redirect(new URL("/", request.url));
+        }
+      } catch (err) {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+    } else {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
+
+  // 4. API Security Check
+  const isApiAdminRoute = url.pathname.startsWith("/api/admin");
+  if (isApiAdminRoute) {
+    if (!user) {
+      return new NextResponse(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
+    }
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    
+    if (supabaseUrl && supabaseAnonKey) {
+      try {
+        const profileRes = await fetch(
+          `${supabaseUrl}/rest/v1/profiles?id=eq.${user.id}&select=role`,
+          {
+            headers: {
+              apikey: supabaseAnonKey,
+              Authorization: `Bearer ${supabaseResponse.headers.get('Authorization') || request.cookies.get('sb-access-token') || ''}`,
+            },
+          }
+        );
+        const profiles = await profileRes.json();
+        
+        if (!profiles || !profiles.length || profiles[0].role !== 'admin') {
+          return new NextResponse(JSON.stringify({ error: "Forbidden: Admin access required" }), { status: 403, headers: { "Content-Type": "application/json" } });
+        }
+      } catch (err) {
+        return new NextResponse(JSON.stringify({ error: "Server error verifying role" }), { status: 500, headers: { "Content-Type": "application/json" } });
+      }
+    } else {
+      return new NextResponse(JSON.stringify({ error: "Configuration missing" }), { status: 500, headers: { "Content-Type": "application/json" } });
+    }
   }
 
   // 1. IP-Based Rate Limiting for sensitive endpoints

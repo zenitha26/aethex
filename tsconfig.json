@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "ES2017",
     "lib": [
       "dom",
@@ -32,18 +33,9 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "**/*.mts",
-    ".next_custom_build/types/**/*.ts"
+    ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "supabase",
-    "supabase/**/*",
-    "gearxstore",
-    "gearxstore/**/*",
-    "gear-x-store",
-    "gear-x-store/**/*"
+    "node_modules"
   ]
 }

@@ -1,164 +1,145 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft, ShieldAlert, Lock, User, Loader2 } from "lucide-react";
-import Turnstile from "../../components/Turnstile";
+import { Loader2, AlertCircle } from "lucide-react";
+import { createClient } from "../../lib/supabase/client";
 
-export default function AdminLoginPage() {
-  const router = useRouter();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [turnstileToken, setTurnstileToken] = useState("");
-  const [loading, setLoading] = useState(false);
+export default function AdminOverviewPage() {
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState({
+    totalRevenue: 0,
+    activeOrders: 0,
+    completedOrders: 0,
+    totalCustomers: 0
+  });
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const supabase = createClient();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!username || !password) {
-      setError("Please fill in all credential fields.");
-      return;
-    }
-    if (!turnstileToken) {
-      setError("Please verify that you are not a robot.");
-      return;
-    }
+  useEffect(() => {
+    async function fetchDashboardData() {
+      try {
+        // Fetch Orders
+        const { data: ordersData, error: ordersErr } = await supabase
+          .from("orders")
+          .select("*")
+          .order("created_at", { ascending: false });
 
-    setLoading(true);
-    setError(null);
+        if (ordersErr) throw ordersErr;
 
-    try {
-      const res = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password, turnstileToken }),
-      });
+        // Fetch Customers
+        const { count: customersCount, error: custErr } = await supabase
+          .from("profiles")
+          .select("*", { count: "exact", head: true });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Authentication failed.");
+        if (custErr) throw custErr;
+
+        const orders = ordersData || [];
+        const totalRevenue = orders
+          .filter((o) => o.payment_status === "confirmed" || o.order_status === "delivered")
+          .reduce((acc, curr) => acc + Number(curr.total), 0);
+
+        const activeOrders = orders.filter((o) => o.order_status === "processing").length;
+        const completedOrders = orders.filter((o) => o.order_status === "delivered").length;
+
+        setStats({
+          totalRevenue,
+          activeOrders,
+          completedOrders,
+          totalCustomers: customersCount || 0
+        });
+
+        setRecentOrders(orders.slice(0, 5));
+
+      } catch (err: any) {
+        setError(err.message || "Failed to load overview data.");
+      } finally {
+        setLoading(false);
       }
-
-      // Login success, redirect to dashboard
-      router.push("/admin/dashboard");
-      router.refresh();
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred during login.");
-      setLoading(false);
-      // Reset Turnstile token on failure
-      setTurnstileToken("");
     }
+
+    fetchDashboardData();
+  }, [supabase]);
+
+  const formatLKR = (amount: number) => {
+    return new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR", minimumFractionDigits: 0 }).format(amount);
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20 text-silver/60 gap-4">
+        <Loader2 className="h-6 w-6 animate-spin text-white" />
+        <p className="text-xs uppercase tracking-widest">Loading Analytics...</p>
+      </div>
+    );
+  }
+
   return (
-    <main className="min-h-screen bg-[#050505] flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Background blobs */}
-      <div className="ambient-blob blob-1"></div>
-      <div className="ambient-blob blob-2"></div>
-
-      <div className="w-full max-w-md relative z-10 space-y-8">
-        {/* Back link */}
-        <div className="flex justify-start">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-xs text-silver/60 hover:text-white transition-colors uppercase tracking-widest font-semibold"
-          >
-            <ArrowLeft className="h-4 w-4" /> Back to Store
-          </Link>
+    <div className="space-y-8 animate-in fade-in duration-500">
+      {error && (
+        <div className="p-4 bg-red-950/40 border border-red-500/20 rounded-2xl text-xs text-red-400 flex items-start gap-2">
+          <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+          <span>{error}</span>
         </div>
+      )}
 
-        {/* Brand */}
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-widest font-display text-white">
-            AETHEX<span className="text-white/40">SYSTEMS</span>
-          </h1>
-          <p className="text-silver/50 text-xs uppercase tracking-widest">
-            Security Gateway
-          </p>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="luxury-glass p-6 rounded-2xl">
+          <span className="text-[10px] uppercase tracking-wider text-silver/40 font-bold block mb-1">Total Verified Revenue</span>
+          <span className="text-2xl font-bold font-display text-white">{formatLKR(stats.totalRevenue)}</span>
         </div>
-
-        {/* Form Container */}
-        <div className="luxury-glass p-8 rounded-3xl space-y-6">
-          <h2 className="text-lg font-bold font-display tracking-tight text-white border-b border-white/5 pb-4">
-            Authorized Access Only
-          </h2>
-
-          {error && (
-            <div className="p-3.5 bg-red-950/40 border border-red-500/20 rounded-xl text-xs text-red-400 flex items-start gap-2">
-              <ShieldAlert className="h-4 w-4 flex-shrink-0 mt-0.5" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleLogin} className="space-y-4">
-            {/* Username */}
-            <div>
-              <label className="block text-[10px] text-silver/50 uppercase tracking-wider mb-1.5 font-bold">
-                Username
-              </label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-white/30">
-                  <User className="h-4 w-4" />
-                </span>
-                <input
-                  type="text"
-                  required
-                  placeholder="Enter administrator username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-silver/20 focus:outline-none focus:border-white/30 transition-colors"
-                />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div>
-              <label className="block text-[10px] text-silver/50 uppercase tracking-wider mb-1.5 font-bold">
-                Password
-              </label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-white/30">
-                  <Lock className="h-4 w-4" />
-                </span>
-                <input
-                  type="password"
-                  required
-                  placeholder="••••••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-silver/20 focus:outline-none focus:border-white/30 transition-colors"
-                />
-              </div>
-            </div>
-
-            {/* Turnstile Widget */}
-            <div className="flex justify-center py-2">
-              <Turnstile onVerify={(token) => setTurnstileToken(token)} />
-            </div>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={loading || !turnstileToken}
-              className={`relative w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-full font-bold text-xs uppercase tracking-widest transition-all duration-300 ${
-                loading || !turnstileToken
-                  ? "bg-white/5 border border-white/10 text-white/20 cursor-not-allowed"
-                  : "bg-white text-black hover:bg-[#e5e5ea] active:scale-95 shadow-[0_4px_20px_rgba(255,255,255,0.05)]"
-              }`}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin text-black" />
-                  <span>Verifying credentials...</span>
-                </>
-              ) : (
-                <span>Access Console</span>
-              )}
-            </button>
-          </form>
+        <div className="luxury-glass p-6 rounded-2xl">
+          <span className="text-[10px] uppercase tracking-wider text-silver/40 font-bold block mb-1">Active Orders</span>
+          <span className="text-2xl font-bold font-display text-white">{stats.activeOrders}</span>
+        </div>
+        <div className="luxury-glass p-6 rounded-2xl">
+          <span className="text-[10px] uppercase tracking-wider text-silver/40 font-bold block mb-1">Completed Shipments</span>
+          <span className="text-2xl font-bold font-display text-white">{stats.completedOrders}</span>
+        </div>
+        <div className="luxury-glass p-6 rounded-2xl">
+          <span className="text-[10px] uppercase tracking-wider text-silver/40 font-bold block mb-1">Registered Profiles</span>
+          <span className="text-2xl font-bold font-display text-white">{stats.totalCustomers}</span>
         </div>
       </div>
-    </main>
+
+      <div className="luxury-glass rounded-2xl p-6 space-y-4">
+        <h3 className="text-sm font-bold uppercase tracking-wider border-b border-white/5 pb-3 text-white/90">
+          Recent Orders Queue
+        </h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="border-b border-white/5 text-silver/40 uppercase font-bold">
+                <th className="py-3 pr-4">Order Ref ID</th>
+                <th className="py-3 px-4">Customer Name</th>
+                <th className="py-3 px-4 text-right">Amount</th>
+                <th className="py-3 px-4">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentOrders.map((o) => (
+                <tr key={o.id} className="border-b border-white/5 text-silver/80">
+                  <td className="py-3 pr-4 font-mono select-all text-white font-bold">{o.id.slice(0, 8)}...</td>
+                  <td className="py-3 px-4 font-medium">{o.customer_name}</td>
+                  <td className="py-3 px-4 text-right font-semibold text-white">{formatLKR(o.total)}</td>
+                  <td className="py-3 px-4">
+                    <span className={`px-2 py-0.5 rounded-full text-[9px] uppercase font-bold ${
+                      o.order_status === "delivered" ? "bg-green-500/10 text-green-400" : "bg-yellow-500/10 text-yellow-400"
+                    }`}>
+                      {o.order_status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+              {recentOrders.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="py-6 text-center text-silver/40">No orders found.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   );
 }

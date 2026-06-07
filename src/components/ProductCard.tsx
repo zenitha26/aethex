@@ -1,12 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Plus } from "lucide-react";
-import { useCartStore, Product } from "../store/useCartStore";
-
-interface ProductCardProps {
-  product: Product;
-}
+import Link from "next/link";
+import Image from "next/image";
+import { Product } from "../store/useCartStore";
 
 const renderProductGraphic = (id: string) => {
   // Return vector-styled SVGs for high-end dropshipping product representations
@@ -97,80 +93,57 @@ const renderProductGraphic = (id: string) => {
   }
 };
 
-export default function ProductCard({ product }: ProductCardProps) {
-  const { addToCart } = useCartStore();
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }
+  },
+  hover: {
+    y: -10,
+    boxShadow: "0 20px 40px -15px rgba(255, 255, 255, 0.05), 0 0 50px -10px rgba(255, 255, 255, 0.02)",
+    transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] as const }
+  }
+};
 
-  const formattedPrice = new Intl.NumberFormat("en-LK", {
-    style: "currency",
-    currency: "LKR",
-    minimumFractionDigits: 0
-  }).format(product.price);
-
-  const formattedOriginalPrice = product.original_price
-    ? new Intl.NumberFormat("en-LK", {
-        style: "currency",
-        currency: "LKR",
-        minimumFractionDigits: 0
-      }).format(product.original_price)
-    : null;
-
+export default function ProductCard({ product }: { product: Product }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="group relative flex flex-col justify-between p-5 luxury-glass rounded-3xl luxury-glass-hover overflow-hidden"
-    >
-      {/* Product Image Frame */}
-      <div className="relative aspect-video mb-6 w-full rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-center overflow-hidden">
-        {product.original_price && (
-          <span className="absolute top-4 left-4 z-10 px-3 py-1 bg-white text-[#050505] text-[10px] font-extrabold uppercase rounded-full tracking-wider">
-            Sale
-          </span>
-        )}
-        <div className="w-full h-full p-6 transition-transform duration-700 ease-out group-hover:scale-110">
-          {renderProductGraphic(product.id)}
+    <Link href={`/product/${product.external_id || product.id}`} className="block">
+      <article className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-white/20 hover:bg-white/[0.04] hover:shadow-[0_20px_80px_rgba(255,255,255,0.06)]">
+        {/* Aspect Ratio Container */}
+        <div className="relative aspect-square overflow-hidden rounded-3xl bg-[#0a0a0a]">
+          <div className="absolute top-4 left-4 z-10">
+            <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-red-500/20">
+              -20%
+            </span>
+          </div>
+          <Image
+            fill
+            src={product.image_url || "/placeholder-product.jpg"}
+            alt={product.title}
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+          />
         </div>
-      </div>
-
-      {/* Product Info */}
-      <div className="flex-grow">
-        <div className="flex justify-between items-start gap-4 mb-2">
-          <h3 className="text-white text-lg font-bold font-display group-hover:text-silver transition-colors duration-300">
+        
+        {/* Content */}
+        <div className="p-6 space-y-3">
+          <h3 className="text-white font-semibold tracking-tight line-clamp-1">
             {product.title}
           </h3>
-          <span className="text-[10px] text-white/30 font-bold uppercase tracking-widest border border-white/10 px-2 py-0.5 rounded">
-            {product.source}
-          </span>
-        </div>
-        <p className="text-silver/60 text-xs mb-6 font-light leading-relaxed line-clamp-2">
-          {product.description || "Designed with premium precision and high quality engineering."}
-        </p>
-      </div>
-
-      {/* Product Footer */}
-      <div className="flex justify-between items-center mt-auto">
-        <div className="flex flex-col">
-          {formattedOriginalPrice && (
-            <span className="text-xs text-silver/40 line-through font-light mb-0.5">
-              {formattedOriginalPrice}
+          <p className="text-sm text-white/60 line-clamp-2">
+            {product.description || "Designed with premium precision and high quality engineering."}
+          </p>
+          <div className="flex items-center gap-2">
+            <span className="text-white text-lg font-bold">
+              LKR {product.price.toLocaleString()}
             </span>
-          )}
-          <span className="text-white text-base font-bold font-display tracking-tight">
-            {formattedPrice}
-          </span>
+            <span className="text-white/40 line-through text-sm">
+              LKR {Math.round(product.price * 1.25).toLocaleString()}
+            </span>
+          </div>
         </div>
-
-        <button
-          onClick={() => addToCart(product)}
-          className="p-3 bg-white text-[#050505] hover:bg-[#e5e5ea] rounded-full transition-all duration-300 transform active:scale-95"
-          aria-label={`Add ${product.title} to cart`}
-          id={`add-to-cart-${product.id}`}
-        >
-          <Plus className="h-4 w-4 stroke-[3]" />
-        </button>
-      </div>
-    </motion.div>
+      </article>
+    </Link>
   );
 }

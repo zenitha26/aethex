@@ -1,4 +1,6 @@
+// @ts-ignore
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.7";
+declare const Deno: any;
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -12,7 +14,7 @@ async function md5(text: string): Promise<string> {
   return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-Deno.serve(async (req) => {
+Deno.serve(async (req: any) => {
   // Handle CORS
   if (req.method === "OPTIONS") {
     return new Response("ok", {
@@ -146,7 +148,7 @@ Deno.serve(async (req) => {
       }
     );
 
-  } catch (err) {
+  } catch (err: any) {
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
