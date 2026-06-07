@@ -1,75 +1,65 @@
-﻿export const runtime = 'edge';
-
+export const runtime = 'edge';
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
 import { supabaseAdmin } from '../../../../lib/supabase';
 
-// HMAC verification function
-async function verifyShopifyWebhook(request: Request, rawBody: string) {
-  const hmacHeader = request.headers.get('x-shopify-hmac-sha256');
+// Helper function to verify Shopify HMAC using Web Crypto API
+async function verifyShopifyWebhook(data: string, hmac: string | null) {
+  if (!hmac) return false;
   const secret = process.env.SHOPIFY_WEBHOOK_SECRET;
+  if (!secret) return false;
 
-  if (!hmacHeader || !secret) {
-    console.error("HMAC header or secret missing");
-    return false;
-  }
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
 
-  const generatedHash = crypto
-    .createHmac('sha256', secret)
-    .update(rawBody, 'utf8')
-    .digest('base64');
+  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data));
+  const hashArray = Array.from(new Uint8Array(signature));
+  const calculatedHmac = btoa(String.fromCharCode(...hashArray));
 
-  try {
-    return crypto.timingSafeEqual(Buffer.from(generatedHash), Buffer.from(hmacHeader));
-  } catch {
-    return false;
-  }
+  return calculatedHmac === hmac;
 }
 
 export async function POST(request: Request) {
   try {
-    const rawBody = await request.text();
-    const topic = request.headers.get('x-shopify-topic');
+    const textData = await request.text();
+    const hmacHeader = request.headers.get('x-shopify-hmac-sha256');
 
-    if (!topic) {
-      return NextResponse.json({ error: 'Missing topic' }, { status: 400 });
-    }
+    const isValid = await verifyShopifyWebhook(textData, hmacHeader);
 
-    if (!process.env.SHOPIFY_WEBHOOK_SECRET) {
-      return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 });
-    }
-
-    const isValid = await verifyShopifyWebhook(request, rawBody);
     if (!isValid) {
-      console.warn("HMAC verification failed!");
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const payload = JSON.parse(rawBody);
-
-    if (!supabaseAdmin) {
-      return NextResponse.json({ error: 'Supabase client error' }, { status: 500 });
-    }
-
-    // Insert to queue immediately for 0% packet loss processing
+    const payload = JSON.parse(textData);
+    
+    // Process the payload here (e.g., save to Supabase)
     const { error } = await supabaseAdmin
-      .from('webhook_events')
-      .insert({
-        topic: topic,
-        payload: payload,
-        status: 'pending'
-      });
+      .from('orders')
+      .insert([
+        {
+          id: payload.id.toString(),
+          customer_email: payload.email,
+          total: payload.total_price,
+          order_status: 'processing',
+          payment_status: payload.financial_status,
+          items: payload.line_items
+        }
+      ]);
 
     if (error) {
-      console.error('[Shopify Webhook] Queue insertion failed', error);
-      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+       console.error("Supabase insert error:", error);
+       return NextResponse.json({ error: 'Database Error' }, { status: 500 });
     }
 
-    // Return 200 OK instantly to Shopify
     return NextResponse.json({ success: true }, { status: 200 });
 
   } catch (error) {
-    console.error('Webhook Handler Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    console.error('Webhook processing error:', error);
+    return NextResponse.json({ error: 'Server Error' }, { status: 500 });
   }
 }
