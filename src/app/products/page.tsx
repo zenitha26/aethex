@@ -1,3 +1,5 @@
+﻿export const runtime = 'edge';
+
 import Navbar from "../../components/Navbar";
 import ProductGrid from "../../components/ProductGrid";
 import CartDrawer from "../../components/CartDrawer";

@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { getProductById } from '../../../lib/products';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
