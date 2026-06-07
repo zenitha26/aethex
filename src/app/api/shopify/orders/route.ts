@@ -13,8 +13,13 @@ export async function GET(request: Request) {
     }
 
     // 2. Validate token and user role
+    // මෙන්න මේ පේළියෙන් තමයි අර TypeScript error එක නැති කරන්නේ
+    if (!supabaseAdmin) {
+      throw new Error("Supabase Admin client is not initialized");
+    }
+
     const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
-    
+
     if (authError || !user) {
       return NextResponse.json({ error: 'Invalid Token' }, { status: 401 });
     }
