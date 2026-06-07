@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Loader2, AlertCircle, TrendingUp, TrendingDown, Target } from "lucide-react";
+// මෙන්න මේ පේළියේ තමයි LineChart එක අලුතින් එකතු කළේ
+import { Loader2, AlertCircle, TrendingUp, TrendingDown, Target, LineChart } from "lucide-react";
 import { createClient } from "../../../lib/supabase/client";
 
 export default function AdminAnalyticsPage() {
@@ -27,7 +28,7 @@ export default function AdminAnalyticsPage() {
         if (ordersErr) throw ordersErr;
 
         const validOrders = orders?.filter(o => o.payment_status === "confirmed" || o.order_status === "delivered") || [];
-        
+
         // Revenue calculations
         const totalRevenue = validOrders.reduce((acc, curr) => acc + Number(curr.total), 0);
         const averageOrderValue = validOrders.length > 0 ? totalRevenue / validOrders.length : 0;
@@ -117,7 +118,7 @@ export default function AdminAnalyticsPage() {
             <TrendingUp className="h-3 w-3" /> +{stats.revenueGrowth}% vs last month
           </div>
         </div>
-        
+
         <div className="luxury-glass p-6 rounded-2xl flex flex-col justify-between gap-4">
           <div>
             <span className="text-[10px] uppercase tracking-wider text-silver/40 font-bold block mb-1">Average Order Value</span>
@@ -129,59 +130,3 @@ export default function AdminAnalyticsPage() {
         </div>
 
         <div className="luxury-glass p-6 rounded-2xl flex flex-col justify-between gap-4">
-          <div>
-            <span className="text-[10px] uppercase tracking-wider text-silver/40 font-bold block mb-1">Conversion Rate</span>
-            <span className="text-3xl font-bold font-display text-white">{stats.conversionRate}%</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-silver/60 bg-white/5 w-fit px-2 py-1 rounded">
-            <Target className="h-3 w-3" /> Target: 4.0%
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Top Products Table */}
-        <div className="luxury-glass rounded-2xl p-6">
-          <h3 className="text-sm font-bold uppercase tracking-wider border-b border-white/5 pb-3 mb-4 text-white/90">
-            Top Performing Products
-          </h3>
-          <div className="space-y-4">
-            {topProducts.map((p, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-white/5 border border-white/5 rounded-xl">
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold">
-                    {index + 1}
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-white">{p.title}</h4>
-                    <span className="text-[9px] text-silver/40 uppercase tracking-wider">{p.count} units sold</span>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs font-bold text-white">{formatLKR(p.revenue)}</span>
-                </div>
-              </div>
-            ))}
-            {topProducts.length === 0 && (
-              <div className="text-center py-6 text-xs text-silver/40">Not enough data to calculate top products.</div>
-            )}
-          </div>
-        </div>
-
-        {/* Visual Chart Placeholder */}
-        <div className="luxury-glass rounded-2xl p-6 flex flex-col">
-          <h3 className="text-sm font-bold uppercase tracking-wider border-b border-white/5 pb-3 mb-4 text-white/90">
-            Revenue Trends (Weekly)
-          </h3>
-          <div className="flex-1 flex items-center justify-center min-h-[200px] border border-dashed border-white/10 rounded-xl bg-white/[0.01]">
-            <div className="text-center space-y-2">
-              <LineChart className="h-8 w-8 text-silver/20 mx-auto" />
-              <p className="text-xs text-silver/40 uppercase tracking-widest font-semibold">Chart Visualization Ready</p>
-              <p className="text-[10px] text-silver/60 max-w-[200px]">Waiting for sufficient daily traffic data to render spline graph.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
