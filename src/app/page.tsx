@@ -28,7 +28,9 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const products = await getProducts();
+  let products = await getProducts();
+  // Ensure exactly 2 products are shown as requested
+  products = products.slice(0, 2);
 
   return (
     <>

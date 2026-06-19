@@ -47,7 +47,6 @@ export async function getShopifyProducts() {
             description
             handle
             availableForSale
-            totalInventory
             priceRange {
               minVariantPrice {
                 amount
@@ -61,10 +60,18 @@ export async function getShopifyProducts() {
                 }
               }
             }
-            variants(first: 1) {
+            variants(first: 10) {
               edges {
                 node {
                   id
+                  title
+                  selectedOptions {
+                    name
+                    value
+                  }
+                  image {
+                    url
+                  }
                 }
               }
             }

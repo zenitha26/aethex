@@ -2,7 +2,7 @@
 
 client_id = "51fc8d7a93af4492f3e786d6bc1568df"
 name = "Aethex-NextJS"
-application_url = "http://aethexstore.com/"
+application_url = "https://aethexstore.com"
 embedded = true
 
 [webhooks]
@@ -25,4 +25,7 @@ optional_scopes = [
 use_legacy_install_flow = false
 
 [auth]
-redirect_urls = [ ]
+redirect_urls = [
+  "https://aethexstore.com/api/auth/callback",
+  "https://aethexstore.com/api/auth/offline/callback"
+]

@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { useCartStore, CartItem } from "../store/useCartStore";
-import { X, Plus, Minus, Trash2, ShieldCheck, MessageCircle } from "lucide-react";
+import { useCartStore } from "../store/useCartStore";
+import { CartItem } from "../types/cart";
+import { X, Plus, Minus, Trash2, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function CartDrawer() {
   const { cart, isCartOpen, setCartOpen, updateQuantity, removeFromCart } =
@@ -23,7 +25,7 @@ export default function CartDrawer() {
   }, [isCartOpen, setCartOpen]);
 
   const subtotal = cart.reduce(
-    (acc: number, item: CartItem) => acc + item.product.price * item.quantity,
+    (acc: number, item: CartItem) => acc + item.price * item.quantity,
     0
   );
 
@@ -33,11 +35,6 @@ export default function CartDrawer() {
       currency: "LKR",
       minimumFractionDigits: 0,
     }).format(amount);
-  };
-
-  const getItemUniqueId = (item: any) => {
-    if (!item.customization) return item.product.id;
-    return `${item.product.id}-${item.customization.switches}-${item.customization.keycaps}-${item.customization.caseStyle}`;
   };
 
   const handleCheckout = () => {
@@ -101,21 +98,28 @@ export default function CartDrawer() {
               ) : (
                 <div className="flex flex-col gap-6">
                   {cart.map((item: CartItem) => {
-                    const id = getItemUniqueId(item);
+                    const id = item.id;
                     return (
                       <div
                         key={id}
                         className="flex gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl"
                       >
-                        <div className="w-16 h-16 bg-black/40 rounded-xl flex items-center justify-center">
-                          <div className="w-10 h-10 bg-white/10 rounded-lg" />
+                        <div className="w-16 h-16 bg-black/40 rounded-xl flex items-center justify-center relative overflow-hidden">
+                          {item.image ? (
+                            <Image src={item.image} alt={item.title} fill className="object-cover" />
+                          ) : (
+                            <div className="w-10 h-10 bg-white/10 rounded-lg" />
+                          )}
                         </div>
                         <div className="flex-grow">
                           <h4 className="text-white text-sm font-semibold">
-                            {item.product.title}
+                            {item.title}
                           </h4>
+                          {item.color && (
+                            <p className="text-xs text-white/60 mt-0.5">Color: {item.color}</p>
+                          )}
                           <p className="text-xs text-white/40 mt-1">
-                            LKR {item.product.price}
+                            LKR {item.price}
                           </p>
                           <div className="flex items-center justify-between mt-3">
                             <div className="flex items-center gap-2 bg-white/5 px-2 py-1 rounded-full">
@@ -136,7 +140,7 @@ export default function CartDrawer() {
                               </button>
                             </div>
                             <span className="text-white font-bold text-sm">
-                              {formatLKR(item.product.price * item.quantity)}
+                              {formatLKR(item.price * item.quantity)}
                             </span>
                           </div>
                         </div>

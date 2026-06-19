@@ -1,43 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
-export interface Product {
-  id: string;
-  title: string;
-  description?: string;
-  price: number;
-  original_price?: number | null;
-  image_url?: string;
-  source?: string;
-  external_id?: string;
-  product_url?: string;
-  stock?: number;
-  variant_id?: string;
-}
-
-export interface CartItem {
-  product: Product;
-  quantity: number;
-  customization?: {
-    switches: string;
-    keycaps: string;
-    caseStyle: string;
-  };
-}
-
-interface CartState {
-  cart: CartItem[];
-  isCartOpen: boolean;
-  searchQuery: string;
-  selectedCategory: string;
-  addToCart: (product: Product, customization?: CartItem["customization"]) => void;
-  removeFromCart: (itemId: string) => void;
-  updateQuantity: (itemId: string, delta: number) => void;
-  setCartOpen: (open: boolean) => void;
-  setSearchQuery: (query: string) => void;
-  setSelectedCategory: (category: string) => void;
-  clearCart: () => void;
-}
+import { CartItem, CartState } from "../types/cart";
 
 export const useCartStore = create<CartState>()(
   persist(
@@ -47,31 +10,29 @@ export const useCartStore = create<CartState>()(
       searchQuery: "",
       selectedCategory: "All",
 
-      addToCart: (product, customization) =>
+      addToCart: (product, quantity = 1, color?: string, variantId?: string) =>
         set((state) => {
-          const existingItemIndex = state.cart.findIndex((item) => {
-            const matchesId = item.product.id === product.id;
-            if (!customization && !item.customization) return matchesId;
-            if (customization && item.customization) {
-              return (
-                matchesId &&
-                item.customization.switches === customization.switches &&
-                item.customization.keycaps === customization.keycaps &&
-                item.customization.caseStyle === customization.caseStyle
-              );
-            }
-            return false;
-          });
+          const newItemId = `${product.id}-${color || 'none'}`;
+
+          const existingItemIndex = state.cart.findIndex((item) => item.id === newItemId);
 
           let newCart = [...state.cart];
 
           if (existingItemIndex > -1) {
             newCart[existingItemIndex] = {
               ...newCart[existingItemIndex],
-              quantity: newCart[existingItemIndex].quantity + 1,
+              quantity: newCart[existingItemIndex].quantity + quantity,
             };
           } else {
-            newCart.push({ product, quantity: 1, customization });
+            newCart.push({
+              id: newItemId,
+              title: product.title,
+              price: product.price,
+              image: product.image_url,
+              quantity: Math.max(1, quantity),
+              color,
+              variantId: variantId || product.variant_id,
+            });
           }
 
           return { cart: newCart, isCartOpen: true };
@@ -79,24 +40,15 @@ export const useCartStore = create<CartState>()(
 
       removeFromCart: (itemId) =>
         set((state) => ({
-          cart: state.cart.filter((item) => {
-            const uniqueId = item.customization
-              ? `${item.product.id}-${item.customization.switches}-${item.customization.keycaps}-${item.customization.caseStyle}`
-              : item.product.id;
-            return uniqueId !== itemId;
-          }),
+          cart: state.cart.filter((item) => item.id !== itemId),
         })),
 
       updateQuantity: (itemId, delta) =>
         set((state) => {
           const newCart = state.cart
             .map((item) => {
-              const uniqueId = item.customization
-                ? `${item.product.id}-${item.customization.switches}-${item.customization.keycaps}-${item.customization.caseStyle}`
-                : item.product.id;
-
-              if (uniqueId === itemId) {
-                return { ...item, quantity: item.quantity + delta };
+              if (item.id === itemId) {
+                return { ...item, quantity: Math.max(1, item.quantity + delta) };
               }
               return item;
             })
@@ -111,7 +63,7 @@ export const useCartStore = create<CartState>()(
       clearCart: () => set({ cart: [] }),
     }),
     {
-      name: "aethex-cart-storage", // local storage key
+      name: "aethex-cart-storage-v2", // changed key to v2 to avoid conflicts with old schema
     }
   )
 );

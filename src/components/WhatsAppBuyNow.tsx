@@ -1,12 +1,21 @@
 "use client";
 
 import { MessageCircle } from "lucide-react";
-import { Product } from "../../lib/products";
+import { Product } from "../types/product";
 
-export default function WhatsAppBuyNow({ product }: { product: Product }) {
+export default function WhatsAppBuyNow({ 
+  product, 
+  quantity = 1,
+  color
+}: { 
+  product: Product;
+  quantity?: number;
+  color?: string;
+}) {
   const handleWhatsAppClick = () => {
+    let colorText = color ? `\n\nColor:\n${color}` : '';
     // Generate a pre-filled message with product details
-    const message = `Hello Aethex Store! I would like to order the following item:\n\nProduct: ${product.title}\nPrice: LKR ${product.price.toLocaleString()}\n\nIs this currently available?`;
+    const message = `Hello AETHEX,\n\nI would like to order:\n\nProduct:\n${product.title}${colorText}\n\nQuantity:\n${quantity}\n\nPrice:\nLKR ${(product.price * quantity).toLocaleString()}\n\nPlease confirm availability.`;
     
     // URL Encode the message
     const encodedMessage = encodeURIComponent(message);

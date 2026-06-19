@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useCartStore, Product } from "../store/useCartStore";
+import { useCartStore } from "../store/useCartStore";
+import { Product } from "../types/product";
 import { motion } from "framer-motion";
 import { Sliders, Cpu, Palette } from "lucide-react";
 
@@ -70,11 +71,8 @@ export default function KeyboardBuilder() {
       stock: 1
     };
 
-    addToCart(customProduct, {
-      switches: switchType,
-      keycaps: keycapColor,
-      caseStyle: caseStyle,
-    });
+    const colorString = `Switches: ${switchType}, Keycaps: ${keycapColor}, Case: ${caseStyle}`;
+    addToCart(customProduct, 1, colorString);
   };
 
   const frame = getCaseStyles();

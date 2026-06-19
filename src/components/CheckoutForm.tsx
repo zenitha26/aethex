@@ -65,7 +65,7 @@ export default function CheckoutForm({ onBack, totalAmount }: CheckoutFormProps)
         cancel_url: `${window.location.origin}/`,
         notify_url: `${window.location.origin}/api/webhook/payhere`,
         order_id: paymentData.order_id,
-        items: cart.map(i => i.product.title).join(", "),
+        items: cart.map(i => i.title).join(", "),
         currency: paymentData.currency,
         amount: paymentData.amount,
         hash: paymentData.hash,

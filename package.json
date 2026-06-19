@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "shopify:dev": "shopify app dev",
+    "shopify:env": "shopify app env pull"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.5",

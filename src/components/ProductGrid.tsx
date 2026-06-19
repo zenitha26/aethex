@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useCartStore, Product } from "../store/useCartStore";
+import { useCartStore } from "../store/useCartStore";
+import { Product } from "../types/product";
 import ProductCard from "./ProductCard";
 import { motion } from "framer-motion";
 import { staggerContainer } from "../lib/animations";

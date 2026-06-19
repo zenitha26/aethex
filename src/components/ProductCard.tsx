@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Product } from "../store/useCartStore";
+import { Product } from "../types/product";
 
 const renderProductGraphic = (id: string) => {
   // Return vector-styled SVGs for high-end dropshipping product representations
@@ -109,7 +109,7 @@ const cardVariants = {
 
 export default function ProductCard({ product }: { product: Product }) {
   return (
-    <Link href={`/product/${product.external_id || product.id}`} className="block">
+    <Link href={`/product/${encodeURIComponent(product.external_id || product.id)}`} className="block">
       <article className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-white/20 hover:bg-white/[0.04] hover:shadow-[0_20px_80px_rgba(255,255,255,0.06)]">
         {/* Aspect Ratio Container */}
         <div className="relative aspect-square overflow-hidden rounded-3xl bg-[#0a0a0a]">

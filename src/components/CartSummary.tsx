@@ -1,13 +1,15 @@
 "use client";
 
 import React from "react";
-import { useCartStore, CartItem } from "../store/useCartStore";
+import { useCartStore } from "../store/useCartStore";
+import { CartItem } from "../types/cart";
 import { Plus, Minus, Trash2 } from "lucide-react";
+import Image from "next/image";
 
 export default function CartSummary() {
   const { cart, updateQuantity, removeFromCart } = useCartStore();
 
-  const subtotal = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+  const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const formatLKR = (amount: number) => {
     return new Intl.NumberFormat("en-LK", {
@@ -15,11 +17,6 @@ export default function CartSummary() {
       currency: "LKR",
       minimumFractionDigits: 0,
     }).format(amount);
-  };
-
-  const getItemUniqueId = (item: CartItem) => {
-    if (!item.customization) return item.product.id;
-    return `${item.product.id}-${item.customization.switches}-${item.customization.keycaps}-${item.customization.caseStyle}`;
   };
 
   if (cart.length === 0) {
@@ -38,7 +35,7 @@ export default function CartSummary() {
 
       <div className="divide-y divide-white/5 space-y-4 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
         {cart.map((item, index) => {
-          const uniqueId = getItemUniqueId(item);
+          const uniqueId = item.id;
           return (
             <div
               key={uniqueId}
@@ -46,11 +43,9 @@ export default function CartSummary() {
               id={`checkout-summary-item-${uniqueId}`}
             >
               {/* Product Thumbnail */}
-              <div className="w-16 h-16 bg-white/[0.02] border border-white/5 rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0">
-                {item.product.id === "9912002" ? (
-                  <svg width="32" height="32" viewBox="0 0 240 160" fill="none">
-                    <rect x="80" y="25" width="80" height="110" rx="40" fill="#121212" stroke="rgba(255,255,255,0.2)" strokeWidth="4" />
-                  </svg>
+              <div className="w-16 h-16 bg-white/[0.02] border border-white/5 rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0 relative">
+                {item.image ? (
+                  <Image src={item.image} alt={item.title} fill className="object-cover" />
                 ) : (
                   <svg width="32" height="32" viewBox="0 0 240 160" fill="none">
                     <rect x="15" y="40" width="210" height="90" rx="12" fill="#121212" stroke="rgba(255,255,255,0.2)" strokeWidth="4" />
@@ -62,15 +57,15 @@ export default function CartSummary() {
               <div className="flex-grow flex flex-col justify-between">
                 <div>
                   <h4 className="text-white text-sm font-semibold leading-tight line-clamp-1">
-                    {item.product.title}
+                    {item.title}
                   </h4>
-                  {item.customization ? (
+                  {item.color ? (
                     <p className="text-[10px] text-silver/50 mt-0.5">
-                      {item.customization.switches} | {item.customization.keycaps} | {item.customization.caseStyle}
+                      Color: {item.color}
                     </p>
                   ) : (
                     <p className="text-[10px] text-silver/40 mt-0.5 uppercase tracking-wider">
-                      {item.product.source || "AETHEX"}
+                      AETHEX
                     </p>
                   )}
                 </div>
@@ -100,7 +95,7 @@ export default function CartSummary() {
                   </div>
 
                   <span className="text-white text-sm font-bold font-display">
-                    {formatLKR(item.product.price * item.quantity)}
+                    {formatLKR(item.price * item.quantity)}
                   </span>
                 </div>
               </div>

@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { useCartStore, CartItem } from "../store/useCartStore";
+import { useCartStore } from "../store/useCartStore";
+import { CartItem } from "../types/cart";
 import { ShoppingCart, Loader2 } from "lucide-react";
 
 export default function ShopifyCheckoutButton() {

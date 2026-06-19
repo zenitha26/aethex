@@ -38,7 +38,11 @@ export async function POST(request: Request) {
     const payload = JSON.parse(textData);
     
     // Process the payload here (e.g., save to Supabase)
-    const { error } = await supabaseAdmin
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: "Database not configured" }, { status: 500 });
+    }
+
+    const { error: dbError } = await supabaseAdmin
       .from('orders')
       .insert([
         {
@@ -51,8 +55,8 @@ export async function POST(request: Request) {
         }
       ]);
 
-    if (error) {
-       console.error("Supabase insert error:", error);
+    if (dbError) {
+      console.error("Supabase insert error:", dbError);
        return NextResponse.json({ error: 'Database Error' }, { status: 500 });
     }
 

@@ -16,6 +16,10 @@ export async function GET(request: Request) {
 
   try {
     // 1. Get the tracking number from the database for this order
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: "Database not configured" }, { status: 500 });
+    }
+
     const { data: trackingData, error: dbError } = await supabaseAdmin
       .from('tracking_updates')
       .select('tracking_number, courier_slug')

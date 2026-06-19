@@ -214,6 +214,23 @@ export default function AdminOrdersPage() {
                 </select>
               </div>
 
+              <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-4">
+                <h4 className="text-[10px] uppercase tracking-wider text-silver/50 font-bold mb-3 border-b border-white/10 pb-2">Line Items</h4>
+                <div className="space-y-3 max-h-40 overflow-y-auto custom-scrollbar pr-2">
+                  {selectedOrder.line_items && selectedOrder.line_items.length > 0 ? (
+                    selectedOrder.line_items.map((item: any, idx: number) => (
+                      <div key={idx} className="text-xs text-white/80">
+                        <div className="font-semibold">{item.quantity} × {item.product_name}</div>
+                        {item.color && <div className="text-[10px] text-white/50 mt-0.5">Color: {item.color}</div>}
+                        {item.variant_id && <div className="text-[10px] font-mono text-white/30 mt-0.5">Variant ID: {item.variant_id}</div>}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-xs text-white/40">No item details available.</div>
+                  )}
+                </div>
+              </div>
+
               <div className="flex gap-3 pt-4 border-t border-white/5">
                 <button
                   type="button"

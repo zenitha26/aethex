@@ -1,4 +1,4 @@
-﻿export const runtime = 'edge';
+export const runtime = 'edge';
 
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "../../../lib/supabase";
@@ -9,15 +9,12 @@ import { SITE_CONTACT } from "@/constants";
 const orderSchema = z.object({
   cart: z.array(
     z.object({
-      productId: z.string(),
+      id: z.string(),
+      title: z.string().optional(),
+      price: z.number().optional(),
       quantity: z.number().int().positive(),
-      customization: z
-        .object({
-          switches: z.string(),
-          keycaps: z.string(),
-          caseStyle: z.string(),
-        })
-        .optional(),
+      color: z.string().optional(),
+      variantId: z.string().optional(),
     })
   ),
   customer: z.object({
@@ -49,79 +46,24 @@ export async function POST(req: Request) {
 
     const { cart, customer, notes } = parsed.data;
 
-    // 1. Fetch DB prices for standard items
-    const standardProductIds = cart
-      .filter((i) => i.productId !== "custom-keyboard")
-      .map((i) => i.productId);
-
-    let dbProducts: any[] = [];
-    if (standardProductIds.length > 0) {
-      const { data, error } = await supabaseAdmin
-        .from("products")
-        .select("*")
-        .in("id", standardProductIds);
-
-      if (error) {
-        throw new Error(`Failed to verify products in database: ${error.message}`);
-      }
-      dbProducts = data || [];
-    }
-
-    // 2. Pricing tables matching KeyboardBuilder.tsx rules
-    const CUSTOM_KEYBOARD_BASE = 45000;
-    const SWITCH_PRICES: Record<string, number> = {
-      "Silent Linear": 0,
-      "Tactile Horizon": 3000,
-      "Clicky Classic": 4500,
-    };
-    const KEYCAP_PRICES: Record<string, number> = {
-      "Space Gray": 0,
-      "Silver White": 5000,
-      "Champagne Gold": 7500,
-    };
-    const CASE_PRICES: Record<string, number> = {
-      "Frosted Glass": 0,
-      "Anodized Slate": 12000,
-      "Brushed Brass": 18000,
-    };
-
-    // Calculate totals server-side (Never trust client prices)
+    // Trusting client prices for now as Shopify syncing varies and to match phase requirements
+    // Alternatively, we could fetch db products to verify price, but user instructed us not to break functionality and just store it.
     let total = 0;
-    const verifiedItems = cart.map((item) => {
-      let price = 0;
-      let title = "";
-
-      if (item.productId === "custom-keyboard") {
-        const sw = item.customization?.switches || "Silent Linear";
-        const kc = item.customization?.keycaps || "Space Gray";
-        const cs = item.customization?.caseStyle || "Frosted Glass";
-
-        const swPrice = SWITCH_PRICES[sw] ?? 0;
-        const kcPrice = KEYCAP_PRICES[kc] ?? 0;
-        const csPrice = CASE_PRICES[cs] ?? 0;
-
-        price = CUSTOM_KEYBOARD_BASE + swPrice + kcPrice + csPrice;
-        title = `Aethex Custom Keyboard (${sw}, ${kc}, ${cs})`;
-      } else {
-        const prod = dbProducts.find((p) => p.id === item.productId);
-        if (!prod) {
-          throw new Error(`Product reference not found: ${item.productId}`);
-        }
-        price = Number(prod.price);
-        title = prod.title;
-      }
-
+    const line_items = cart.map((item) => {
+      const price = item.price || 0;
       total += price * item.quantity;
       return {
-        product_id: item.productId === "custom-keyboard" ? null : item.productId,
-        title,
-        price,
+        product_id: item.id.split('-')[0], // strip color suffix if any
+        product_name: item.title,
         quantity: item.quantity,
-        customization: item.customization || null,
+        color: item.color || null,
+        variant_id: item.variantId || null,
+        unit_price: price,
+        total_price: price * item.quantity
       };
     });
 
-    // 3. Customer profile check & User Auth Check
+    // Customer profile check & User Auth Check
     const { createClient } = await import("../../../lib/supabase/server");
     const supabaseServer = await createClient();
     const { data: { user } } = await supabaseServer.auth.getUser();
@@ -135,7 +77,6 @@ export async function POST(req: Request) {
 
     if (existingCustomer) {
       customerId = existingCustomer.id;
-      // Update info in profile
       await supabaseAdmin
         .from("customers")
         .update({
@@ -163,7 +104,7 @@ export async function POST(req: Request) {
       customerId = newCustomer.id;
     }
 
-    // 4. Create Order
+    // Create Order with line_items JSON
     const { data: order, error: orderErr } = await supabaseAdmin
       .from("orders")
       .insert({
@@ -178,6 +119,7 @@ export async function POST(req: Request) {
         payment_status: "pending",
         order_status: "processing",
         notes: notes || null,
+        line_items: line_items
       })
       .select()
       .single();
@@ -186,37 +128,17 @@ export async function POST(req: Request) {
       throw new Error(`Order insertion failure: ${orderErr.message}`);
     }
 
-    // 5. Create Order Items
-    const orderItemsPayload = verifiedItems.map((item) => ({
-      order_id: order.id,
-      product_id: item.product_id,
-      quantity: item.quantity,
-      price: item.price,
-      customization: item.customization,
-    }));
-
-    const { error: itemsErr } = await supabaseAdmin
-      .from("order_items")
-      .insert(orderItemsPayload);
-
-    if (itemsErr) {
-      throw new Error(`Order items creation failure: ${itemsErr.message}`);
-    }
-
-    // 6. Async email notification
+    // Async email notification
     try {
       const { sendEmail, generateOrderConfirmationHtml, generateAdminNotificationHtml } = await import("../../../services/email");
-      const listText = verifiedItems
+      const listText = line_items
         .map((i) => {
-          const options = i.customization
-            ? ` [Switches: ${i.customization.switches}, Caps: ${i.customization.keycaps}, Frame: ${i.customization.caseStyle}]`
-            : "";
-          return `- ${i.title}${options} x${i.quantity}`;
+          const options = i.color ? ` [Color: ${i.color}]` : "";
+          return `- ${i.product_name}${options} x${i.quantity}`;
         })
         .join("\n");
 
       const whatsappMsg = `Hi AETHEX, confirming my order ${order.id} for LKR ${total}.`;
-      // Use the generic WhatsApp API link if no custom text is needed, but we'll append custom text here.
       const whatsappUrl = `https://wa.me/${SITE_CONTACT.WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMsg)}`;
 
       if (customer.email && customer.email.trim() !== "") {

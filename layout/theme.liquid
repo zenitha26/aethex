@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ shop.name }}</title>
+
+  {{ content_for_header }}
+
+  {{ 'custom-ui.css' | asset_url | stylesheet_tag }}
+
+  <script>
+    window.ShopifyData = {
+      products: {{ collections['all'].products | json }},
+      shop: "{{ shop.name }}"
+    };
+  </script>
+</head>
+<body class="bg-black text-white">
+
+  <div id="root"></div>
+
+  <div style="display: none;">{{ content_for_layout }}</div>
+
+  <script src="{{ 'custom-ui.js' | asset_url }}" type="module" defer="defer"></script>
+
+</body>
+</html>

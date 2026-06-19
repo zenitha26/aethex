@@ -1,32 +1,35 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Loader2, AlertCircle, Search } from "lucide-react";
+import { Loader2, AlertCircle, Search, Edit2 } from "lucide-react";
+import ProductEditModal from "../../../components/ProductEditModal";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [editingProduct, setEditingProduct] = useState<any | null>(null);
+
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin/products");
+      const data = await res.json();
+      
+      if (data.success) {
+        setProducts(data.products || []);
+      } else {
+        throw new Error(data.error || "Failed to load products");
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function fetchProducts() {
-      try {
-        const res = await fetch("/api/admin/products");
-        const data = await res.json();
-        
-        if (data.success) {
-          setProducts(data.products || []);
-        } else {
-          throw new Error(data.error || "Failed to load products");
-        }
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
     fetchProducts();
   }, []);
 
@@ -39,7 +42,7 @@ export default function AdminProductsPage() {
     p.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (loading) {
+  if (loading && products.length === 0) {
     return (
       <div className="flex items-center justify-center py-20 text-silver/60 gap-4">
         <Loader2 className="h-6 w-6 animate-spin text-white" />
@@ -49,7 +52,7 @@ export default function AdminProductsPage() {
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-in fade-in duration-500 relative">
       {error && (
         <div className="p-4 bg-red-950/40 border border-red-500/20 rounded-2xl text-xs text-red-400 flex items-start gap-2">
           <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
@@ -61,7 +64,7 @@ export default function AdminProductsPage() {
         <div>
           <h2 className="text-2xl font-bold font-display">Products Catalog</h2>
           <p className="text-xs text-silver/60 font-light">
-            Read-only mirror of your Shopify catalog. Manage products in Shopify Admin.
+            Manage your Shopify products directly from this panel.
           </p>
         </div>
 
@@ -81,7 +84,17 @@ export default function AdminProductsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {filteredProducts.map((p) => (
-          <div key={p.id} className="luxury-glass p-5 rounded-2xl flex flex-col justify-between gap-4 transition-transform duration-300 hover:scale-[1.02]">
+          <div key={p.id} className="luxury-glass p-5 rounded-2xl flex flex-col justify-between gap-4 transition-transform duration-300 hover:scale-[1.02] group relative">
+            <div className="absolute top-7 right-7 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button 
+                onClick={() => setEditingProduct(p)}
+                className="p-2 bg-black/60 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white hover:text-black transition-colors"
+                title="Edit Product"
+              >
+                <Edit2 className="w-4 h-4" />
+              </button>
+            </div>
+
             <div className="space-y-3">
               <div 
                 className="h-32 bg-black/40 rounded-xl flex items-center justify-center border border-white/5 relative overflow-hidden bg-cover bg-center"
@@ -118,6 +131,17 @@ export default function AdminProductsPage() {
           </div>
         )}
       </div>
+
+      {editingProduct && (
+        <ProductEditModal 
+          product={editingProduct} 
+          onClose={() => setEditingProduct(null)} 
+          onSuccess={() => {
+            setEditingProduct(null);
+            fetchProducts();
+          }}
+        />
+      )}
     </div>
   );
 }
