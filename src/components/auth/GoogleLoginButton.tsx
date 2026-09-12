@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 interface GoogleLoginButtonProps {
@@ -45,14 +45,32 @@ export default function GoogleLoginButton({
   compact = false,
 }: GoogleLoginButtonProps) {
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const supabase = createClient();
 
   const handleGoogleLogin = async () => {
     if (loading) return;
     setLoading(true);
+    setErrorMessage(null);
 
     try {
+      // 1. Environment Variable Preflight Diagnostics
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+      if (!supabaseUrl || !supabaseKey) {
+        const missing = [];
+        if (!supabaseUrl) missing.push("NEXT_PUBLIC_SUPABASE_URL");
+        if (!supabaseKey) missing.push("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+        const envErr = new Error(`Configuration Error: Missing required environment variable(s): ${missing.join(", ")}`);
+        (envErr as any).code = "MISSING_ENV_VARS";
+        throw envErr;
+      }
+
+      // 2. Formulate redirect destination
       const destination = redirectTo || `${window.location.origin}/auth/callback`;
+
+      // 3. Initiate OAuth with Google
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
@@ -73,34 +91,63 @@ export default function GoogleLoginButton({
       }
     } catch (err: any) {
       setLoading(false);
+      const friendlyMessage = err?.message || "Google sign-in could not be initiated.";
+      setErrorMessage(friendlyMessage);
+
+      // 4. Forceful Terminal/Console Logging with exact raw message, code, and stack trace
+      console.error("\n========================================================");
+      console.error("🔴 [GOOGLE AUTH CLIENT ERROR] signInWithOAuth failed:");
+      console.error("• Raw Error:", err);
+      console.error("• Error Code / Status:", err?.code || err?.status || err?.name || "OAUTH_INIT_ERROR");
+      console.error("• Error Message:", err?.message || String(err));
+      console.error("• Stack Trace:", err?.stack || new Error().stack);
+      console.error("========================================================\n");
+
       if (onError) {
-        onError(err instanceof Error ? err : new Error(err?.message || "Google sign-in failed"));
-      } else {
-        console.error("Google Auth Error:", err);
+        onError(err instanceof Error ? err : new Error(friendlyMessage));
       }
     }
   };
 
   return (
-    <button
-      type="button"
-      onClick={handleGoogleLogin}
-      disabled={loading}
-      className={`inline-flex items-center justify-center gap-2 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 hover:border-white/25 text-white font-medium transition-all duration-200 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-not-allowed ${
-        compact ? "px-3 py-1.5 text-xs" : "px-5 py-2.5 text-xs sm:text-sm"
-      } ${className}`}
-    >
-      {loading ? (
-        <>
-          <Loader2 className="w-4 h-4 animate-spin text-white/70 shrink-0" />
-          <span>Connecting...</span>
-        </>
-      ) : (
-        <>
-          <GoogleIcon className="w-4 h-4 shrink-0" />
-          <span>{text}</span>
-        </>
+    <div className="flex flex-col gap-2 w-full">
+      <button
+        type="button"
+        onClick={handleGoogleLogin}
+        disabled={loading}
+        className={`inline-flex items-center justify-center gap-2 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 hover:border-white/25 text-white font-medium transition-all duration-200 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-not-allowed ${
+          compact ? "px-3 py-1.5 text-xs" : "px-5 py-2.5 text-xs sm:text-sm"
+        } ${className}`}
+      >
+        {loading ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin text-white/70 shrink-0" />
+            <span>Connecting...</span>
+          </>
+        ) : (
+          <>
+            <GoogleIcon className="w-4 h-4 shrink-0" />
+            <span>{text}</span>
+          </>
+        )}
+      </button>
+
+      {/* Surface UI Error Feedback */}
+      {errorMessage && (
+        <div className="flex items-start gap-2 p-2.5 rounded-xl bg-red-500/10 border border-red-500/25 text-red-300 text-xs font-mono">
+          <AlertCircle className="w-4 h-4 shrink-0 text-red-400 mt-0.5" />
+          <span className="flex-1 leading-tight">{errorMessage}</span>
+          <button
+            type="button"
+            onClick={() => setErrorMessage(null)}
+            className="text-red-400/60 hover:text-red-300 p-0.5 shrink-0"
+            title="Dismiss"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
       )}
-    </button>
+    </div>
   );
 }
+

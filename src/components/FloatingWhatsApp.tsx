@@ -1,97 +1,68 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { ArrowRight, MessageSquare } from "lucide-react";
-import { audioEngine } from "../lib/audio";
-import { SITE_CONTACT } from "../constants";
+import React, { useState } from "react";
+import { usePathname } from "next/navigation";
+import { MessageCircle } from "lucide-react";
+import { audioEngine } from "@/lib/audio";
+import { SITE_CONTACT } from "@/constants";
 
-interface FloatingWhatsAppProps {
-  onOpenOrder?: () => void;
-}
+export default function FloatingWhatsApp() {
+  const pathname = usePathname();
+  const [isHovered, setIsHovered] = useState(false);
 
-export default function FloatingWhatsApp({ onOpenOrder }: FloatingWhatsAppProps) {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isNearBottom, setIsNearBottom] = useState(false);
+  // Automatically hide on /checkout and /admin/** routes
+  if (
+    !pathname ||
+    pathname.startsWith("/checkout") ||
+    pathname.startsWith("/admin")
+  ) {
+    return null;
+  }
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight;
-      const windowHeight = window.innerHeight;
-
-      // Show after scrolling past hero (200px)
-      setIsVisible(scrollY > 200);
-
-      // Hide when near final CTA / footer
-      const closeToBottom = docHeight - (scrollY + windowHeight) < 400;
-      setIsNearBottom(closeToBottom);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const handleClick = () => {
-    audioEngine.playAcquire();
-    if (onOpenOrder) {
-      onOpenOrder();
-      return;
-    }
-    const event = new CustomEvent("aethex:open-order", { cancelable: true });
-    const notHandled = window.dispatchEvent(event);
-    if (!notHandled) {
-      return;
-    }
-    const text = encodeURIComponent(
-      "Hi AETHEX, I'd like to order the ASPOR A711 360° Console Mount (Rs. 2,990 + Delivery). Please confirm availability."
-    );
-    window.open(`https://wa.me/${SITE_CONTACT.WHATSAPP_NUMBER}?text=${text}`, "_blank");
+  const handleWhatsAppClick = (e: React.MouseEvent) => {
+    try {
+      audioEngine.playAcquire();
+    } catch {}
   };
 
-  if (!isVisible || isNearBottom) return null;
+  const supportMessage = encodeURIComponent(
+    "Hello AETHEX Concierge, I have an inquiry regarding your hardware catalog or order support."
+  );
+  const whatsappUrl = `https://wa.me/${SITE_CONTACT.WHATSAPP_NUMBER || "94782349954"}?text=${supportMessage}`;
 
   return (
-    <>
-      {/* MOBILE MANDATORY STICKY ORDER BAR (Section 15) */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white/95 border-t border-gray-200 px-5 py-3.5 flex items-center justify-between shadow-xl pb-[max(0.85rem,env(safe-area-inset-bottom))] font-sans backdrop-blur-md">
-        <div className="flex flex-col">
-          <span className="text-xs font-mono font-bold text-[#111111] tracking-wider">
-            ASPOR A711
-          </span>
-          <span className="text-[10px] font-mono text-gray-600">
-            Rs. 2,990 + Delivery
-          </span>
-        </div>
-
-        <button
-          type="button"
-          onClick={handleClick}
-          className="bg-black text-white px-5 py-2.5 text-xs font-mono font-bold tracking-widest uppercase flex items-center gap-2 cursor-pointer active:scale-95 transition-all shadow-sm hover:bg-neutral-800"
-        >
-          <span>ORDER NOW</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </button>
+    <aside 
+      aria-label="Direct Concierge Support" 
+      className="fixed bottom-6 right-6 z-40 sm:bottom-8 sm:right-8 flex items-center gap-3 font-sans"
+    >
+      {/* Sleek Tooltip Label on Hover */}
+      <div 
+        className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0B0B0B]/90 backdrop-blur-md border border-white/10 text-white/80 text-[11px] font-mono tracking-wider transition-all duration-300 pointer-events-none shadow-xl ${
+          isHovered ? "opacity-100 translate-x-0" : "opacity-0 translate-x-2"
+        }`}
+      >
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+        <span>AETHEX CONCIERGE</span>
       </div>
 
-      {/* DESKTOP SUBTLE FLOATING ORDER CONTROL */}
-      <aside aria-label="Quick Order" className="fixed bottom-6 right-6 z-40 hidden md:flex items-center font-sans">
-        <button
-          type="button"
-          onClick={handleClick}
-          className="bg-white text-[#111111] border border-gray-300 hover:border-black px-4 py-2.5 flex items-center gap-3 transition-all cursor-pointer shadow-xl hover:scale-105"
-        >
-          <div className="w-2 h-2 bg-black rounded-none inline-block animate-pulse" />
-          <div className="flex flex-col text-left">
-            <span className="text-[9px] font-mono tracking-widest text-gray-500 uppercase font-semibold">
-              ASPOR A711
-            </span>
-            <span className="text-xs font-mono font-bold text-[#111111] tracking-wider">
-              ORDER [RS. 2,990]
-            </span>
-          </div>
-          <ArrowRight className="w-3.5 h-3.5 text-black ml-1" />
-        </button>
-      </aside>
-    </>
+      {/* Sleek Glassmorphic Circular Button with Glowing Hover State */}
+      <a
+        href={whatsappUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={handleWhatsAppClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-white/[0.05] hover:bg-white/[0.12] backdrop-blur-xl border border-white/10 hover:border-white/30 text-white flex items-center justify-center transition-all duration-300 shadow-2xl hover:shadow-[0_0_25px_rgba(255,255,255,0.18)] hover:scale-105 active:scale-95 group relative cursor-pointer"
+        title="Chat with AETHEX Concierge on WhatsApp"
+        aria-label="WhatsApp Concierge"
+      >
+        {/* Subtle radial sheen glow effect */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-white/0 via-white/5 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+        
+        {/* Minimal WhatsApp Icon in Quiet Luxury Monochrome */}
+        <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white/80 group-hover:text-white transition-colors duration-200" />
+      </a>
+    </aside>
   );
 }

@@ -152,6 +152,40 @@ class AudioEngine {
     osc2.stop(ctx.currentTime + 0.35);
   }
 
+  public playSuccess() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx || this.ctx.state === "suspended") return;
+
+    const ctx = this.ctx;
+
+    // Elegant, warm acoustic confirmation tone
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc1.type = "sine";
+    osc1.frequency.setValueAtTime(440, ctx.currentTime);
+    osc1.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.18);
+
+    osc2.type = "triangle";
+    osc2.frequency.setValueAtTime(554.37, ctx.currentTime);
+    osc2.frequency.exponentialRampToValueAtTime(1108.73, ctx.currentTime + 0.18);
+
+    gain.gain.setValueAtTime(0.04, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.28);
+
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc1.start();
+    osc2.start();
+
+    osc1.stop(ctx.currentTime + 0.3);
+    osc2.stop(ctx.currentTime + 0.3);
+  }
+
   private startHum() {
     if (this.isMuted || !this.ctx || this.humNodes) return;
     const ctx = this.ctx;

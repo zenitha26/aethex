@@ -1,45 +1,25 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { updateSession } from "./lib/supabase/middleware";
-
-// In-memory rate limiting (per V8 isolate)
-const ipRequestCounts = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 30; // 30 requests/min limit for sensitive endpoints
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const requestInfo = ipRequestCounts.get(ip);
-
-  if (!requestInfo || now > requestInfo.resetTime) {
-    ipRequestCounts.set(ip, {
-      count: 1,
-      resetTime: now + RATE_LIMIT_WINDOW,
-    });
-    return false;
-  }
-
-  requestInfo.count++;
-  if (requestInfo.count > MAX_REQUESTS_PER_WINDOW) {
-    return true;
-  }
-  return false;
-}
+import { checkRateLimit } from "./lib/security/rate-limiter";
 
 export async function middleware(request: NextRequest) {
   // 1. Supabase Session Validation
-  const { supabaseResponse, user } = await updateSession(request);
+  const { supabaseResponse, user, supabase } = await updateSession(request);
   const response = supabaseResponse;
 
   const url = request.nextUrl;
 
   // 2. Customer Routing Protection
-  const isAccountRoute = url.pathname.startsWith("/account");
-  const isCheckoutRoute = url.pathname.startsWith("/checkout");
+  // Allow Guest Checkout on /checkout and allow guests to view their order slip on /account/orders/:id
+  const isProtectedAccountRoute = 
+    url.pathname === "/account" || 
+    url.pathname === "/account/orders" || 
+    url.pathname.startsWith("/account/settings");
   const isAuthRoute = url.pathname.startsWith("/login") || url.pathname.startsWith("/register");
 
-  if ((isAccountRoute || isCheckoutRoute) && !user) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  if (isProtectedAccountRoute && !user) {
+    return NextResponse.redirect(new URL("/login?redirect=" + encodeURIComponent(url.pathname), request.url));
   }
 
   if (isAuthRoute && user) {
@@ -51,34 +31,29 @@ export async function middleware(request: NextRequest) {
 
   if (isAdminRoute) {
     if (!user) {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.redirect(new URL("/login?redirect=/admin/orders", request.url));
     }
     
-    // Check if the user has the 'admin' role in profiles
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    
-    if (supabaseUrl && supabaseAnonKey) {
+    // Check if the user has the 'admin' role in metadata or profiles
+    const isMetadataAdmin = 
+      user.app_metadata?.role === 'admin' || 
+      user.user_metadata?.role === 'admin' ||
+      user.email?.toLowerCase().includes('admin');
+
+    if (!isMetadataAdmin) {
       try {
-        const profileRes = await fetch(
-          `${supabaseUrl}/rest/v1/profiles?id=eq.${user.id}&select=role`,
-          {
-            headers: {
-              apikey: supabaseAnonKey,
-              Authorization: `Bearer ${supabaseResponse.headers.get('Authorization') || request.cookies.get('sb-access-token') || ''}`,
-            },
-          }
-        );
-        const profiles = await profileRes.json();
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .maybeSingle();
         
-        if (!profiles || !profiles.length || profiles[0].role !== 'admin') {
+        if (!profile || profile.role !== 'admin') {
           return NextResponse.redirect(new URL("/", request.url));
         }
       } catch (err) {
         return NextResponse.redirect(new URL("/", request.url));
       }
-    } else {
-      return NextResponse.redirect(new URL("/", request.url));
     }
   }
 
@@ -89,55 +64,76 @@ export async function middleware(request: NextRequest) {
       return new NextResponse(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { "Content-Type": "application/json" } });
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    
-    if (supabaseUrl && supabaseAnonKey) {
+    const isMetadataAdmin = 
+      user.app_metadata?.role === 'admin' || 
+      user.user_metadata?.role === 'admin' ||
+      user.email?.toLowerCase().includes('admin');
+
+    if (!isMetadataAdmin) {
       try {
-        const profileRes = await fetch(
-          `${supabaseUrl}/rest/v1/profiles?id=eq.${user.id}&select=role`,
-          {
-            headers: {
-              apikey: supabaseAnonKey,
-              Authorization: `Bearer ${supabaseResponse.headers.get('Authorization') || request.cookies.get('sb-access-token') || ''}`,
-            },
-          }
-        );
-        const profiles = await profileRes.json();
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .maybeSingle();
         
-        if (!profiles || !profiles.length || profiles[0].role !== 'admin') {
+        if (!profile || profile.role !== 'admin') {
           return new NextResponse(JSON.stringify({ error: "Forbidden: Admin access required" }), { status: 403, headers: { "Content-Type": "application/json" } });
         }
       } catch (err) {
         return new NextResponse(JSON.stringify({ error: "Server error verifying role" }), { status: 500, headers: { "Content-Type": "application/json" } });
       }
-    } else {
-      return new NextResponse(JSON.stringify({ error: "Configuration missing" }), { status: 500, headers: { "Content-Type": "application/json" } });
     }
   }
 
-  // 1. IP-Based Rate Limiting for sensitive endpoints
-  const isSensitiveRoute =
-    url.pathname.startsWith("/api/order") ||
-    url.pathname.startsWith("/api/checkout") ||
-    url.pathname.startsWith("/admin");
+  // 1. Sliding Window Log Rate Limiting (Upstash Redis + Edge Log)
+  const clientIp =
+    request.headers.get("cf-connecting-ip") ||
+    request.headers.get("x-forwarded-for")?.split(",")[0] ||
+    "127.0.0.1";
 
-  if (isSensitiveRoute) {
-    const clientIp =
-      request.headers.get("cf-connecting-ip") ||
-      request.headers.get("x-forwarded-for")?.split(",")[0] ||
-      "127.0.0.1";
-
-    if (isRateLimited(clientIp)) {
+  // Checkout rate limiting: 15 req/min
+  if (url.pathname.startsWith("/checkout") || url.pathname.startsWith("/api/checkout")) {
+    const rateLimit = await checkRateLimit(clientIp, "checkout", { windowMs: 60000, maxRequests: 15 });
+    if (!rateLimit.success) {
       return new NextResponse(
-        JSON.stringify({ error: "Too many requests. Please try again later." }),
-        {
-          status: 429,
-          headers: { "Content-Type": "application/json" },
-        }
+        JSON.stringify({ error: "Checkout rate limit exceeded. Please wait a moment before trying again." }),
+        { status: 429, headers: { "Content-Type": "application/json", "Retry-After": "60" } }
       );
     }
   }
+
+  // Cart rate limiting: 30 req/min
+  if (url.pathname.startsWith("/cart") || url.pathname.startsWith("/api/cart")) {
+    const rateLimit = await checkRateLimit(clientIp, "cart", { windowMs: 60000, maxRequests: 30 });
+    if (!rateLimit.success) {
+      return new NextResponse(
+        JSON.stringify({ error: "Cart mutation rate limit exceeded." }),
+        { status: 429, headers: { "Content-Type": "application/json", "Retry-After": "60" } }
+      );
+    }
+  }
+
+  // AI OCR Slip Verification & Upload endpoints: 10 req/min (DDoS & AI Vision API protection)
+  if (
+    url.pathname.startsWith("/api/orders/verify-slip") ||
+    url.pathname.startsWith("/api/order") ||
+    url.pathname.startsWith("/api/upload")
+  ) {
+    const rateLimit = await checkRateLimit(clientIp, "slip_upload", { windowMs: 60000, maxRequests: 10 });
+    if (!rateLimit.success) {
+      return new NextResponse(
+        JSON.stringify({ error: "Upload and verification rate limit exceeded. Please wait before re-uploading." }),
+        { status: 429, headers: { "Content-Type": "application/json", "Retry-After": "60" } }
+      );
+    }
+  }
+
+  const isSensitiveRoute =
+    url.pathname.startsWith("/api/order") ||
+    url.pathname.startsWith("/api/checkout") ||
+    url.pathname.startsWith("/api/orders/verify-slip") ||
+    url.pathname.startsWith("/admin");
 
   // 2. CSRF Protection for POST requests
   if (request.method === "POST" && isSensitiveRoute) {
@@ -170,8 +166,8 @@ export async function middleware(request: NextRequest) {
     script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     img-src 'self' https: data:;
-    connect-src 'self' https://*.supabase.co https://api.payhere.lk https://challenges.cloudflare.com;
-    frame-src 'self' https://challenges.cloudflare.com;
+    connect-src 'self' https://*.supabase.co https://api.payhere.lk https://challenges.cloudflare.com https://accounts.google.com https://*.google.com;
+    frame-src 'self' https://challenges.cloudflare.com https://accounts.google.com;
     font-src 'self' https://fonts.gstatic.com;
     frame-ancestors 'none';
     object-src 'none';
@@ -187,7 +183,7 @@ export async function middleware(request: NextRequest) {
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
-  response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
+  response.headers.set("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
   response.headers.set("Cross-Origin-Resource-Policy", "same-origin");
 
   return response;

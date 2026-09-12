@@ -2,7 +2,18 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Mail, MapPin, Phone, Check } from "lucide-react";
+import { 
+  ArrowRight, 
+  Mail, 
+  MapPin, 
+  Phone, 
+  Check,
+  Landmark,
+  QrCode,
+  MessageCircle,
+  Truck,
+  ShieldCheck
+} from "lucide-react";
 import { audioEngine } from "../lib/audio";
 import { SITE_CONTACT } from "../constants";
 import { useCartStore } from "../store/useCartStore";
@@ -48,6 +59,14 @@ export default function Footer() {
     { name: "Privacy Policy", href: "/policies" },
     { name: "Terms & Conditions", href: "/terms" },
     { name: "Refund & Returns", href: "/policies" },
+  ];
+
+  const trustBadges = [
+    { label: "Direct Bank Transfer", icon: Landmark },
+    { label: "Instant QR Payment", icon: QrCode },
+    { label: "WhatsApp Verification", icon: MessageCircle },
+    { label: "24h Express Dispatch", icon: Truck },
+    { label: "7-Day Guarantee", icon: ShieldCheck },
   ];
 
   return (
@@ -110,7 +129,7 @@ export default function Footer() {
               AETHEX
             </h1>
             <p className="text-sm text-gray-400 leading-relaxed mb-6">
-              Sri Lanka's destination for industrial-grade consumer electronics, smart gadgets, power stations, and precision automotive hardware.
+              Industrial-grade consumer electronics, smart gadgets, power stations, and precision automotive hardware.
             </p>
             <div className="space-y-3 text-sm text-gray-400">
               <a 
@@ -186,15 +205,16 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom Bar (Payments & Copyright) */}
+        {/* Bottom Bar (Trust Badges & Copyright) */}
         <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-xs text-gray-500 uppercase tracking-widest mr-2 font-mono">
-              Accepted:
-            </span>
-            {['Cash on Delivery', 'Bank Transfer', 'Koko 3X', 'Mintpay'].map((method) => (
-              <span key={method} className="px-3 py-1 rounded-md border border-white/10 bg-white/5 text-xs text-gray-300 font-mono">
-                {method}
+          <div className="flex flex-wrap items-center gap-2.5">
+            {trustBadges.map(({ label, icon: Icon }) => (
+              <span 
+                key={label} 
+                className="px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-md text-xs text-gray-400 flex items-center gap-2 hover:text-white hover:border-white/20 transition-colors"
+              >
+                <Icon className="w-3.5 h-3.5 text-white/70" />
+                <span>{label}</span>
               </span>
             ))}
           </div>

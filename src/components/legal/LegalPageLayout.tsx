@@ -20,37 +20,37 @@ export default function LegalPageLayout({
   children,
 }: LegalPageLayoutProps) {
   return (
-    <div className="bg-white text-[#111111] min-h-screen font-sans selection:bg-black selection:text-white relative">
+    <div className="bg-[#050505] text-white min-h-screen font-sans selection:bg-white selection:text-black relative">
       <Navbar />
 
       <main className="pt-32 pb-24 px-6 sm:px-10 lg:px-12 max-w-[1200px] mx-auto space-y-12">
         
         {/* Breadcrumb & Metadata Header */}
-        <div className="space-y-4 border-b border-gray-200 pb-8">
-          <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-gray-500 uppercase font-semibold">
-            <Link href="/" className="hover:text-black transition-colors">
+        <div className="space-y-4 border-b border-white/10 pb-8">
+          <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-white/40 uppercase font-semibold">
+            <Link href="/" className="hover:text-white transition-colors">
               HOME
             </Link>
             <span>/</span>
             <span>{category}</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-light uppercase tracking-tight text-[#111111] leading-tight">
+          <h1 className="text-3xl sm:text-5xl font-light uppercase tracking-tight text-white leading-tight">
             {title}
           </h1>
 
-          <p className="text-gray-600 text-sm sm:text-base font-light max-w-2xl leading-relaxed">
+          <p className="text-white/60 text-sm sm:text-base font-light max-w-2xl leading-relaxed">
             {subtitle}
           </p>
 
-          <div className="text-[10px] font-mono text-gray-400 tracking-wider uppercase pt-2">
+          <div className="text-[10px] font-mono text-white/40 tracking-wider uppercase pt-2">
             LAST UPDATED: {lastUpdated} • AETHEX STORE (COLOMBO, SRI LANKA)
           </div>
         </div>
 
         {/* Content Body */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          <div className="lg:col-span-8 space-y-10 text-xs sm:text-sm font-light text-gray-600 leading-relaxed">
+          <div className="lg:col-span-8 max-w-prose space-y-10 text-xs sm:text-sm font-light text-white/60 leading-relaxed">
             {children}
           </div>
 

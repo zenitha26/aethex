@@ -13,7 +13,8 @@ import {
   Truck, 
   Check, 
   MessageSquare, 
-  ArrowLeft 
+  ArrowLeft,
+  ArrowRight
 } from "lucide-react";
 import { Product } from "../types/product";
 import { useCartStore } from "../store/useCartStore";
@@ -27,6 +28,8 @@ import WishlistDrawer from "./WishlistDrawer";
 import CompareModal from "./CompareModal";
 import CategoryDrawer from "./CategoryDrawer";
 import CustomerReviews from "./CustomerReviews";
+import ProductHotspots from "./ProductHotspots";
+import MobileBottomBar from "./MobileBottomBar";
 import { audioEngine } from "../lib/audio";
 import { SITE_CONTACT } from "../constants";
 
@@ -35,7 +38,7 @@ interface ProductDetailClientProps {
 }
 
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
-  const { addToCart } = useCartStore();
+  const { addToCart, setCartOpen } = useCartStore();
   const { toggleWishlist, isInWishlist } = useWishlistStore();
   const { toggleCompare, isInCompare } = useCompareStore();
 
@@ -60,6 +63,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
     try { audioEngine.playAcquire(); } catch {}
     const variantObj = product.variants?.find(v => v.id === selectedVariant);
     addToCart(product, quantity, variantObj?.color, selectedVariant);
+    setCartOpen(true);
   };
 
   const handleWhatsAppOrder = () => {
@@ -72,14 +76,14 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 • Variant: ${variantObj?.color || "Standard"}
 • Quantity: ${quantity}
 • Total Price: Rs. ${total.toLocaleString()} LKR + Islandwide Delivery
-• Payment: Cash on Delivery (COD)
+• Payment: Bank Transfer / COD
 
 Please confirm my order and dispatch.`);
     window.open(`https://wa.me/${SITE_CONTACT.WHATSAPP_NUMBER}?text=${text}`, "_blank");
   };
 
   return (
-    <div className="bg-[#F9F9F9] text-[#111111] min-h-screen font-sans selection:bg-black selection:text-white">
+    <div className="bg-[#050505] text-white min-h-screen font-sans selection:bg-white selection:text-black">
       {/* Floating Unified Navigation */}
       <Navbar onOpenCategories={() => setIsCategoryDrawerOpen(true)} />
 
@@ -96,36 +100,40 @@ Please confirm my order and dispatch.`);
       <CompareModal />
 
       {/* Breadcrumbs */}
-      <div className="border-b border-gray-200 bg-white py-3 px-6 sm:px-10 lg:px-12 text-xs font-mono">
-        <div className="max-w-[1500px] mx-auto flex items-center gap-2 text-gray-500">
-          <Link href="/" className="hover:text-black transition-colors flex items-center gap-1">
+      <div className="border-b border-white/5 bg-[#050505] py-4 px-6 sm:px-10 lg:px-12 text-xs font-mono">
+        <div className="max-w-[1500px] mx-auto flex items-center gap-2 text-white/40">
+          <Link href="/" className="hover:text-white transition-colors flex items-center gap-1">
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Store Home</span>
           </Link>
           <span>/</span>
           <span>{product.category || "Hardware"}</span>
           <span>/</span>
-          <span className="text-black font-bold truncate max-w-xs sm:max-w-md">{product.title}</span>
+          <span className="text-white font-bold truncate max-w-xs sm:max-w-md">{product.title}</span>
         </div>
       </div>
 
       {/* Main Product Showcase Section */}
-      <section className="py-12 sm:py-16 px-6 sm:px-10 lg:px-12 border-b border-gray-200 bg-white">
+      <section className="py-12 sm:py-20 px-6 sm:px-10 lg:px-12 border-b border-white/10 bg-[#050505]">
         <div className="max-w-[1500px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
-          {/* Left: Gallery (7 Cols) */}
+          {/* Left: Gallery & Interactive Sensory Hotspots (7 Cols) */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="relative aspect-square w-full bg-[#F9F9F9] border border-gray-200 overflow-hidden shadow-lg">
+            <div className="relative aspect-square w-full bg-white/[0.02] border border-white/10 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl group">
               <Image
                 src={activeImage}
                 alt={product.title}
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 700px"
-                className="object-cover p-4"
+                className="object-cover p-4 transition-transform duration-700 group-hover:scale-[1.02]"
               />
+
+              {/* Interactive Virtual Hotspots Overlay */}
+              <ProductHotspots />
+
               {product.badge && (
-                <div className="absolute top-4 left-4 bg-black text-white text-[10px] font-mono font-bold tracking-widest uppercase px-3 py-1 shadow-xs">
+                <div className="absolute top-4 left-4 z-10 bg-white text-black text-[10px] font-mono font-bold tracking-widest uppercase px-3 py-1 rounded-full shadow-lg">
                   {product.badge}
                 </div>
               )}
@@ -133,13 +141,13 @@ Please confirm my order and dispatch.`);
 
             {/* Thumbnails Row */}
             {gallery.length > 1 && (
-              <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+              <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
                 {gallery.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveImage(img)}
-                    className={`relative w-20 h-20 bg-[#F9F9F9] border shrink-0 transition-all ${
-                      activeImage === img ? "border-black shadow-xs" : "border-gray-200 opacity-60 hover:opacity-100"
+                    className={`relative w-20 h-20 rounded-2xl bg-white/[0.02] border shrink-0 transition-all overflow-hidden ${
+                      activeImage === img ? "border-white scale-105 shadow-md" : "border-white/10 opacity-50 hover:opacity-100"
                     }`}
                   >
                     <Image
@@ -156,60 +164,60 @@ Please confirm my order and dispatch.`);
           </div>
 
           {/* Right: Technical Info & Purchase Controls (5 Cols) */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="space-y-2">
-              <span className="text-[10px] font-mono tracking-[0.3em] text-gray-500 uppercase block font-semibold">
-                {product.category || "TECH & HARDWARE"}
+          <div className="lg:col-span-5 space-y-8">
+            <div className="space-y-3">
+              <span className="text-[10px] font-mono tracking-[0.3em] text-white/40 uppercase block font-semibold">
+                {product.category || "ENGINEERED COCKPIT HARDWARE"}
               </span>
-              <h1 className="text-2xl sm:text-4xl font-mono uppercase text-[#111111] font-medium leading-tight">
+              <h1 className="text-2xl sm:text-4xl font-mono uppercase text-white font-medium leading-tight tracking-tight">
                 {product.title}
               </h1>
               {product.subtitle && (
-                <p className="text-sm font-mono text-gray-600 leading-relaxed">
+                <p className="text-xs font-mono text-white/60 leading-relaxed">
                   {product.subtitle}
                 </p>
               )}
             </div>
 
             {/* Rating & In-Stock */}
-            <div className="flex items-center gap-3 text-xs font-mono text-gray-700">
-              <span className="font-bold text-black">★ {product.rating || "4.8"}</span>
-              <span className="text-gray-500">({product.reviewCount || "64"} verified buyer reviews)</span>
-              <span className="text-gray-300">•</span>
-              <span className="text-black font-semibold flex items-center gap-1">
-                <Check className="w-3.5 h-3.5 text-black" /> In Stock
+            <div className="flex items-center gap-3 text-xs font-mono text-white/70">
+              <span className="font-bold text-white">★ {product.rating || "4.9"}</span>
+              <span className="text-white/40">({product.reviewCount || "64"} verified owner telemetry)</span>
+              <span className="text-white/20">•</span>
+              <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                <Check className="w-3.5 h-3.5" /> In Stock (Direct Dispatch)
               </span>
             </div>
 
             {/* Pricing Section */}
-            <div className="space-y-2 border-y border-gray-200 py-5 font-mono">
+            <div className="space-y-2 border-y border-white/10 py-6 font-mono">
               <div className="flex items-baseline gap-3">
-                <span className="text-3xl font-bold text-black">
+                <span className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
                   Rs. {product.price.toLocaleString()} LKR
                 </span>
                 {product.original_price && (
-                  <span className="text-sm text-gray-400 line-through">
+                  <span className="text-sm text-white/40 line-through">
                     Rs. {product.original_price.toLocaleString()} LKR
                   </span>
                 )}
                 {discountPercent && (
-                  <span className="border border-gray-300 text-black text-[11px] font-bold px-2 py-0.5 bg-gray-50 shadow-xs">
+                  <span className="border border-white/20 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-white/5">
                     Save {discountPercent}%
                   </span>
                 )}
               </div>
-              <div className="text-xs text-gray-600">
-                Or 3 interest-free installments of <span className="text-black font-bold">Rs. {Math.round(product.price / 3).toLocaleString()}</span> with Koko / Mintpay
+              <div className="text-xs text-white/50">
+                Complimentary Express Courier islandwide • Bank Transfer & Instant Verification
               </div>
             </div>
 
             {/* Variants */}
             {product.variants && product.variants.length > 0 && (
-              <div className="space-y-2 font-mono text-xs">
-                <span className="text-[10px] uppercase text-gray-500 tracking-wider block font-semibold">
-                  SELECT COLOR / FINISH:
+              <div className="space-y-3 font-mono text-xs">
+                <span className="text-[10px] uppercase text-white/40 tracking-wider block font-semibold">
+                  SELECT FINISH / HARDWARE SPEC:
                 </span>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {product.variants.map((v) => (
                     <button
                       key={v.id}
@@ -217,10 +225,10 @@ Please confirm my order and dispatch.`);
                         setSelectedVariant(v.id);
                         if (v.image_url) setActiveImage(v.image_url);
                       }}
-                      className={`px-4 py-2 border uppercase tracking-wider transition-all shadow-xs ${
+                      className={`px-5 py-2.5 rounded-full border uppercase tracking-wider text-xs font-mono transition-all ${
                         selectedVariant === v.id
-                          ? "bg-black text-white border-black font-bold shadow-xs"
-                          : "bg-white text-black border-gray-300 hover:border-black"
+                          ? "bg-white text-black border-white font-bold shadow-lg"
+                          : "bg-white/[0.03] text-white/70 border-white/10 hover:border-white/30 hover:text-white"
                       }`}
                     >
                       {v.title || v.color}
@@ -231,54 +239,54 @@ Please confirm my order and dispatch.`);
             )}
 
             {/* Quantity and Action Buttons */}
-            <div className="space-y-3 pt-2">
+            <div className="space-y-4 pt-2">
               <div className="flex items-center gap-3">
                 {/* Quantity */}
-                <div className="flex items-center border border-gray-300 px-3 py-3 bg-[#F9F9F9] font-mono text-xs">
+                <div className="flex items-center border border-white/10 rounded-full px-4 py-3 bg-white/[0.03] font-mono text-xs">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="text-gray-600 hover:text-black px-2"
+                    className="text-white/60 hover:text-white px-2"
                   >
                     <Minus className="w-3.5 h-3.5" />
                   </button>
-                  <span className="text-black w-8 text-center font-bold">{quantity}</span>
+                  <span className="text-white w-8 text-center font-bold">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="text-gray-600 hover:text-black px-2"
+                    className="text-white/60 hover:text-white px-2"
                   >
                     <Plus className="w-3.5 h-3.5" />
                   </button>
                 </div>
 
-                {/* Add to Cart (Solid Black) */}
+                {/* Add to Cart (Solid White) */}
                 <button
                   onClick={handleAddToCart}
-                  className="flex-1 bg-black text-white hover:bg-neutral-800 py-3.5 text-xs font-mono font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-md"
+                  className="flex-1 bg-white text-black hover:bg-white/90 py-4 px-6 rounded-full text-xs font-mono font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 cursor-pointer transition-all shadow-2xl active:scale-[0.99]"
                 >
-                  <ShoppingBag className="w-4 h-4" />
+                  <ShoppingBag className="w-4 h-4 text-black" />
                   <span>ADD TO CART</span>
                 </button>
 
                 {/* Wishlist */}
                 <button
                   onClick={() => toggleWishlist(product)}
-                  className={`border p-3.5 transition-colors shadow-xs ${
+                  className={`border border-white/10 p-4 rounded-full transition-all ${
                     isFavorited
-                      ? "border-black bg-black text-white"
-                      : "border-gray-300 text-gray-600 hover:border-black hover:text-black bg-white"
+                      ? "border-white bg-white text-black"
+                      : "text-white/60 hover:border-white hover:text-white bg-white/[0.03]"
                   }`}
                   title={isFavorited ? "In Wishlist" : "Add to Wishlist"}
                 >
-                  <Heart className={`w-4 h-4 ${isFavorited ? "fill-white" : ""}`} />
+                  <Heart className={`w-4 h-4 ${isFavorited ? "fill-black text-black" : ""}`} />
                 </button>
 
                 {/* Compare */}
                 <button
                   onClick={() => toggleCompare(product)}
-                  className={`border p-3.5 transition-colors shadow-xs ${
+                  className={`border border-white/10 p-4 rounded-full transition-all ${
                     isCompared
-                      ? "border-black bg-black text-white"
-                      : "border-gray-300 text-gray-600 hover:border-black hover:text-black bg-white"
+                      ? "border-white bg-white text-black"
+                      : "text-white/60 hover:border-white hover:text-white bg-white/[0.03]"
                   }`}
                   title={isCompared ? "In Compare" : "Add to Compare"}
                 >
@@ -286,36 +294,36 @@ Please confirm my order and dispatch.`);
                 </button>
               </div>
 
-              {/* Order via WhatsApp */}
+              {/* Direct WhatsApp Ordering Alternative */}
               <button
                 onClick={handleWhatsAppOrder}
-                className="w-full bg-white border border-gray-300 hover:border-black text-[#111111] py-3.5 text-xs font-mono font-semibold tracking-[0.2em] uppercase flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
+                className="w-full bg-white/[0.03] border border-white/10 hover:border-white/30 text-white py-3.5 rounded-full text-xs font-mono font-semibold tracking-[0.2em] uppercase flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
-                <MessageSquare className="w-4 h-4" />
-                <span>ORDER VIA WHATSAPP (CASH ON DELIVERY)</span>
+                <MessageSquare className="w-4 h-4 text-emerald-400" />
+                <span>ORDER VIA WHATSAPP (INSTANT CONCIERGE)</span>
               </button>
             </div>
 
             {/* Trust Badges */}
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 font-mono text-xs text-gray-600">
-              <div className="flex items-center gap-2">
-                <Truck className="w-4 h-4 text-black" />
+            <div className="grid grid-cols-2 gap-4 pt-6 border-t border-white/10 font-mono text-xs text-white/60">
+              <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/[0.02] border border-white/5">
+                <Truck className="w-4 h-4 text-white" />
                 <div>
-                  <div className="text-black uppercase font-bold text-[10px]">Islandwide Dispatch</div>
-                  <div className="text-[10px]">1–3 Business Days</div>
+                  <div className="text-white uppercase font-bold text-[10px]">Islandwide Delivery</div>
+                  <div className="text-[10px] text-white/40">24–48h Dispatch</div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-black" />
+              <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/[0.02] border border-white/5">
+                <ShieldCheck className="w-4 h-4 text-white" />
                 <div>
-                  <div className="text-black uppercase font-bold text-[10px]">Warranty Included</div>
-                  <div className="text-[10px]">Official Replacement</div>
+                  <div className="text-white uppercase font-bold text-[10px]">Official Guarantee</div>
+                  <div className="text-[10px] text-white/40">7-Day Replacement</div>
                 </div>
               </div>
             </div>
 
             {/* Description Paragraph */}
-            <p className="text-xs font-mono text-gray-600 leading-relaxed pt-2">
+            <p className="text-xs font-mono text-white/60 leading-relaxed pt-2">
               {product.description}
             </p>
           </div>
@@ -324,13 +332,13 @@ Please confirm my order and dispatch.`);
 
       {/* Technical Specifications Section */}
       {product.specs && Object.keys(product.specs).length > 0 && (
-        <section className="py-16 px-6 sm:px-10 lg:px-12 border-b border-gray-200 bg-[#F9F9F9] font-sans">
+        <section className="py-20 px-6 sm:px-10 lg:px-12 border-b border-white/10 bg-[#050505] font-sans">
           <div className="max-w-[1500px] mx-auto space-y-8">
-            <div className="space-y-1 border-b border-gray-200 pb-4">
-              <span className="text-[10px] font-mono tracking-[0.3em] text-gray-500 uppercase block font-semibold">
+            <div className="space-y-1 border-b border-white/10 pb-4">
+              <span className="text-[10px] font-mono tracking-[0.3em] text-white/40 uppercase block font-semibold">
                 TECHNICAL DATA
               </span>
-              <h2 className="text-2xl sm:text-3xl font-mono uppercase text-[#111111] font-light">
+              <h2 className="text-2xl sm:text-3xl font-mono uppercase text-white font-light">
                 Specifications & Engineering
               </h2>
             </div>
@@ -339,10 +347,10 @@ Please confirm my order and dispatch.`);
               {Object.entries(product.specs).map(([label, value]) => (
                 <div 
                   key={label} 
-                  className="flex items-center justify-between p-4 bg-white border border-gray-200 shadow-xs"
+                  className="flex items-center justify-between p-5 bg-white/[0.02] border border-white/10 rounded-2xl backdrop-blur-xl"
                 >
-                  <span className="text-gray-500 uppercase tracking-wider">{label}</span>
-                  <span className="text-black font-semibold text-right">{value}</span>
+                  <span className="text-white/50 uppercase tracking-wider">{label}</span>
+                  <span className="text-white font-semibold text-right">{value}</span>
                 </div>
               ))}
             </div>
@@ -352,23 +360,23 @@ Please confirm my order and dispatch.`);
 
       {/* Key Features Bullet Section */}
       {product.features && product.features.length > 0 && (
-        <section className="py-16 px-6 sm:px-10 lg:px-12 border-b border-gray-200 bg-white font-sans">
+        <section className="py-20 px-6 sm:px-10 lg:px-12 border-b border-white/10 bg-[#050505] font-sans">
           <div className="max-w-[1500px] mx-auto space-y-8">
-            <div className="space-y-1 border-b border-gray-200 pb-4">
-              <span className="text-[10px] font-mono tracking-[0.3em] text-gray-500 uppercase block font-semibold">
+            <div className="space-y-1 border-b border-white/10 pb-4">
+              <span className="text-[10px] font-mono tracking-[0.3em] text-white/40 uppercase block font-semibold">
                 SYSTEM HIGHLIGHTS
               </span>
-              <h2 className="text-2xl sm:text-3xl font-mono uppercase text-[#111111] font-light">
+              <h2 className="text-2xl sm:text-3xl font-mono uppercase text-white font-light">
                 Key Features
               </h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-mono text-xs">
               {product.features.map((feat, i) => (
-                <div key={i} className="p-6 bg-[#F9F9F9] border border-gray-200 space-y-2 shadow-xs">
-                  <div className="text-[10px] text-gray-500 tracking-widest uppercase font-semibold">FEATURE 0{i + 1}</div>
-                  <h3 className="text-sm text-black font-bold uppercase">{feat.title}</h3>
-                  <p className="text-gray-600 leading-relaxed font-light">{feat.desc}</p>
+                <div key={i} className="p-6 bg-white/[0.02] border border-white/10 rounded-3xl space-y-3 backdrop-blur-xl">
+                  <div className="text-[10px] text-white/40 tracking-widest uppercase font-semibold">FEATURE 0{i + 1}</div>
+                  <h3 className="text-sm text-white font-bold uppercase">{feat.title}</h3>
+                  <p className="text-white/60 leading-relaxed font-light">{feat.desc}</p>
                 </div>
               ))}
             </div>
@@ -378,6 +386,9 @@ Please confirm my order and dispatch.`);
 
       {/* Customer Reviews Section */}
       <CustomerReviews />
+
+      {/* Mobile Sticky Bottom Bar */}
+      <MobileBottomBar onOpenCategories={() => setIsCategoryDrawerOpen(true)} />
 
       {/* Footer */}
       <Footer />

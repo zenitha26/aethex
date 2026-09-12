@@ -101,10 +101,10 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
 
   return (
     <header 
-      className={`sticky top-0 left-0 right-0 z-50 transition-all duration-300 font-sans ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 font-sans ${
         isScrolled 
-          ? "bg-white/85 backdrop-blur-xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] py-2.5 sm:py-3" 
-          : "bg-white/60 backdrop-blur-lg py-3.5 sm:py-4"
+          ? "bg-[#050505]/90 backdrop-blur-xl border-b border-white/10 py-2.5 sm:py-3 shadow-2xl" 
+          : "bg-[#050505]/60 backdrop-blur-lg border-b border-white/5 py-3.5 sm:py-4"
       }`}
     >
       <div className="max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12 flex items-center justify-between gap-4 lg:gap-8">
@@ -114,7 +114,7 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden text-[#111111] p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+              className="lg:hidden text-white/70 hover:text-white p-1.5 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -125,19 +125,19 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
               onClick={() => { try { audioEngine.playSelect(); } catch {} }}
               className="flex items-center gap-2 group"
             >
-              <span className="text-[#111111] text-xl font-bold tracking-[0.25em] uppercase font-mono group-hover:opacity-80 transition-opacity">
+              <span className="text-white text-xl font-bold tracking-[0.25em] uppercase font-mono group-hover:opacity-80 transition-opacity">
                 AETHEX
               </span>
-              <span className="hidden sm:inline-block w-1.5 h-1.5 rounded-full bg-black" />
+              <span className="hidden sm:inline-block w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
             </Link>
           </div>
 
           {/* Clean Integrated Nav Links */}
-          <nav className="hidden lg:flex items-center gap-6 text-xs font-medium text-gray-600 tracking-wide">
+          <nav className="hidden lg:flex items-center gap-6 text-xs font-mono text-white/60 tracking-wider">
             {onOpenCategories && (
               <button
                 onClick={() => onOpenCategories()}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gray-100/90 hover:bg-black hover:text-white text-gray-900 transition-all duration-200 cursor-pointer font-semibold shadow-xs"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white text-white/80 hover:text-black transition-all duration-200 cursor-pointer font-semibold border border-white/10"
               >
                 <Layers className="w-3.5 h-3.5" />
                 <span>Departments</span>
@@ -146,27 +146,32 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
 
             <button
               onClick={() => handleNavClick("deals-section")}
-              className="hover:text-black transition-colors flex items-center gap-1 font-semibold text-[#111111]"
+              className="hover:text-white transition-colors flex items-center gap-1.5 text-white/80"
             >
               <span>Top Deals</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
             </button>
 
             <button
               onClick={() => handleNavClick("products-grid")}
-              className="hover:text-black transition-colors"
+              className="hover:text-white transition-colors"
             >
               Catalog
             </button>
 
             <button
               onClick={() => handleNavClick("hardware-spotlight")}
-              className="hover:text-black transition-colors"
+              className="hover:text-white transition-colors"
             >
               A711 Mount
             </button>
 
-            <Link href="/about-us" className="hover:text-black transition-colors">
+            <Link href="/droplist" className="hover:text-white transition-colors flex items-center gap-1.5">
+              <span>Droplist</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            </Link>
+
+            <Link href="/about-us" className="hover:text-white transition-colors">
               About
             </Link>
           </nav>
@@ -175,34 +180,34 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
         {/* Center: Minimalist Apple-Style Search Capsule */}
         <form 
           onSubmit={handleSearchSubmit}
-          className="hidden md:flex flex-1 max-w-md items-center bg-gray-100/90 hover:bg-gray-100 focus-within:bg-white focus-within:ring-2 focus-within:ring-black/10 rounded-full px-4 py-2 transition-all"
+          className="hidden md:flex flex-1 max-w-md items-center bg-white/[0.03] hover:bg-white/[0.06] focus-within:bg-white/[0.08] border border-white/10 rounded-full px-4 py-2 transition-all"
         >
-          <Search className="w-4 h-4 text-gray-400 shrink-0 mr-2.5" />
+          <Search className="w-4 h-4 text-white/40 shrink-0 mr-2.5" />
           <input
             type="text"
-            placeholder="Search catalog, hardware, audio..."
+            placeholder="Search precision hardware, cockpit ergonomics..."
             value={localSearch}
             onChange={handleSearchChange}
-            className="flex-1 bg-transparent text-xs text-[#111111] placeholder:text-gray-400 outline-none font-normal"
+            className="flex-1 bg-transparent text-xs text-white placeholder:text-white/30 outline-none font-mono font-normal"
           />
           {localSearch && (
             <button 
               type="button" 
               onClick={() => { setLocalSearch(""); setSearchQuery(""); }} 
-              className="text-gray-400 hover:text-black text-xs px-1"
+              className="text-white/40 hover:text-white text-xs px-1"
             >
               ✕
             </button>
           )}
         </form>
 
-        {/* Right: Actions (Mobile search toggle, Wishlist, Compare, Cart, WhatsApp CTA) */}
-        <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+        {/* Right: Actions */}
+        <div className="flex items-center gap-3 sm:gap-4 shrink-0 font-mono">
           
           {/* Mobile Search Toggle Button */}
           <button
             onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
-            className="md:hidden text-[#111111] p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="md:hidden text-white/70 hover:text-white p-2 rounded-full hover:bg-white/5 transition-colors"
             aria-label="Toggle search"
           >
             <Search className="w-5 h-5" />
@@ -211,13 +216,13 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
           {/* Wishlist Pill */}
           <button
             onClick={() => { try { audioEngine.playSelect(); } catch {}; setWishlistOpen(true); }}
-            className="hidden sm:flex items-center gap-1.5 text-gray-700 hover:text-black p-2 hover:bg-gray-100 rounded-full transition-all relative"
+            className="hidden sm:flex items-center gap-1.5 text-white/70 hover:text-white p-2 hover:bg-white/5 rounded-full transition-all relative border border-transparent hover:border-white/10"
             title="View Wishlist"
             aria-label="Wishlist"
           >
             <Heart className="w-4 h-4" />
             {wishlist.length > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-black text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+              <span className="absolute -top-0.5 -right-0.5 bg-white text-black text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                 {wishlist.length}
               </span>
             )}
@@ -226,13 +231,13 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
           {/* Compare Pill */}
           <button
             onClick={() => { try { audioEngine.playSelect(); } catch {}; setCompareOpen(true); }}
-            className="hidden sm:flex items-center gap-1.5 text-gray-700 hover:text-black p-2 hover:bg-gray-100 rounded-full transition-all relative"
+            className="hidden sm:flex items-center gap-1.5 text-white/70 hover:text-white p-2 hover:bg-white/5 rounded-full transition-all relative border border-transparent hover:border-white/10"
             title="View Compare"
             aria-label="Compare Products"
           >
             <Scale className="w-4 h-4" />
             {compareList.length > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-black text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+              <span className="absolute -top-0.5 -right-0.5 bg-white text-black text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                 {compareList.length}
               </span>
             )}
@@ -241,28 +246,28 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
           {/* Mini Cart Capsule */}
           <button
             onClick={() => { try { audioEngine.playSelect(); } catch {}; setCartOpen(true); }}
-            className="flex items-center gap-2.5 bg-gray-100 hover:bg-gray-200/80 px-3.5 sm:px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer shadow-xs"
+            className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 px-3.5 sm:px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer shadow-sm text-white"
             aria-label="Shopping Cart"
           >
             <div className="relative flex items-center justify-center">
-              <ShoppingBag className="w-4 h-4 text-[#111111]" />
+              <ShoppingBag className="w-4 h-4 text-white" />
               {totalCartCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-black text-white font-bold text-[8px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">
+                <span className="absolute -top-1.5 -right-2 bg-white text-black font-bold text-[8px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">
                   {totalCartCount}
                 </span>
               )}
             </div>
-            <span className="hidden sm:inline-block font-semibold text-[#111111] text-[11px]">
+            <span className="hidden sm:inline-block font-semibold text-white text-[11px] font-mono">
               Rs. {subtotal.toLocaleString()}
             </span>
           </button>
 
-          {/* User Auth Section: Account Avatar or Google Login Button */}
+          {/* User Auth Section */}
           {user ? (
             <div className="hidden sm:flex items-center gap-2">
               <Link
                 href="/account"
-                className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-full text-xs font-semibold text-[#111111] transition-all shadow-xs"
+                className="flex items-center gap-2 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 px-3 py-1.5 rounded-full text-xs font-semibold text-white transition-all shadow-sm"
                 title={user.email}
               >
                 {user.user_metadata?.avatar_url ? (
@@ -272,17 +277,17 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
                     className="w-4 h-4 rounded-full object-cover"
                   />
                 ) : (
-                  <span className="w-4 h-4 rounded-full bg-black text-white flex items-center justify-center text-[9px] font-bold">
+                  <span className="w-4 h-4 rounded-full bg-white text-black flex items-center justify-center text-[9px] font-bold">
                     {(user.email || "U").charAt(0).toUpperCase()}
                   </span>
                 )}
-                <span className="max-w-[80px] truncate">
+                <span className="max-w-[80px] truncate font-mono">
                   {user.user_metadata?.full_name?.split(" ")[0] || "Account"}
                 </span>
               </Link>
               <button
                 onClick={handleSignOut}
-                className="text-[11px] text-gray-500 hover:text-black hover:underline cursor-pointer"
+                className="text-[11px] text-white/40 hover:text-white hover:underline cursor-pointer font-mono"
                 title="Sign Out"
               >
                 Sign Out
@@ -293,14 +298,14 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
               <GoogleLoginButton
                 compact
                 text="Sign In"
-                className="!bg-black !text-white !border-black hover:!bg-neutral-800 shadow-xs text-xs"
+                className="!bg-white/[0.05] !text-white !border-white/10 hover:!bg-white/[0.1] shadow-xs text-xs"
               />
             </div>
           )}
 
-          {/* Primary Action Button (Smooth Framer Motion Rounded-Full) */}
+          {/* Primary Action Button */}
           <motion.button
-            whileHover={{ scale: 1.04, y: -1 }}
+            whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
             onClick={() => {
@@ -311,10 +316,10 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
                 window.open(`https://wa.me/${SITE_CONTACT.WHATSAPP_NUMBER}?text=Hello%20AETHEX,%20I'd%20like%20to%20place%20an%20order.`, "_blank");
               }
             }}
-            className="hidden xl:flex bg-black text-white hover:bg-neutral-800 px-5 py-2.5 rounded-full text-xs font-bold tracking-wider uppercase items-center gap-2 shadow-sm cursor-pointer transition-colors"
+            className="hidden xl:flex bg-white text-black hover:bg-white/90 px-5 py-2.5 rounded-full text-xs font-mono font-bold tracking-wider uppercase items-center gap-2 shadow-lg cursor-pointer transition-colors"
           >
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span>ORDER (COD)</span>
+            <MessageSquare className="w-3.5 h-3.5 text-black" />
+            <span>DIRECT ORDER</span>
           </motion.button>
         </div>
       </div>
@@ -326,24 +331,24 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden px-4 pt-2 pb-3 overflow-hidden"
+            className="md:hidden px-4 pt-2 pb-3 overflow-hidden bg-[#050505] border-t border-white/5"
           >
             <form 
               onSubmit={handleSearchSubmit}
-              className="flex items-center bg-gray-100 rounded-full px-4 py-2"
+              className="flex items-center bg-white/[0.04] border border-white/10 rounded-full px-4 py-2"
             >
-              <Search className="w-4 h-4 text-gray-400 mr-2 shrink-0" />
+              <Search className="w-4 h-4 text-white/40 mr-2 shrink-0" />
               <input
                 type="text"
-                placeholder="Search products, automotive..."
+                placeholder="Search catalog, hardware..."
                 value={localSearch}
                 onChange={handleSearchChange}
                 autoFocus
-                className="flex-1 bg-transparent text-xs text-[#111111] outline-none"
+                className="flex-1 bg-transparent text-xs text-white placeholder:text-white/30 outline-none font-mono"
               />
               <button
                 type="submit"
-                className="text-xs font-semibold text-black px-2"
+                className="text-xs font-mono font-semibold text-white px-2"
               >
                 Go
               </button>
@@ -359,11 +364,11 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="lg:hidden bg-white/95 backdrop-blur-xl border-t border-gray-100 p-6 space-y-5 text-sm"
+            className="lg:hidden bg-[#0B0B0B]/95 backdrop-blur-2xl border-t border-white/10 p-6 space-y-5 text-sm font-mono text-white"
           >
             {/* Mobile Authentication State */}
             {user ? (
-              <div className="flex items-center justify-between p-3.5 bg-gray-50 rounded-2xl border border-gray-100">
+              <div className="flex items-center justify-between p-3.5 bg-white/[0.03] rounded-2xl border border-white/10">
                 <Link
                   href="/account"
                   onClick={() => setMobileMenuOpen(false)}
@@ -373,23 +378,23 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
                     <img
                       src={user.user_metadata.avatar_url}
                       alt="Avatar"
-                      className="w-8 h-8 rounded-full object-cover border border-gray-200 shrink-0"
+                      className="w-8 h-8 rounded-full object-cover border border-white/10 shrink-0"
                     />
                   ) : (
-                    <span className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-xs font-bold shrink-0">
+                    <span className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-xs font-bold shrink-0">
                       {(user.email || "U").charAt(0).toUpperCase()}
                     </span>
                   )}
                   <div className="min-w-0">
-                    <div className="text-xs font-bold text-black truncate">
+                    <div className="text-xs font-bold text-white truncate">
                       {user.user_metadata?.full_name || "My Account"}
                     </div>
-                    <div className="text-[10px] text-gray-500 truncate">{user.email}</div>
+                    <div className="text-[10px] text-white/40 truncate">{user.email}</div>
                   </div>
                 </Link>
                 <button
                   onClick={() => { setMobileMenuOpen(false); handleSignOut(); }}
-                  className="text-xs font-semibold text-gray-500 hover:text-black px-2.5 py-1 rounded-md hover:bg-gray-200 transition-colors shrink-0 cursor-pointer"
+                  className="text-xs font-semibold text-white/50 hover:text-white px-2.5 py-1 rounded-md hover:bg-white/10 transition-colors shrink-0 cursor-pointer"
                 >
                   Sign Out
                 </button>
@@ -397,7 +402,7 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
             ) : (
               <div>
                 <GoogleLoginButton
-                  className="w-full justify-center !bg-black !text-white !border-black hover:!bg-neutral-800 shadow-sm py-2.5"
+                  className="w-full justify-center !bg-white !text-black hover:!bg-white/90 shadow-lg py-2.5 font-bold rounded-full"
                   text="Sign in with Google"
                 />
               </div>
@@ -406,78 +411,86 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
             {onOpenCategories && (
               <button
                 onClick={() => { setMobileMenuOpen(false); onOpenCategories(); }}
-                className="w-full flex items-center justify-between p-3.5 bg-gray-50 rounded-2xl text-black font-semibold"
+                className="w-full flex items-center justify-between p-3.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white font-semibold"
               >
                 <div className="flex items-center gap-2.5">
-                  <Layers className="w-4 h-4" />
+                  <Layers className="w-4 h-4 text-white" />
                   <span>Browse All Departments</span>
                 </div>
-                <ArrowRight className="w-4 h-4 text-gray-400" />
+                <ArrowRight className="w-4 h-4 text-white/40" />
               </button>
             )}
 
-            <div className="flex flex-col space-y-3 pt-1 text-gray-700 font-medium">
+            <div className="flex flex-col space-y-3 pt-1 text-white/70 font-medium">
               <button
                 onClick={() => { setMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                className="text-left hover:text-black py-1"
+                className="text-left hover:text-white py-1"
               >
                 Home
               </button>
               <button
                 onClick={() => handleNavClick("deals-section")}
-                className="text-left hover:text-black py-1 font-semibold text-black flex items-center justify-between"
+                className="text-left hover:text-white py-1 font-semibold text-white flex items-center justify-between"
               >
-                <span>Top Deals (Flash Sale)</span>
-                <span className="text-[10px] bg-black text-white px-2 py-0.5 rounded-full font-bold">HOT</span>
+                <span>Top Deals (Drop 01)</span>
+                <span className="text-[10px] bg-white text-black px-2 py-0.5 rounded-full font-bold">HOT</span>
               </button>
               <button
                 onClick={() => handleNavClick("products-grid")}
-                className="text-left hover:text-black py-1"
+                className="text-left hover:text-white py-1"
               >
                 Shop Catalog
               </button>
               <button
                 onClick={() => handleNavClick("hardware-spotlight")}
-                className="text-left hover:text-black py-1"
+                className="text-left hover:text-white py-1"
               >
                 ASPOR A711 Mount
               </button>
+              <Link
+                href="/droplist"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-left hover:text-white py-1 flex items-center justify-between"
+              >
+                <span>Priority Droplist</span>
+                <span className="text-[10px] bg-white/10 text-white px-2 py-0.5 rounded-full border border-white/10 font-mono">VIP</span>
+              </Link>
               <button
                 onClick={() => { setMobileMenuOpen(false); setCompareOpen(true); }}
-                className="text-left hover:text-black py-1 flex items-center justify-between"
+                className="text-left hover:text-white py-1 flex items-center justify-between"
               >
                 <span>Compare Products</span>
-                <span className="text-xs text-gray-400">({compareList.length})</span>
+                <span className="text-xs text-white/40">({compareList.length})</span>
               </button>
               <button
                 onClick={() => { setMobileMenuOpen(false); setWishlistOpen(true); }}
-                className="text-left hover:text-black py-1 flex items-center justify-between"
+                className="text-left hover:text-white py-1 flex items-center justify-between"
               >
                 <span>Wishlist</span>
-                <span className="text-xs text-gray-400">({wishlist.length})</span>
+                <span className="text-xs text-white/40">({wishlist.length})</span>
               </button>
               <Link
                 href="/about-us"
                 onClick={() => setMobileMenuOpen(false)}
-                className="hover:text-black py-1"
+                className="hover:text-white py-1"
               >
                 About AETHEX
               </Link>
               <Link
                 href="/contact"
                 onClick={() => setMobileMenuOpen(false)}
-                className="hover:text-black py-1"
+                className="hover:text-white py-1"
               >
                 Contact & Showroom
               </Link>
             </div>
 
-            <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-              <div className="flex items-center gap-1.5 text-black font-semibold">
+            <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-white/50">
+              <div className="flex items-center gap-1.5 text-white font-semibold">
                 <Phone className="w-3.5 h-3.5" />
                 <a href={`tel:${SITE_CONTACT.HOTLINE.replace(/\s+/g, '')}`}>{SITE_CONTACT.HOTLINE}</a>
               </div>
-              <span>Islandwide COD Delivery</span>
+              <span>Islandwide Delivery</span>
             </div>
           </motion.div>
         )}

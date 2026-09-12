@@ -41,8 +41,8 @@ export default function TermsPage() {
       </PolicySection>
 
       <PolicySection index="05 //" title="Driver Responsibility & Safety Disclaimer">
-        <p className="border border-gray-200 bg-[#F9F9F9] p-4 text-[#111111]">
-          <strong>Important Safety Notice:</strong> The vehicle operator remains solely responsible for driving safely and complying with all local Sri Lankan traffic regulations. Always adjust your phone mount, input GPS destinations, or set media playlists before putting the vehicle in motion or while safely parked. Do not operate your smartphone in any manner that obstructs your view of the road or compromises safe steering.
+        <p className="border border-white/10 bg-[#0B0B0B] p-4 text-white/80 rounded-xl">
+          <strong className="text-white">Important Safety Notice:</strong> The vehicle operator remains solely responsible for driving safely and complying with all local Sri Lankan traffic regulations. Always adjust your phone mount, input GPS destinations, or set media playlists before putting the vehicle in motion or while safely parked. Do not operate your smartphone in any manner that obstructs your view of the road or compromises safe steering.
         </p>
       </PolicySection>
 

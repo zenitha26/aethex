@@ -66,6 +66,7 @@ export default function GoogleLoginButton({
   children,
 }: GoogleLoginButtonProps) {
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const supabase = createClient();
 
   const handleLogin = async () => {
@@ -75,9 +76,26 @@ export default function GoogleLoginButton({
     } catch {}
 
     setLoading(true);
+    setErrorMessage(null);
 
     try {
+      // 1. Preflight check for Supabase environment variables
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+      if (!supabaseUrl || !supabaseKey) {
+        const missing = [];
+        if (!supabaseUrl) missing.push("NEXT_PUBLIC_SUPABASE_URL");
+        if (!supabaseKey) missing.push("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+        const envErr = new Error(`Configuration Error: Missing required environment variable(s): ${missing.join(", ")}`);
+        (envErr as any).code = "MISSING_ENV_VARS";
+        throw envErr;
+      }
+
+      // 2. Formulate destination callback URL
       const destination = redirectTo || `${window.location.origin}/auth/callback`;
+
+      // 3. Initiate Google OAuth
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
@@ -98,10 +116,20 @@ export default function GoogleLoginButton({
       }
     } catch (err: any) {
       setLoading(false);
+      const friendlyMessage = err?.message || "Google Authentication failed";
+      setErrorMessage(friendlyMessage);
+
+      // 4. Forceful Terminal / Console Logging with exact raw message, code, and stack trace
+      console.error("\n========================================================");
+      console.error("🔴 [GOOGLE AUTH SIGN-IN ERROR] signInWithOAuth failed:");
+      console.error("• Raw Error:", err);
+      console.error("• Error Code / Status:", err?.code || err?.status || err?.name || "OAUTH_INIT_ERROR");
+      console.error("• Error Message:", err?.message || String(err));
+      console.error("• Stack Trace:", err?.stack || new Error().stack);
+      console.error("========================================================\n");
+
       if (onError) {
-        onError(err instanceof Error ? err : new Error(err?.message || "Google Authentication failed"));
-      } else {
-        console.error("Google Auth Error:", err);
+        onError(err instanceof Error ? err : new Error(friendlyMessage));
       }
     }
   };
@@ -136,21 +164,38 @@ export default function GoogleLoginButton({
   };
 
   return (
-    <motion.button
-      type="button"
-      whileHover={!disabled && !loading ? { scale: 1.01, y: -1 } : {}}
-      whileTap={!disabled && !loading ? { scale: 0.99 } : {}}
-      transition={{ type: "spring", stiffness: 400, damping: 25 }}
-      onClick={handleLogin}
-      disabled={disabled || loading}
-      className={`w-full flex items-center justify-center font-medium font-sans transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
-    >
-      {loading ? (
-        <Loader2 className={`${iconSizes[size]} animate-spin text-gray-500`} />
-      ) : (
-        <GoogleIcon className={`${iconSizes[size]} shrink-0`} monochrome={monochrome} />
+    <div className="flex flex-col gap-2 w-full">
+      <motion.button
+        type="button"
+        whileHover={!disabled && !loading ? { scale: 1.01, y: -1 } : {}}
+        whileTap={!disabled && !loading ? { scale: 0.99 } : {}}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+        onClick={handleLogin}
+        disabled={disabled || loading}
+        className={`w-full flex items-center justify-center font-medium font-sans transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+      >
+        {loading ? (
+          <Loader2 className={`${iconSizes[size]} animate-spin text-gray-500`} />
+        ) : (
+          <GoogleIcon className={`${iconSizes[size]} shrink-0`} monochrome={monochrome} />
+        )}
+        <span className="truncate">{loading ? "Connecting to Google..." : buttonText}</span>
+      </motion.button>
+
+      {/* Surface UI Error Feedback */}
+      {errorMessage && (
+        <div className="flex items-start gap-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-mono">
+          <span className="flex-1 leading-tight">{errorMessage}</span>
+          <button
+            type="button"
+            onClick={() => setErrorMessage(null)}
+            className="text-red-500 hover:text-red-800 p-0.5 shrink-0"
+            title="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
       )}
-      <span className="truncate">{loading ? "Connecting to Google..." : buttonText}</span>
-    </motion.button>
+    </div>
   );
 }

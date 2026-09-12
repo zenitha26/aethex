@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback, memo } from "react";
+import { useState, useEffect, useCallback, memo, useOptimistic, useTransition } from "react";
 import { useCartStore } from "../store/useCartStore";
 import { CartItem } from "../types/cart";
-import { Plus, Minus, Trash2, X, ShoppingBag, MessageSquare, ArrowRight, User as UserIcon } from "lucide-react";
+import { Plus, Minus, Trash2, X, ShoppingBag, ArrowRight, ShieldCheck, Truck, Sparkles } from "lucide-react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -13,6 +13,11 @@ import { SITE_CONTACT } from "../constants";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import GoogleLoginButton from "@/components/auth/GoogleLoginButton";
+import { updateCartQuantityAction, removeCartItemAction } from "@/app/actions/cart";
+
+type CartOptimisticAction =
+  | { type: "UPDATE"; id: string; delta: number }
+  | { type: "REMOVE"; id: string };
 
 const CartItemRow = memo(({ 
   item, 
@@ -33,62 +38,64 @@ const CartItemRow = memo(({
   return (
     <motion.div
       layout="position"
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.25 }}
-      className="flex gap-4 py-4 border-b border-gray-100 relative group bg-white"
+      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+      className="flex gap-4 py-4 border-b border-white/5 relative group bg-transparent"
     >
-      <div className="w-20 h-20 bg-[#F9F9F9] flex items-center justify-center relative overflow-hidden shrink-0 border border-gray-200">
+      <div className="w-20 h-20 bg-white/[0.02] border border-white/10 rounded-xl flex items-center justify-center relative overflow-hidden shrink-0">
         {item.image ? (
           <Image 
             src={item.image} 
             alt={item.title} 
             fill 
             sizes="80px"
-            className="object-cover p-1.5" 
+            className="object-cover p-1.5 transition-transform duration-500 group-hover:scale-105" 
           />
         ) : (
-          <div className="w-8 h-8 bg-gray-100" />
+          <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center font-mono text-[9px] text-white/30">
+            ITEM
+          </div>
         )}
       </div>
 
       <div className="flex-grow flex flex-col justify-between py-0.5">
         <div>
           <div className="flex items-start justify-between gap-2 pr-6">
-            <h4 className="text-[#111111] text-xs font-mono uppercase tracking-wider line-clamp-2 leading-snug font-semibold">
+            <h4 className="text-white text-xs font-mono uppercase tracking-wider line-clamp-2 leading-snug font-semibold">
               {item.title}
             </h4>
           </div>
           {item.color && (
-            <p className="text-gray-500 text-[10px] font-mono tracking-wider mt-0.5">
+            <p className="text-white/40 text-[10px] font-mono tracking-wider mt-0.5">
               Variant: {item.color}
             </p>
           )}
         </div>
 
         <div className="flex items-center justify-between mt-3">
-          <div className="flex items-center border border-gray-300 px-2 py-0.5 font-mono text-xs bg-[#F9F9F9]">
+          <div className="flex items-center border border-white/10 rounded-lg px-2 py-0.5 font-mono text-xs bg-white/[0.03]">
             <button 
               onClick={() => { playSelect(); onUpdate(item.id, -1); }} 
               onMouseEnter={playHover}
-              aria-label="Decrease" 
-              className="text-gray-600 hover:text-black p-1 transition-colors"
+              aria-label="Decrease quantity" 
+              className="text-white/60 hover:text-white p-1 transition-colors"
             >
               <Minus className="h-3 w-3" />
             </button>
-            <span className="text-[#111111] w-6 text-center font-bold text-xs">{item.quantity}</span>
+            <span className="text-white w-6 text-center font-bold text-xs">{item.quantity}</span>
             <button 
               onClick={() => { playSelect(); onUpdate(item.id, 1); }} 
               onMouseEnter={playHover}
-              aria-label="Increase" 
-              className="text-gray-600 hover:text-black p-1 transition-colors"
+              aria-label="Increase quantity" 
+              className="text-white/60 hover:text-white p-1 transition-colors"
             >
               <Plus className="h-3 w-3" />
             </button>
           </div>
 
-          <span className="text-black font-mono text-xs font-bold">
+          <span className="text-white font-mono text-xs font-bold">
             Rs. {(item.price * item.quantity).toLocaleString()}
           </span>
         </div>
@@ -97,7 +104,7 @@ const CartItemRow = memo(({
       <button 
         onClick={() => { playSelect(); onRemove(item.id); }} 
         onMouseEnter={playHover}
-        className="absolute top-4 right-0 text-gray-400 hover:text-black transition-colors"
+        className="absolute top-4 right-0 text-white/30 hover:text-white transition-colors p-1"
         title="Remove"
       >
         <Trash2 className="h-3.5 w-3.5" />
@@ -111,7 +118,29 @@ export default function CartDrawer() {
   const { cart, isCartOpen, setCartOpen, updateQuantity, removeFromCart } = useCartStore();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [isPending, startTransition] = useTransition();
   const supabase = createClient();
+
+  // React 19 useOptimistic hook for instantaneous zero-latency cart updates
+  const [optimisticCart, setOptimisticCart] = useOptimistic(
+    cart,
+    (currentCart: CartItem[], action: CartOptimisticAction) => {
+      switch (action.type) {
+        case "UPDATE":
+          return currentCart
+            .map((item) =>
+              item.id === action.id
+                ? { ...item, quantity: Math.max(1, item.quantity + action.delta) }
+                : item
+            )
+            .filter((item) => item.quantity > 0);
+        case "REMOVE":
+          return currentCart.filter((item) => item.id !== action.id);
+        default:
+          return currentCart;
+      }
+    }
+  );
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -144,32 +173,69 @@ export default function CartDrawer() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isCartOpen, setCartOpen]);
 
-  const subtotal = cart.reduce((acc: number, item: CartItem) => acc + item.price * item.quantity, 0);
+  // Subtotal calculated from optimistic state for instant UI feedback
+  const subtotal = optimisticCart.reduce((acc: number, item: CartItem) => acc + item.price * item.quantity, 0);
 
-  const handleUpdate = useCallback((id: string, qty: number) => updateQuantity(id, qty), [updateQuantity]);
-  const handleRemove = useCallback((id: string) => removeFromCart(id), [removeFromCart]);
+  // Optimistic quantity updater using Next.js Server Action
+  const handleUpdate = useCallback(
+    (id: string, delta: number) => {
+      startTransition(async () => {
+        // 1. Instant optimistic update
+        setOptimisticCart({ type: "UPDATE", id, delta });
 
-  const handleWhatsAppCheckout = useCallback(() => {
-    try { audioEngine.playAcquire(); } catch {}
-    setCartOpen(false);
-    const itemsList = cart.map(item => `• ${item.title} (${item.quantity}x) - Rs. ${(item.price * item.quantity).toLocaleString()}`).join('\n');
-    const text = encodeURIComponent(`Hello AETHEX Store, I would like to place an order:\n\n${itemsList || "• ASPOR A711 360° Console Mount (1x)"}\n\nSubtotal: Rs. ${subtotal.toLocaleString()} LKR + Islandwide Delivery\nPayment: Cash on Delivery (COD)\n\nPlease confirm availability and dispatch.`);
-    window.open(`https://wa.me/${SITE_CONTACT.WHATSAPP_NUMBER}?text=${text}`, "_blank");
-  }, [cart, subtotal, setCartOpen]);
+        // 2. Encrypted Server Action mutation
+        try {
+          await updateCartQuantityAction(id, delta);
+        } catch (err) {
+          console.warn("Cart update server action notice:", err);
+        }
+
+        // 3. Local store synchronization
+        updateQuantity(id, delta);
+      });
+    },
+    [updateQuantity, setOptimisticCart]
+  );
+
+  // Optimistic item removal using Server Action
+  const handleRemove = useCallback(
+    (id: string) => {
+      startTransition(async () => {
+        // 1. Instant optimistic removal
+        setOptimisticCart({ type: "REMOVE", id });
+
+        // 2. Server Action
+        try {
+          await removeCartItemAction(id);
+        } catch (err) {
+          console.warn("Cart remove server action notice:", err);
+        }
+
+        // 3. Reconcile store
+        removeFromCart(id);
+      });
+    },
+    [removeFromCart, setOptimisticCart]
+  );
 
   const handleDirectCheckout = useCallback(() => {
-    try { audioEngine.playSelect(); } catch {}
+    try { audioEngine.playAcquire(); } catch {}
     setCartOpen(false);
     router.push("/checkout");
   }, [router, setCartOpen]);
 
   const drawerVariants: Variants = {
-    hidden: { x: "100%" },
+    hidden: { x: "100%", opacity: 0.8 },
     visible: { 
       x: 0, 
-      transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] } 
+      opacity: 1,
+      transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } 
     },
-    exit: { x: "100%", transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }
+    exit: { 
+      x: "100%", 
+      opacity: 0.8,
+      transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } 
+    }
   };
 
   const playHover = () => {
@@ -183,66 +249,82 @@ export default function CartDrawer() {
     <AnimatePresence>
       {isCartOpen && (
         <>
+          {/* Glass Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.5 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.3 }}
             onClick={() => setCartOpen(false)}
-            className="fixed inset-0 bg-black/40 z-[100]"
+            className="fixed inset-0 bg-black/70 backdrop-blur-md z-[100]"
           />
 
+          {/* Glassmorphic Cart Drawer Panel */}
           <motion.div
             variants={drawerVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
             role="dialog"
-            className="fixed right-0 top-0 bottom-0 w-full max-w-[440px] bg-white border-l border-gray-200 z-[101] shadow-2xl flex flex-col justify-between font-sans text-[#111111]"
+            aria-label="Shopping Cart Drawer"
+            className="fixed right-0 top-0 bottom-0 w-full max-w-[440px] bg-[#0B0B0B]/95 backdrop-blur-2xl border-l border-white/10 z-[101] shadow-2xl flex flex-col justify-between font-sans text-white"
           >
             {/* Header */}
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between bg-[#F9F9F9]">
+            <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/[0.01]">
               <div className="flex items-center gap-3">
-                <ShoppingBag className="w-4 h-4 text-black" />
-                <h2 className="text-[#111111] text-sm font-mono tracking-[0.2em] uppercase font-bold">
-                  CART <span className="text-gray-500">({cart.reduce((s, i) => s + i.quantity, 0)})</span>
-                </h2>
+                <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                  <ShoppingBag className="w-3.5 h-3.5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-white text-xs font-mono tracking-[0.2em] uppercase font-bold">
+                    BAG DISPATCH <span className="text-white/40">({optimisticCart.reduce((s, i) => s + i.quantity, 0)})</span>
+                  </h2>
+                  <p className="text-[10px] font-mono text-white/40">Direct Ceylon Express Logistics</p>
+                </div>
               </div>
               
               <button 
                 onClick={() => { playSelect(); setCartOpen(false); }} 
                 onMouseEnter={playHover}
-                className="text-gray-500 hover:text-black p-1 transition-colors"
+                className="p-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white transition-colors"
                 aria-label="Close cart"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
+            {/* Free Shipping Progress Indicator */}
+            <div className="px-6 py-2.5 bg-white/[0.02] border-b border-white/5 flex items-center gap-2 text-[11px] font-mono text-white/70">
+              <Truck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span>Complimentary Express Courier on all orders</span>
+            </div>
+
             {/* Item List */}
-            <div className="flex-grow overflow-y-auto px-6 py-4 flex flex-col divide-y divide-gray-100 bg-white">
-              {cart.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center py-20">
-                  <div className="w-12 h-12 border border-gray-300 flex items-center justify-center mb-4 text-gray-400">
-                    <ShoppingBag className="w-5 h-5" />
+            <div className="flex-grow overflow-y-auto px-6 py-4 flex flex-col divide-y divide-white/5 custom-scrollbar">
+              {optimisticCart.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-center py-24 space-y-4">
+                  <div className="w-16 h-16 rounded-full bg-white/[0.02] border border-white/10 flex items-center justify-center text-white/30">
+                    <ShoppingBag className="w-6 h-6" />
                   </div>
-                  <p className="text-[#111111] text-xs font-mono uppercase tracking-wider mb-2 font-bold">
-                    Your Cart Is Empty
-                  </p>
-                  <p className="text-gray-500 text-xs font-light max-w-xs mb-6">
-                    Browse our catalog and add items to your cart.
-                  </p>
+                  <div className="space-y-1">
+                    <p className="text-white text-xs font-mono uppercase tracking-widest font-bold">
+                      Your Bag Is Empty
+                    </p>
+                    <p className="text-white/40 text-xs font-mono max-w-xs">
+                      Select engineered automotive hardware from our current drop.
+                    </p>
+                  </div>
                   <button
                     onClick={() => { playSelect(); setCartOpen(false); }}
                     onMouseEnter={playHover}
-                    className="border border-gray-300 text-[#111111] px-6 py-2.5 text-xs font-mono uppercase tracking-widest hover:border-black transition-colors shadow-xs"
+                    className="mt-2 px-6 py-3 rounded-full border border-white/20 text-white text-xs font-mono uppercase tracking-widest hover:bg-white hover:text-black transition-all shadow-sm"
                   >
-                    Explore Shop
+                    Browse Drop 01
                   </button>
                 </div>
               ) : (
                 <AnimatePresence mode="popLayout">
-                  {cart.map((item: CartItem) => (
+                  {optimisticCart.map((item: CartItem) => (
                     <CartItemRow 
                       key={item.id} 
                       item={item} 
@@ -254,88 +336,66 @@ export default function CartDrawer() {
               )}
             </div>
 
-            {/* Footer / Subtotal & Checkout */}
-            {cart.length > 0 && (
-              <div className="p-6 border-t border-gray-200 bg-[#F9F9F9] space-y-4">
+            {/* Footer / Subtotal & One-Page Checkout Trigger */}
+            {optimisticCart.length > 0 && (
+              <div className="p-6 border-t border-white/10 bg-[#070707]/90 backdrop-blur-xl space-y-4">
                 <div className="space-y-1.5 pb-2">
                   <div className="flex justify-between items-center text-xs font-mono">
-                    <span className="text-gray-600 uppercase tracking-wider font-medium">Subtotal:</span>
-                    <span className="text-black text-lg font-bold">Rs. {subtotal.toLocaleString()}</span>
+                    <span className="text-white/50 uppercase tracking-widest font-medium">Subtotal</span>
+                    <span className="text-white text-lg font-bold">Rs. {subtotal.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between items-center text-[10px] font-mono text-gray-500">
-                    <span>Shipping:</span>
-                    <span>Calculated at checkout (Islandwide)</span>
-                  </div>
-                  <div className="text-[10px] font-mono text-gray-600 pt-1">
-                    Or 3 interest-free payments of <span className="text-black font-bold">Rs. {Math.round(subtotal / 3).toLocaleString()}</span> with Koko
+                  <div className="flex justify-between items-center text-[10px] font-mono text-white/40">
+                    <span>Shipping</span>
+                    <span className="text-emerald-400">Complimentary Express</span>
                   </div>
                 </div>
 
-                {/* User Authentication Status or Google Login Trigger */}
+                {/* User Status / Quick Guest Notification */}
                 {user ? (
-                  <div className="flex items-center justify-between px-3.5 py-2.5 bg-white rounded-xl border border-gray-200 shadow-2xs">
+                  <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-white/[0.03] border border-white/10">
                     <Link
                       href="/account"
                       onClick={() => setCartOpen(false)}
                       className="flex items-center gap-2.5 min-w-0 hover:opacity-80 transition-opacity"
                     >
-                      {user.user_metadata?.avatar_url ? (
-                        <img
-                          src={user.user_metadata.avatar_url}
-                          alt="Avatar"
-                          className="w-6 h-6 rounded-full object-cover border border-gray-200 shrink-0"
-                        />
-                      ) : (
-                        <span className="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center text-[10px] font-bold shrink-0">
-                          {(user.email || "U").charAt(0).toUpperCase()}
-                        </span>
-                      )}
-                      <div className="min-w-0">
-                        <div className="text-[11px] font-semibold text-black truncate">
-                          {user.user_metadata?.full_name || "My Account"}
+                      <span className="w-5 h-5 rounded-full bg-white text-black flex items-center justify-center text-[9px] font-bold shrink-0 font-mono">
+                        {(user.email || "U").charAt(0).toUpperCase()}
+                      </span>
+                      <div className="min-w-0 font-mono">
+                        <div className="text-[10px] font-semibold text-white truncate">
+                          {user.user_metadata?.full_name || user.email}
                         </div>
-                        <div className="text-[9px] text-gray-500 truncate">{user.email}</div>
                       </div>
                     </Link>
                     <button
                       type="button"
                       onClick={handleSignOut}
-                      className="text-[11px] font-medium text-gray-500 hover:text-black underline cursor-pointer shrink-0 ml-2"
+                      className="text-[10px] font-mono text-white/40 hover:text-white underline ml-2"
                     >
                       Sign Out
                     </button>
                   </div>
                 ) : (
-                  <div className="p-3 bg-white rounded-xl border border-gray-200 shadow-2xs space-y-2">
-                    <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-gray-600 font-medium">Quick Sign In</span>
-                      <span className="text-[10px] text-gray-400">Save address & orders</span>
-                    </div>
-                    <GoogleLoginButton
-                      className="w-full justify-center !bg-black !text-white !border-black hover:!bg-neutral-800 shadow-xs py-2 text-xs"
-                      text="Sign in with Google"
-                    />
+                  <div className="p-2.5 rounded-xl bg-white/[0.02] border border-white/5 text-[10px] font-mono text-white/50 flex items-center justify-between">
+                    <span>Guest Checkout enabled</span>
+                    <span className="text-white/80">No password required</span>
                   </div>
                 )}
 
-                <div className="space-y-2.5">
+                {/* Primary Checkout Actions */}
+                <div className="space-y-2 pt-1">
                   <button
                     onClick={handleDirectCheckout}
                     onMouseEnter={playHover}
-                    className="w-full bg-black text-white hover:bg-neutral-800 transition-all py-3.5 text-xs font-mono font-bold tracking-[0.18em] uppercase flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                    className="w-full bg-white text-black hover:bg-white/90 transition-all py-4 rounded-full text-xs font-mono font-bold tracking-widest uppercase flex items-center justify-center gap-2 shadow-2xl active:scale-[0.99]"
                   >
-                    <span>CHECKOUT</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <span>Instant Checkout</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-black" />
                   </button>
-
-                  <button
-                    onClick={handleWhatsAppCheckout}
-                    onMouseEnter={playHover}
-                    className="w-full bg-white border border-gray-300 text-[#111111] hover:border-black transition-all py-3 text-xs font-mono font-semibold tracking-[0.18em] uppercase flex items-center justify-center gap-2 cursor-pointer shadow-xs"
-                  >
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    <span>ORDER VIA WHATSAPP (COD)</span>
-                  </button>
+                  
+                  <p className="text-center text-[9px] font-mono text-white/30 tracking-widest uppercase">
+                    Bank Transfer • Instant Ceylon Express Clearance
+                  </p>
                 </div>
               </div>
             )}

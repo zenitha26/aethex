@@ -13,32 +13,47 @@ export default async function OrdersPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-display font-bold text-[#111111] mb-2">Order History</h1>
-        <p className="text-gray-600">View all your previous purchases.</p>
+    <div className="space-y-10 font-sans">
+      <div className="space-y-1 pb-6 border-b border-white/5">
+        <h1 className="text-3xl sm:text-4xl font-light uppercase tracking-tight text-white font-mono">
+          Order History
+        </h1>
+        <p className="text-white/60 text-sm leading-relaxed">
+          Comprehensive telemetry of all your hardware acquisitions and shipment status.
+        </p>
       </div>
 
       {(!orders || orders.length === 0) ? (
-        <div className="text-center py-12 bg-white border border-gray-200 rounded-2xl shadow-sm">
-          <p className="text-gray-500 italic">You haven't placed any orders yet.</p>
+        <div className="text-center py-16 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-xl">
+          <p className="text-white/50 text-sm font-mono">You haven't placed any orders yet.</p>
         </div>
       ) : (
         <div className="space-y-4">
           {orders.map((order) => (
-            <div key={order.id} className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-100 pb-4 mb-4">
-                <div>
-                  <p className="font-semibold text-lg tracking-wide text-[#111111]">Order #{order.id.slice(0, 8).toUpperCase()}</p>
-                  <p className="text-sm text-gray-500">{new Date(order.created_at).toLocaleDateString()} at {new Date(order.created_at).toLocaleTimeString()}</p>
+            <div
+              key={order.id}
+              className="bg-white/[0.02] border border-white/5 hover:border-white/10 hover:bg-white/[0.04] transition-all rounded-3xl p-6 sm:p-8 backdrop-blur-xl space-y-6"
+            >
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/5 pb-4">
+                <div className="space-y-1">
+                  <p className="font-mono font-semibold text-base tracking-wide text-white">
+                    Order #{order.id.slice(0, 8).toUpperCase()}
+                  </p>
+                  <p className="text-xs font-mono text-white/50">
+                    {new Date(order.created_at).toLocaleDateString()} at {new Date(order.created_at).toLocaleTimeString()}
+                  </p>
                 </div>
-                <div className="text-left md:text-right">
-                  <p className="text-2xl font-bold font-display text-[#111111]">LKR {order.total.toLocaleString()}</p>
+                <div className="text-left sm:text-right">
+                  <p className="text-2xl font-mono font-bold text-white">
+                    LKR {order.total.toLocaleString()}
+                  </p>
                   <div className="mt-1">
-                    <span className={`inline-block text-xs px-2.5 py-1 rounded-full uppercase tracking-wider font-bold ${
-                      order.order_status === "delivered" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
-                      order.order_status === "processing" ? "bg-blue-50 text-blue-700 border border-blue-200" :
-                      "bg-gray-100 text-gray-700 border border-gray-200"
+                    <span className={`inline-block text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider font-mono font-bold border ${
+                      order.order_status === "delivered"
+                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                        : order.order_status === "processing"
+                        ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                        : "bg-white/5 text-white/60 border-white/10"
                     }`}>
                       {order.order_status || "Pending"}
                     </span>
@@ -46,15 +61,23 @@ export default async function OrdersPage() {
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-gray-500 mb-1 uppercase tracking-widest text-xs font-bold">Shipping Address</p>
-                  <p className="text-gray-800">{order.customer_address}</p>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-2 border-t border-white/5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono flex-1">
+                  <div className="space-y-1">
+                    <p className="text-white/40 uppercase tracking-widest text-[10px] font-semibold">Shipping Address</p>
+                    <p className="text-white/80 leading-relaxed">{order.customer_address || "Standard Courier Delivery"}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-white/40 uppercase tracking-widest text-[10px] font-semibold">Contact Details</p>
+                    <p className="text-white/80">{order.customer_phone || "—"}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-gray-500 mb-1 uppercase tracking-widest text-xs font-bold">Contact</p>
-                  <p className="text-gray-800">{order.customer_phone}</p>
-                </div>
+                <a
+                  href={`/account/orders/${order.id}`}
+                  className="px-4 py-2 rounded-full border border-white/10 hover:border-white/30 bg-white/5 hover:bg-white/10 text-white text-xs font-mono uppercase tracking-wider transition"
+                >
+                  {order.order_status === "pending_payment" ? "Upload Slip →" : "View Details →"}
+                </a>
               </div>
             </div>
           ))}

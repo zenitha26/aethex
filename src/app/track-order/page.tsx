@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Search, CheckCircle2, Package, Truck, Compass, Copy, Check, Loader2 } from "lucide-react";
 import Navbar from "../../components/Navbar";
-import { supabase } from "../../lib/supabase";
+import { createClient } from "../../lib/supabase/client";
 
 const formatLKR = (amount: number) => {
   return new Intl.NumberFormat("en-LK", {
@@ -20,6 +20,7 @@ function TrackOrderContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const queryId = searchParams.get("order_id") || "";
+  const supabase = createClient();
 
   const [orderIdInput, setOrderIdInput] = useState(queryId);
   const [loading, setLoading] = useState(false);

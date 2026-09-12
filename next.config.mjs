@@ -123,6 +123,8 @@ const nextConfig = {
     return config;
   },
   experimental: {
+    ...(process.env.NEXT_ENABLE_PPR === 'true' ? { ppr: 'incremental' } : {}),
+    taint: true,
     webpackBuildWorker: false,
     workerThreads: false
   },

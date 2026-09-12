@@ -17,10 +17,10 @@ export function LogoutButton() {
   return (
     <button
       onClick={handleLogout}
-      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors text-left text-gray-600 font-medium"
+      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-500/10 text-white/50 hover:text-red-400 transition-all text-left font-medium text-sm cursor-pointer"
     >
-      <LogOut className="w-5 h-5" />
-      <span>Log Out</span>
+      <LogOut className="w-4 h-4" />
+      <span>Sign Out</span>
     </button>
   );
 }

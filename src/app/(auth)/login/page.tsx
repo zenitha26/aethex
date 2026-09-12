@@ -2,14 +2,14 @@
 
 export const dynamic = "force-dynamic";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { createClient } from "../../../lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Mail, Phone, Lock, User, KeyRound } from "lucide-react";
+import { ArrowLeft, Mail, Phone, Lock, User, KeyRound, AlertCircle } from "lucide-react";
 import GoogleLoginButton from "../../../components/GoogleLoginButton";
 
-export default function AuthPage() {
+function AuthForm() {
   const [view, setView] = useState<"login" | "register" | "otp">("login");
   const [method, setMethod] = useState<"email" | "phone">("email");
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,21 @@ export default function AuthPage() {
   const [otp, setOtp] = useState("");
 
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
+
+  // Detect OAuth error passed back from auth callback redirect
+  useEffect(() => {
+    const errorMsg = searchParams.get("error_description") || searchParams.get("error");
+    if (errorMsg) {
+      setError(decodeURIComponent(errorMsg));
+      console.error("\n========================================================");
+      console.error("🔴 [LOGIN PAGE] Authentication error detected from callback redirect:");
+      console.error("• Error Message:", errorMsg);
+      console.error("• Raw Query Params:", Object.fromEntries(searchParams.entries()));
+      console.error("========================================================\n");
+    }
+  }, [searchParams]);
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,8 +114,17 @@ export default function AuthPage() {
           </p>
 
           {error && (
-            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
-              {error}
+            <div className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-3 animate-in fade-in">
+              <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+              <div className="flex-1 leading-relaxed">{error}</div>
+              <button
+                type="button"
+                onClick={() => setError(null)}
+                className="text-red-400 hover:text-red-700 p-1 shrink-0 cursor-pointer"
+                title="Dismiss"
+              >
+                ✕
+              </button>
             </div>
           )}
 
@@ -232,3 +255,12 @@ export default function AuthPage() {
     </div>
   );
 }
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center font-mono text-xs">Loading...</div>}>
+      <AuthForm />
+    </Suspense>
+  );
+}
+

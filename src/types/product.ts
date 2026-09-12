@@ -8,6 +8,7 @@ export interface ProductVariant {
 export interface Product {
   id: string;
   title: string;
+  sku?: string;
   subtitle?: string;
   category?: string;
   description?: string;

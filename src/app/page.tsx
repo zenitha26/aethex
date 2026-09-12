@@ -1,5 +1,7 @@
-export const runtime = 'edge';
+// Partial Prerendering (PPR) enabled when canary/NEXT_ENABLE_PPR is active
+// export const experimental_ppr = true;
 
+import { Suspense } from "react";
 import { getProducts } from "@/lib/products";
 import HomeClient from "../components/HomeClient";
 import { Metadata } from 'next';
@@ -74,7 +76,13 @@ export default async function Home() {
           })
         }}
       />
-      <HomeClient initialProducts={products} />
+      <Suspense fallback={
+        <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full border border-white/20 border-t-white animate-spin" />
+        </div>
+      }>
+        <HomeClient initialProducts={products} />
+      </Suspense>
     </>
   );
 }

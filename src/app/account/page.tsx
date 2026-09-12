@@ -30,41 +30,60 @@ export default async function AccountDashboard() {
   }).format(totalSpent);
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-display font-bold text-[#111111] mb-2">Welcome, {profile?.full_name || user?.email?.split("@")[0] || "User"}!</h1>
-        <p className="text-gray-600">Manage your orders and personal details.</p>
+    <div className="space-y-10 font-sans">
+      <div className="space-y-1 pb-6 border-b border-white/5">
+        <h1 className="text-3xl sm:text-4xl font-light uppercase tracking-tight text-white font-mono">
+          Welcome, {profile?.full_name || user?.email?.split("@")[0] || "Client"}
+        </h1>
+        <p className="text-white/60 text-sm leading-relaxed">
+          Access your fleet telemetry, hardware configurations, and past dispatches.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-          <p className="text-gray-500 text-sm mb-1 uppercase tracking-widest font-bold">Total Orders</p>
-          <p className="text-4xl font-display font-bold text-[#111111]">{totalOrders}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="bg-white/[0.02] border border-white/5 backdrop-blur-xl rounded-3xl p-6 sm:p-8 space-y-2">
+          <p className="text-white/40 text-xs uppercase tracking-widest font-mono font-semibold">Total Orders</p>
+          <p className="text-4xl font-mono font-bold text-white">{totalOrders}</p>
         </div>
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-          <p className="text-gray-500 text-sm mb-1 uppercase tracking-widest font-bold">Total Spent</p>
-          <p className="text-4xl font-display font-bold text-[#111111]">{formattedSpent}</p>
+        <div className="bg-white/[0.02] border border-white/5 backdrop-blur-xl rounded-3xl p-6 sm:p-8 space-y-2">
+          <p className="text-white/40 text-xs uppercase tracking-widest font-mono font-semibold">Total Invested</p>
+          <p className="text-4xl font-mono font-bold text-white">{formattedSpent}</p>
         </div>
       </div>
 
-      <div>
-        <h2 className="text-xl font-display font-bold text-[#111111] mb-4">Recent Orders</h2>
+      <div className="space-y-6">
+        <h2 className="text-sm font-mono uppercase tracking-[0.2em] font-semibold text-white">
+          Recent Dispatches
+        </h2>
         {totalOrders === 0 ? (
-          <p className="text-gray-500 italic">You haven't placed any orders yet.</p>
+          <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-xl text-center">
+            <p className="text-white/50 text-sm font-mono">No hardware dispatches logged yet.</p>
+          </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {orders?.slice(0, 3).map((order) => (
-              <div key={order.id} className="flex justify-between items-center bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-                <div>
-                  <p className="font-semibold tracking-wide text-[#111111]">#{order.id.slice(0, 8).toUpperCase()}</p>
-                  <p className="text-sm text-gray-500">{new Date(order.created_at).toLocaleDateString()}</p>
+              <div
+                key={order.id}
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/[0.02] border border-white/5 hover:border-white/10 hover:bg-white/[0.04] transition-all rounded-2xl p-5 backdrop-blur-xl"
+              >
+                <div className="space-y-1">
+                  <p className="font-mono font-semibold text-sm tracking-wide text-white">
+                    #{order.id.slice(0, 8).toUpperCase()}
+                  </p>
+                  <p className="text-xs font-mono text-white/50">
+                    {new Date(order.created_at).toLocaleDateString()}
+                  </p>
                 </div>
-                <div className="text-right">
-                  <p className="font-bold text-[#111111]">LKR {order.total.toLocaleString()}</p>
-                  <span className={`text-xs px-2.5 py-1 rounded-full uppercase tracking-wider font-bold ${
-                    order.order_status === "delivered" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
-                    order.order_status === "processing" ? "bg-blue-50 text-blue-700 border border-blue-200" :
-                    "bg-gray-100 text-gray-700 border border-gray-200"
+                <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
+                  <p className="font-mono font-bold text-white text-sm">
+                    LKR {order.total.toLocaleString()}
+                  </p>
+                  <span className={`text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider font-mono font-bold border ${
+                    order.order_status === "delivered"
+                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                      : order.order_status === "processing"
+                      ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                      : "bg-white/5 text-white/60 border-white/10"
                   }`}>
                     {order.order_status || "Pending"}
                   </span>
