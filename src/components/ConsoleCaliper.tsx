@@ -58,17 +58,17 @@ export default function ConsoleCaliper({ onSelectVehicle }: ConsoleCaliperProps)
   const isCompatible = diameter >= 64 && diameter <= 96;
 
   return (
-    <div className="bg-white border border-gray-200 p-6 sm:p-10 lg:p-12 space-y-8 font-sans shadow-sm">
+    <div className="bg-[#0B0B0B] border border-white/10 p-6 sm:p-10 lg:p-12 space-y-8 font-sans shadow-2xl text-white">
       
       {/* Customer Question First */}
-      <div className="space-y-2 border-b border-gray-200 pb-6">
-        <span className="text-[10px] font-mono tracking-[0.25em] text-gray-500 uppercase block font-semibold">
+      <div className="space-y-2 border-b border-white/10 pb-6">
+        <span className="text-[10px] font-mono tracking-[0.25em] text-white/50 uppercase block font-semibold">
           FITMENT VERIFICATION
         </span>
-        <h3 className="text-2xl sm:text-4xl font-light uppercase text-[#111111] tracking-tight">
+        <h3 className="text-2xl sm:text-4xl font-light uppercase text-white tracking-tight font-mono">
           Will it fit my car?
         </h3>
-        <p className="text-gray-600 text-xs sm:text-sm font-light max-w-xl leading-relaxed">
+        <p className="text-white/60 text-xs sm:text-sm font-light max-w-xl leading-relaxed">
           The ASPOR A711 expands from 65mm to 95mm to fit standard vehicle cup holders. 
           Select your vehicle model below to confirm compatibility.
         </p>
@@ -82,7 +82,7 @@ export default function ConsoleCaliper({ onSelectVehicle }: ConsoleCaliperProps)
           
           {/* Quick Vehicle Presets */}
           <div className="space-y-2">
-            <label className="text-[10px] font-mono uppercase text-gray-500 tracking-wider block font-semibold">
+            <label className="text-[10px] font-mono uppercase text-white/50 tracking-wider block font-semibold">
               WHAT DO YOU DRIVE?
             </label>
             <div className="flex flex-wrap gap-2">
@@ -95,8 +95,8 @@ export default function ConsoleCaliper({ onSelectVehicle }: ConsoleCaliperProps)
                     onClick={() => handleSelectPreset(p)}
                     className={`px-3 py-2 text-left border text-[11px] font-mono transition-all cursor-pointer ${
                       isSelected
-                        ? "bg-black text-white border-black font-semibold shadow-xs"
-                        : "bg-white text-gray-700 border-gray-200 hover:border-black hover:text-black"
+                        ? "bg-white text-black border-white font-semibold shadow-md"
+                        : "bg-white/5 text-white/70 border-white/10 hover:border-white/40 hover:text-white"
                     }`}
                   >
                     <span>{p.name}</span>
@@ -107,13 +107,13 @@ export default function ConsoleCaliper({ onSelectVehicle }: ConsoleCaliperProps)
           </div>
 
           {/* Console Diameter Slider */}
-          <div className="space-y-3 bg-[#F9F9F9] p-5 border border-gray-200">
+          <div className="space-y-3 bg-[#111111] p-5 border border-white/10">
             <div className="flex justify-between items-center text-xs font-mono">
-              <label htmlFor={sliderId} className="text-gray-600 uppercase tracking-wider flex items-center gap-2">
-                <Sliders className="w-3.5 h-3.5 text-gray-500" />
+              <label htmlFor={sliderId} className="text-white/60 uppercase tracking-wider flex items-center gap-2">
+                <Sliders className="w-3.5 h-3.5 text-white/50" />
                 <span>CONSOLE DIAMETER</span>
               </label>
-              <span className="text-[#111111] font-bold text-sm">{diameter.toFixed(0)} MM</span>
+              <span className="text-white font-bold text-sm">{diameter.toFixed(0)} MM</span>
             </div>
 
             <input
@@ -124,11 +124,11 @@ export default function ConsoleCaliper({ onSelectVehicle }: ConsoleCaliperProps)
               step="1"
               value={diameter}
               onChange={handleSliderChange}
-              className="w-full accent-black bg-gray-200 h-1.5 rounded-none cursor-pointer focus:outline-none"
+              className="w-full accent-white bg-white/20 h-1.5 rounded-none cursor-pointer focus:outline-none"
               aria-label="Console diameter slider"
             />
 
-            <div className="flex justify-between text-[9px] font-mono text-gray-400">
+            <div className="flex justify-between text-[9px] font-mono text-white/40">
               <span>62 MM</span>
               <span>75 MM (TYPICAL)</span>
               <span>95 MM</span>
@@ -136,15 +136,15 @@ export default function ConsoleCaliper({ onSelectVehicle }: ConsoleCaliperProps)
           </div>
 
           {/* Estimated Fit Verdict Box */}
-          <div className="bg-[#F9F9F9] border border-gray-200 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+          <div className="bg-[#111111] border border-white/10 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
             <div className="space-y-1">
-              <div className="flex items-center gap-2 text-[#111111] font-mono text-xs font-semibold uppercase tracking-wider">
-                <span className="w-5 h-5 bg-black text-white rounded-full flex items-center justify-center text-[10px] font-bold">
+              <div className="flex items-center gap-2 text-white font-mono text-xs font-semibold uppercase tracking-wider">
+                <span className="w-5 h-5 bg-white text-black rounded-full flex items-center justify-center text-[10px] font-bold">
                   ✓
                 </span>
                 <span>ESTIMATED FIT: {isCompatible ? "100% COMPATIBLE" : "CHECK MEASUREMENT"}</span>
               </div>
-              <p className="text-[11px] text-gray-600 font-light">
+              <p className="text-[11px] text-white/60 font-light">
                 {selectedVehicle} console well ({diameter}mm) is fully supported by the A711 expanding silicone lugs.
               </p>
             </div>
@@ -152,7 +152,7 @@ export default function ConsoleCaliper({ onSelectVehicle }: ConsoleCaliperProps)
             <button
               type="button"
               onClick={handleOrder}
-              className="bg-black text-white hover:bg-neutral-800 transition-all px-7 py-3.5 rounded-full text-xs font-mono font-bold tracking-[0.18em] uppercase flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer shadow-md hover:scale-[1.03] active:scale-[0.97]"
+              className="bg-white text-black hover:bg-white/90 transition-all px-7 py-3.5 rounded-full text-xs font-mono font-bold tracking-[0.18em] uppercase flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer shadow-xl hover:scale-[1.03] active:scale-[0.97]"
             >
               <span>ORDER A711</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -162,8 +162,8 @@ export default function ConsoleCaliper({ onSelectVehicle }: ConsoleCaliperProps)
         </div>
 
         {/* Right Column: Clean Vector Representation (5 Cols) */}
-        <div className="lg:col-span-5 border border-gray-200 bg-[#F9F9F9] p-6 flex flex-col items-center justify-center text-center space-y-4">
-          <div className="text-[9px] font-mono tracking-widest text-gray-500 uppercase font-semibold">
+        <div className="lg:col-span-5 border border-white/10 bg-[#111111] p-6 flex flex-col items-center justify-center text-center space-y-4">
+          <div className="text-[9px] font-mono tracking-widest text-white/50 uppercase font-semibold">
             CUP-WELL CONTACT PREVIEW
           </div>
 
@@ -175,7 +175,7 @@ export default function ConsoleCaliper({ onSelectVehicle }: ConsoleCaliperProps)
                 cy="100"
                 r={Math.min(90, 45 + ((diameter - 62) / 33) * 40)}
                 fill="none"
-                stroke="rgba(0,0,0,0.15)"
+                stroke="rgba(255,255,255,0.15)"
                 strokeWidth="2"
                 strokeDasharray="4,2"
                 className="transition-all duration-200"
@@ -194,26 +194,26 @@ export default function ConsoleCaliper({ onSelectVehicle }: ConsoleCaliperProps)
                       y1="100"
                       x2={x}
                       y2={y}
-                      stroke="rgba(0,0,0,0.3)"
+                      stroke="rgba(255,255,255,0.3)"
                       strokeWidth="2"
                     />
-                    <circle cx={x} cy={y} r="8" fill="#FFFFFF" stroke="#111111" strokeWidth="1.5" />
+                    <circle cx={x} cy={y} r="8" fill="#050505" stroke="#FFFFFF" strokeWidth="1.5" />
                   </g>
                 );
               })}
 
               {/* Center Core */}
-              <circle cx="100" cy="100" r="28" fill="#FFFFFF" stroke="#111111" strokeWidth="1.5" />
-              <circle cx="100" cy="100" r="4" fill="#111111" />
+              <circle cx="100" cy="100" r="28" fill="#050505" stroke="#FFFFFF" strokeWidth="1.5" />
+              <circle cx="100" cy="100" r="4" fill="#FFFFFF" />
             </svg>
 
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-lg font-mono text-[#111111] font-bold">{diameter} MM</span>
-              <span className="text-[8px] font-mono text-gray-500 uppercase tracking-widest">BORE WIDTH</span>
+              <span className="text-lg font-mono text-white font-bold">{diameter} MM</span>
+              <span className="text-[8px] font-mono text-white/50 uppercase tracking-widest">BORE WIDTH</span>
             </div>
           </div>
 
-          <div className="text-[10px] font-mono text-gray-600 tracking-wider uppercase">
+          <div className="text-[10px] font-mono text-white/60 tracking-wider uppercase">
             3 High-Tension Silicone Friction Grips
           </div>
         </div>

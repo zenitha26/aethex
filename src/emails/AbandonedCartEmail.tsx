@@ -133,7 +133,7 @@ export default function AbandonedCartEmail({
           <Section style={trustSection}>
             <div style={trustItem}>
               <Text style={trustTitle}>DIRECT BANK SETTLEMENT</Text>
-              <Text style={trustDesc}>Hatton National Bank instant CEFTS / LankaQR verification.</Text>
+              <Text style={trustDesc}>Instant direct bank transfer verification and dispatch.</Text>
             </div>
             <div style={trustItem}>
               <Text style={trustTitle}>INSURED ISLAND-WIDE TRANSIT</Text>

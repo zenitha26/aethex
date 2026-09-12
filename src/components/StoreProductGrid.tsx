@@ -85,30 +85,30 @@ export default function StoreProductGrid({
   };
 
   return (
-    <section id="products-grid" className="py-16 px-6 sm:px-10 lg:px-12 bg-[#F9F9F9] font-sans text-[#111111]">
+    <section id="products-grid" className="py-16 px-6 sm:px-10 lg:px-12 bg-[#050505] font-sans text-white border-b border-white/10">
       <div className="max-w-[1500px] mx-auto space-y-8">
         
-        {/* Section Header & Main Tabs matching thi.lk */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gray-200 pb-6">
+        {/* Section Header & Main Tabs */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-6">
           <div className="space-y-1">
-            <span className="text-[10px] font-mono tracking-[0.3em] text-gray-500 uppercase block font-semibold">
+            <span className="text-[10px] font-mono tracking-[0.3em] text-white/50 uppercase block font-semibold">
               OUR CATALOG // FAST DISPATCH
             </span>
-            <h2 className="text-3xl sm:text-4xl font-mono uppercase text-[#111111] font-light">
+            <h2 className="text-3xl sm:text-4xl font-mono uppercase text-white font-light">
               Our Products
             </h2>
           </div>
 
           {/* Filter Tabs */}
-          <div className="flex flex-wrap items-center gap-2 border border-gray-300 p-1 bg-white font-mono text-xs shadow-xs">
+          <div className="flex flex-wrap items-center gap-2 border border-white/10 p-1 bg-[#0B0B0B] font-mono text-xs shadow-xs">
             {filterTabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id as any)}
                 className={`px-4 py-2 uppercase tracking-wider transition-all cursor-pointer ${
                   activeTab === tab.id
-                    ? "bg-black text-white font-bold shadow-xs"
-                    : "text-gray-600 hover:text-black"
+                    ? "bg-white text-black font-bold shadow-md"
+                    : "text-white/60 hover:text-white"
                 }`}
               >
                 {tab.label}
@@ -121,10 +121,10 @@ export default function StoreProductGrid({
         <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar font-mono text-xs">
           <button
             onClick={() => handleCategorySelect("All")}
-            className={`px-3 py-1.5 border whitespace-nowrap uppercase tracking-wider transition-all cursor-pointer shadow-xs ${
+            className={`px-3 py-1.5 border whitespace-nowrap uppercase tracking-wider transition-all cursor-pointer ${
               selectedCategory === "All" || selectedCategory === "All Products"
-                ? "bg-black text-white border-black font-bold"
-                : "bg-white text-gray-700 border-gray-300 hover:border-black hover:text-black"
+                ? "bg-white text-black border-white font-bold"
+                : "bg-[#0B0B0B] text-white/70 border-white/10 hover:border-white/40 hover:text-white"
             }`}
           >
             All Departments
@@ -135,10 +135,10 @@ export default function StoreProductGrid({
               <button
                 key={cat.id}
                 onClick={() => handleCategorySelect(cat.name)}
-                className={`px-3 py-1.5 border whitespace-nowrap uppercase tracking-wider transition-all cursor-pointer shadow-xs ${
+                className={`px-3 py-1.5 border whitespace-nowrap uppercase tracking-wider transition-all cursor-pointer ${
                   isSelected
-                    ? "bg-black text-white border-black font-bold"
-                    : "bg-white text-gray-700 border-gray-300 hover:border-black hover:text-black"
+                    ? "bg-white text-black border-white font-bold"
+                    : "bg-[#0B0B0B] text-white/70 border-white/10 hover:border-white/40 hover:text-white"
                 }`}
               >
                 {cat.name}
@@ -148,15 +148,15 @@ export default function StoreProductGrid({
         </div>
 
         {/* Control Strip: Active Filter Badge, Results Count & Sort Dropdown */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 border-y border-gray-200 text-xs font-mono text-gray-600">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 border-y border-white/10 text-xs font-mono text-white/60">
           <div className="flex items-center gap-3">
             <span>
-              Showing <span className="text-black font-bold">{filteredProducts.length}</span> of {products.length} Products
+              Showing <span className="text-white font-bold">{filteredProducts.length}</span> of {products.length} Products
             </span>
             {(selectedCategory !== "All" && selectedCategory !== "All Products" || searchQuery) && (
               <button
                 onClick={handleResetFilters}
-                className="flex items-center gap-1 text-black hover:underline uppercase text-[10px] ml-2 border border-gray-300 bg-white px-2 py-0.5 shadow-xs"
+                className="flex items-center gap-1 text-white hover:text-white/80 uppercase text-[10px] ml-2 border border-white/10 bg-white/5 px-2 py-0.5"
               >
                 <RotateCcw className="w-3 h-3" />
                 <span>Reset Filters</span>
@@ -165,11 +165,11 @@ export default function StoreProductGrid({
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Sort By:</span>
+            <span className="text-[10px] uppercase tracking-wider text-white/50 font-semibold">Sort By:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-white border border-gray-300 text-[#111111] text-xs font-mono py-1.5 px-3 outline-none cursor-pointer shadow-xs"
+              className="bg-[#0B0B0B] border border-white/10 text-white text-xs font-mono py-1.5 px-3 outline-none cursor-pointer"
             >
               <option value="featured">Featured / Newest</option>
               <option value="price-asc">Price: Low to High</option>
@@ -181,19 +181,19 @@ export default function StoreProductGrid({
 
         {/* Products Grid */}
         {filteredProducts.length === 0 ? (
-          <div className="py-20 text-center space-y-4 bg-white border border-gray-200 p-8 shadow-xs">
-            <div className="w-12 h-12 border border-gray-300 flex items-center justify-center mx-auto text-gray-400">
+          <div className="py-20 text-center space-y-4 bg-[#0B0B0B] border border-white/10 p-8">
+            <div className="w-12 h-12 border border-white/10 flex items-center justify-center mx-auto text-white/40">
               <Search className="w-5 h-5" />
             </div>
-            <h3 className="text-base font-mono uppercase text-[#111111] font-bold">
+            <h3 className="text-base font-mono uppercase text-white font-bold">
               No matching products found
             </h3>
-            <p className="text-xs font-mono text-gray-600 max-w-sm mx-auto">
+            <p className="text-xs font-mono text-white/60 max-w-sm mx-auto">
               We couldn't find any products matching your current query or category filter.
             </p>
             <button
               onClick={handleResetFilters}
-              className="bg-black text-white px-6 py-2.5 text-xs font-mono uppercase font-bold tracking-wider hover:bg-neutral-800 transition-colors shadow-sm cursor-pointer"
+              className="bg-white text-black px-6 py-2.5 text-xs font-mono uppercase font-bold tracking-wider hover:bg-white/90 transition-colors shadow-sm cursor-pointer"
             >
               View All Products
             </button>

@@ -28,11 +28,11 @@ export default function DeliveryChecker() {
   const current = DISTRICT_DATA[district] || { time: "2–3 BUSINESS DAYS", fee: "Rs. 350 (Free on 2+ Units)" };
 
   return (
-    <section className="py-12 px-6 sm:px-10 lg:px-12 bg-[#F9F9F9] border-b border-gray-200">
-      <div className="max-w-[1500px] mx-auto bg-white border border-gray-200 p-6 sm:p-10 space-y-6 font-sans text-[#111111] shadow-xs">
+    <section className="py-12 px-6 sm:px-10 lg:px-12 bg-[#050505] border-b border-white/10 text-white">
+      <div className="max-w-[1500px] mx-auto bg-[#0B0B0B] border border-white/10 p-6 sm:p-10 space-y-6 font-sans text-white shadow-2xl">
         
-        <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-gray-500 uppercase font-semibold">
-          <Truck className="w-3.5 h-3.5 text-black" />
+        <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.25em] text-white/50 uppercase font-semibold">
+          <Truck className="w-3.5 h-3.5 text-white" />
           <span>DELIVERY TIMEFRAME CHECKER</span>
         </div>
 
@@ -40,7 +40,7 @@ export default function DeliveryChecker() {
           
           {/* District Selector (6 Cols) */}
           <div className="md:col-span-6 space-y-2">
-            <label className="text-[10px] font-mono uppercase text-gray-500 tracking-wider block font-semibold">
+            <label className="text-[10px] font-mono uppercase text-white/50 tracking-wider block font-semibold">
               WHERE ARE WE SHIPPING?
             </label>
             <select
@@ -49,10 +49,10 @@ export default function DeliveryChecker() {
                 audioEngine.playDetent();
                 setDistrict(e.target.value);
               }}
-              className="w-full bg-[#F9F9F9] border border-gray-300 text-[#111111] p-3.5 text-xs font-mono outline-none focus:border-black cursor-pointer shadow-xs"
+              className="w-full bg-white/5 border border-white/10 text-white p-3.5 text-xs font-mono outline-none focus:border-white cursor-pointer"
             >
               {Object.keys(DISTRICT_DATA).map((d) => (
-                <option key={d} value={d} className="bg-white text-black">
+                <option key={d} value={d} className="bg-[#0B0B0B] text-white">
                   {d}
                 </option>
               ))}
@@ -60,33 +60,33 @@ export default function DeliveryChecker() {
           </div>
 
           {/* Expected Delivery Readout (6 Cols) */}
-          <div className="md:col-span-6 bg-[#F9F9F9] p-4 sm:p-5 border border-gray-200 space-y-1 shadow-xs">
-            <div className="text-[9px] font-mono tracking-widest text-gray-500 uppercase font-semibold">
+          <div className="md:col-span-6 bg-[#111111] p-4 sm:p-5 border border-white/10 space-y-1">
+            <div className="text-[9px] font-mono tracking-widest text-white/50 uppercase font-semibold">
               EXPECTED DOORSTEP ARRIVAL
             </div>
-            <div className="text-xl sm:text-2xl font-mono text-black font-bold tracking-wider">
+            <div className="text-xl sm:text-2xl font-mono text-white font-bold tracking-wider">
               {current.time}
             </div>
-            <div className="text-[10px] font-mono text-gray-600">
-              Standard Courier: {current.fee}
+            <div className="text-[10px] font-mono text-white/60">
+              Insured Courier: {current.fee}
             </div>
           </div>
 
         </div>
 
         {/* 3 Authentic Guarantees */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-gray-200 text-xs font-mono text-gray-700">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-white/10 text-xs font-mono text-white/70">
           <div className="flex items-center gap-2">
-            <span className="text-black font-bold">✓</span>
-            <span>CASH ON DELIVERY</span>
+            <span className="text-white font-bold">✓</span>
+            <span>DIRECT BANK CLEARANCE & COD</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-black font-bold">✓</span>
+            <span className="text-white font-bold">✓</span>
             <span>ISLANDWIDE DOORSTEP DISPATCH</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-black font-bold">✓</span>
-            <span>INSPECTION BEFORE PAYMENT</span>
+            <span className="text-white font-bold">✓</span>
+            <span>INSPECTION BEFORE ACCEPTANCE</span>
           </div>
         </div>
 

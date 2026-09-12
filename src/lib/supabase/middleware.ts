@@ -6,16 +6,25 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY)!,
-    {
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey =
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      return { supabaseResponse, user: null, supabase: null as any };
+    }
+
+    const supabase = createServerClient(supabaseUrl, supabaseKey, {
       cookies: {
         getAll() {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value));
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          );
           supabaseResponse = NextResponse.next({
             request,
           });
@@ -24,13 +33,28 @@ export async function updateSession(request: NextRequest) {
           );
         },
       },
+    });
+
+    // Check if auth tokens exist in cookies before making network call
+    const cookies = request.cookies.getAll();
+    const hasAuthToken = cookies.some(
+      (c) => c.name.includes("auth-token") || c.name.includes("sb-")
+    );
+
+    let user = null;
+    if (hasAuthToken) {
+      try {
+        const { data } = await supabase.auth.getUser();
+        user = data?.user ?? null;
+      } catch (authErr) {
+        console.warn("Supabase auth.getUser exception in middleware:", authErr);
+      }
     }
-  );
 
-  // refreshing the auth token
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  return { supabaseResponse, user, supabase };
+    return { supabaseResponse, user, supabase };
+  } catch (err) {
+    console.warn("Middleware updateSession safe fallback:", err);
+    return { supabaseResponse, user: null, supabase: null as any };
+  }
 }
+

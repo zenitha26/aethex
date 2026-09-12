@@ -1,7 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import Script from "next/script";
-import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import PageTransition from "../components/PageTransition";
 import AdminShortcut from "../components/AdminShortcut";
@@ -11,24 +10,77 @@ import FloatingWhatsApp from "../components/FloatingWhatsApp";
 import CartDrawer from "../components/CartDrawer";
 import MobileBottomBar from "../components/MobileBottomBar";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
-  display: "swap",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-space-grotesk",
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-});
+export const viewport: Viewport = {
+  themeColor: "#050505",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
-  title: "AETHEX | Precision Automotive Hardware & Cockpit Ergonomics",
-  description: "Engineered vehicle hardware. Drop 01: ASPOR A711 360° Adjustable Car Phone Holder. Direct bank transfer checkout & islandwide delivery across Sri Lanka.",
+  title: {
+    default: "AETHEX | Luxury Automotive Hardware & Tactical Cockpit Systems",
+    template: "%s | AETHEX STORE",
+  },
+  description: "Bespoke engineered vehicle hardware, Qi2 fast charging active docks, titanium EDC precision tools, and lossless acoustic studio audio. Islandwide insured delivery across Sri Lanka.",
+  keywords: [
+    "AETHEX",
+    "AETHEX STORE",
+    "ASPOR A711",
+    "Car phone mount Sri Lanka",
+    "automotive cockpit mount",
+    "Qi2 wireless car charger",
+    "titanium EDC screwdriver",
+    "lossless hi-fi earbuds",
+    "Sri Lanka tech store",
+    "luxury car accessories"
+  ],
+  authors: [{ name: "AETHEX Labs" }],
+  creator: "AETHEX STORE",
+  publisher: "AETHEX STORE",
   metadataBase: new URL("https://www.aethexstore.com"),
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/icon-192.png",
+  },
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "AETHEX | Luxury Automotive Hardware & Tactical Cockpit Systems",
+    description: "Bespoke engineered vehicle hardware, Qi2 fast charging active docks, titanium EDC precision tools, and lossless acoustic studio audio.",
+    url: "https://www.aethexstore.com",
+    siteName: "AETHEX STORE",
+    images: [
+      {
+        url: "/images/a711/cockpit_matte.jpg",
+        width: 1200,
+        height: 630,
+        alt: "AETHEX Luxury Automotive Hardware",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AETHEX | Luxury Automotive Hardware",
+    description: "Bespoke engineered vehicle hardware, Qi2 docks, and titanium tools.",
+    images: ["/images/a711/cockpit_matte.jpg"],
+    creator: "@aethexstore",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -41,15 +93,45 @@ export default function RootLayout({
   const tiktokPixelId = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID || "C1234567890";
 
   return (
-    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
-      <head>
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#050505" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <link rel="apple-touch-icon" href="/icon-192.png" />
-      </head>
+    <html lang="en">
       <body className="antialiased bg-[#050505] text-white min-h-screen relative overflow-x-hidden selection:bg-white selection:text-black font-sans">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://www.aethexstore.com/#organization",
+                  "name": "AETHEX STORE",
+                  "url": "https://www.aethexstore.com",
+                  "logo": "https://www.aethexstore.com/images/a711/cockpit_matte.jpg",
+                  "description": "Luxury automotive hardware and tactical cockpit systems in Sri Lanka.",
+                  "contactPoint": {
+                    "@type": "ContactPoint",
+                    "telephone": "+94770000000",
+                    "contactType": "customer service",
+                    "areaServed": "LK",
+                    "availableLanguage": ["English", "Sinhala"]
+                  }
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://www.aethexstore.com/#website",
+                  "url": "https://www.aethexstore.com",
+                  "name": "AETHEX STORE",
+                  "publisher": { "@id": "https://www.aethexstore.com/#organization" },
+                  "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": "https://www.aethexstore.com/?search={search_term_string}",
+                    "query-input": "required name=search_term_string"
+                  }
+                }
+              ]
+            })
+          }}
+        />
         <a href="#main-content" className="sr-only focus:not-sr-only">Skip to Content</a>
 
         <EditorialLoader />

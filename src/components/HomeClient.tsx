@@ -20,6 +20,7 @@ import DealsBanner from "./DealsBanner";
 import StoreProductGrid from "./StoreProductGrid";
 import ConsoleCaliper from "./ConsoleCaliper";
 import InstallationDemoPlayer from "./InstallationDemoPlayer";
+import ProductHotspots from "./ProductHotspots";
 import BundleOffers from "./BundleOffers";
 import DeliveryChecker from "./DeliveryChecker";
 import CustomerReviews from "./CustomerReviews";
@@ -100,7 +101,7 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
   };
 
   return (
-    <div className="bg-[#F9F9F9] text-[#111111] min-h-screen font-sans selection:bg-black selection:text-white relative overflow-x-hidden">
+    <div className="bg-[#050505] text-white min-h-screen font-sans selection:bg-white selection:text-black relative overflow-x-hidden">
       
       {/* 01 — FLOATING UNIFIED NAVIGATION HEADER */}
       <Navbar 
@@ -136,13 +137,13 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
       {/* 03 — TRUST & VALUE PROPOSITION BAR */}
       <ValueProps />
 
-      {/* 04 — "PERFECT FOR EVERY SPACE" CURATED DEPARTMENTS (matching thi.lk) */}
+      {/* 04 — "PERFECT FOR EVERY SPACE" CURATED DEPARTMENTS */}
       <CategoryGrid 
         onSelectCategory={handleSelectCategory}
         selectedCategory={selectedCategory}
       />
 
-      {/* 05 — FLASH DEALS / TOP DEALS COUNTDOWN BANNER (matching thi.lk) */}
+      {/* 05 — FLASH DEALS / TOP DEALS COUNTDOWN BANNER */}
       <div id="deals-section">
         <DealsBanner onShopDeals={handleScrollToGrid} />
       </div>
@@ -156,21 +157,21 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
       {/* ========================================================================= */}
       {/* 07 — HARDWARE SPOTLIGHT: ASPOR A711 360° ARTICULATING MOUNT */}
       {/* ========================================================================= */}
-      <section id="hardware-spotlight" className="py-24 px-6 sm:px-10 lg:px-12 border-t border-gray-200 bg-white text-[#111111]">
+      <section id="hardware-spotlight" className="py-24 px-6 sm:px-10 lg:px-12 border-t border-white/10 bg-[#050505] text-white">
         <div className="max-w-[1500px] mx-auto space-y-16">
           
-          <div className="space-y-2 border-b border-gray-200 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="space-y-2 border-b border-white/10 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <span className="text-[10px] font-mono tracking-[0.3em] text-gray-500 uppercase block font-semibold">
+              <span className="text-[10px] font-mono tracking-[0.3em] text-white/50 uppercase block font-semibold">
                 FLAGSHIP SPOTLIGHT // AUTOMOTIVE GEAR
               </span>
-              <h2 className="text-3xl sm:text-5xl font-light uppercase tracking-tight text-[#111111] mt-1 font-mono">
+              <h2 className="text-3xl sm:text-5xl font-light uppercase tracking-tight text-white mt-1 font-mono">
                 ASPOR A711 Console Mount
               </h2>
             </div>
             <div className="text-right">
-              <span className="text-2xl font-mono font-bold text-black block">Rs. 2,990 LKR</span>
-              <span className="text-xs font-mono text-gray-600">Islandwide Cash on Delivery</span>
+              <span className="text-2xl font-mono font-bold text-white block">Rs. 2,990 LKR</span>
+              <span className="text-xs font-mono text-white/60">Islandwide Insured Delivery</span>
             </div>
           </div>
 
@@ -178,7 +179,7 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
             
             {/* Left: Phase Selector (5 Cols) */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="text-[10px] font-mono tracking-[0.25em] text-gray-500 uppercase font-semibold">
+              <div className="text-[10px] font-mono tracking-[0.25em] text-white/50 uppercase font-semibold">
                 MECHANICAL SPECIFICATIONS
               </div>
 
@@ -192,20 +193,20 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
                         audioEngine.playSelect();
                         setActiveMechPhase(index);
                       }}
-                      className={`p-6 border transition-all cursor-pointer shadow-xs ${
+                      className={`p-6 border transition-all cursor-pointer ${
                         isActive
-                          ? "bg-black border-black text-white shadow-md"
-                          : "bg-[#F9F9F9] border-gray-200 text-gray-700 hover:border-black hover:bg-white"
+                          ? "bg-white border-white text-black shadow-lg"
+                          : "bg-[#0B0B0B] border-white/10 text-white/80 hover:border-white/30 hover:bg-[#111111]"
                       }`}
                     >
                       <div className="flex items-center justify-between font-mono text-xs mb-2">
-                        <span className={`tracking-widest ${isActive ? "text-gray-300" : "text-gray-500"}`}>{phase.tag}</span>
-                        <span className={`font-bold ${isActive ? "text-white" : "text-black"}`}>{phase.spec}</span>
+                        <span className={`tracking-widest ${isActive ? "text-black/60" : "text-white/50"}`}>{phase.tag}</span>
+                        <span className={`font-bold ${isActive ? "text-black" : "text-white"}`}>{phase.spec}</span>
                       </div>
-                      <h3 className={`text-base font-medium uppercase mb-1 ${isActive ? "text-white" : "text-[#111111]"}`}>
+                      <h3 className={`text-base font-medium uppercase mb-1 ${isActive ? "text-black" : "text-white"}`}>
                         {phase.title}
                       </h3>
-                      <p className={`text-xs font-mono leading-relaxed font-light ${isActive ? "text-gray-300" : "text-gray-600"}`}>
+                      <p className={`text-xs font-mono leading-relaxed font-light ${isActive ? "text-black/70" : "text-white/60"}`}>
                         {phase.desc}
                       </p>
                     </div>
@@ -216,7 +217,7 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
               <div className="pt-4">
                 <button
                   onClick={() => handleOpenOrder("Universal", 1)}
-                  className="w-full bg-black text-white hover:bg-neutral-800 transition-all py-4 text-xs font-mono font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                  className="w-full bg-white text-black hover:bg-white/90 transition-all py-4 text-xs font-mono font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 cursor-pointer shadow-xl"
                 >
                   <span>ORDER ASPOR A711 (RS. 2,990)</span>
                   <ArrowRight className="w-4 h-4" />
@@ -226,7 +227,7 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
 
             {/* Right: Interactive Hardware Visual (7 Cols) */}
             <div className="lg:col-span-7">
-              <div className="relative aspect-[4/3] sm:aspect-[16/10] bg-[#F9F9F9] border border-gray-200 overflow-hidden shadow-lg">
+              <div className="relative aspect-[4/3] sm:aspect-[16/10] bg-[#0B0B0B] border border-white/10 overflow-hidden shadow-2xl group">
                 <Image
                   src={mechPhases[activeMechPhase].image}
                   alt={mechPhases[activeMechPhase].title}
@@ -235,7 +236,9 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
                   className="object-cover p-4 transition-all duration-700"
                 />
 
-                <div className="absolute top-4 right-4 bg-black text-white border border-black px-3 py-1.5 font-mono text-[10px] shadow-xs">
+                <ProductHotspots />
+
+                <div className="absolute top-4 right-4 bg-white text-black border border-white px-3 py-1.5 font-mono text-[10px] font-bold z-10">
                   SPEC: {mechPhases[activeMechPhase].spec}
                 </div>
               </div>

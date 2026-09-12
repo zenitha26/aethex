@@ -57,7 +57,7 @@ export default function OrderConfirmedEmail({
   subtotal = 2990,
   shippingFee = 350,
   totalAmount = 3340,
-  paymentMethod = "Direct Bank Transfer (CEFTS / LankaQR Verified)",
+  paymentMethod = "Direct Bank Transfer",
   shippingAddress = {
     name: "A. Perera",
     address: "No. 42 Alfred House Gardens",

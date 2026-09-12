@@ -53,49 +53,49 @@ export default function CategoryGrid({ onSelectCategory, selectedCategory }: Cat
   };
 
   return (
-    <section className="py-16 px-6 sm:px-10 lg:px-12 bg-white border-b border-gray-200 font-sans text-[#111111]">
+    <section className="py-16 px-6 sm:px-10 lg:px-12 bg-[#050505] border-b border-white/10 font-sans text-white">
       <div className="max-w-[1500px] mx-auto space-y-10">
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-gray-200 pb-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-6">
           <div className="space-y-1">
-            <span className="text-[10px] font-mono tracking-[0.3em] text-gray-500 uppercase block font-semibold">
+            <span className="text-[10px] font-mono tracking-[0.3em] text-white/50 uppercase block font-semibold">
               CURATED DEPARTMENTS
             </span>
-            <h2 className="text-3xl sm:text-4xl font-mono uppercase text-[#111111] font-light">
+            <h2 className="text-3xl sm:text-4xl font-mono uppercase text-white font-light">
               Perfect For Every Space
             </h2>
           </div>
-          <p className="text-xs font-mono text-gray-600 max-w-sm sm:text-right">
-            Explore industrial-grade tech, smart electronics, and premium automotive gear.
+          <p className="text-xs font-mono text-white/60 max-w-sm sm:text-right">
+            Explore automotive hardware, lossless acoustics, and precision engineering.
           </p>
         </div>
 
         {/* Category Cards Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {CATEGORIES.filter(c => c.name !== "All Products").map((cat) => {
             const isSelected = selectedCategory === cat.name;
             return (
               <button
                 key={cat.id}
                 onClick={() => handleCategoryClick(cat.name)}
-                className={`p-6 flex flex-col items-start justify-between min-h-[140px] border transition-all text-left group cursor-pointer shadow-xs ${
+                className={`p-6 flex flex-col items-start justify-between min-h-[140px] border transition-all text-left group cursor-pointer ${
                   isSelected
-                    ? "bg-black text-white border-black shadow-md"
-                    : "bg-[#F9F9F9] text-[#111111] border-gray-200 hover:border-black hover:bg-white"
+                    ? "bg-white text-black border-white shadow-xl"
+                    : "bg-[#0B0B0B] text-white border-white/10 hover:border-white/30 hover:bg-[#111111]"
                 }`}
               >
                 <div className="flex items-center justify-between w-full">
-                  <div className={`p-2.5 border ${isSelected ? "border-white/20 bg-white/10 text-white" : "border-gray-200 bg-white text-black group-hover:border-black"}`}>
+                  <div className={`p-2.5 border ${isSelected ? "border-black/20 bg-black/10 text-black" : "border-white/10 bg-white/5 text-white group-hover:border-white/30"}`}>
                     {getIcon(cat.name)}
                   </div>
-                  <ArrowRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${isSelected ? "text-white" : "text-gray-400 group-hover:text-black"}`} />
+                  <ArrowRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${isSelected ? "text-black" : "text-white/40 group-hover:text-white"}`} />
                 </div>
 
                 <div className="space-y-0.5 pt-4">
                   <h3 className="text-xs sm:text-sm font-mono uppercase font-bold tracking-wider leading-snug">
                     {cat.name}
                   </h3>
-                  <span className={`text-[10px] font-mono ${isSelected ? "text-white/70" : "text-gray-500"}`}>
+                  <span className={`text-[10px] font-mono ${isSelected ? "text-black/70" : "text-white/50"}`}>
                     {cat.count} {cat.count === 1 ? "Product" : "Products"} Available
                   </span>
                 </div>

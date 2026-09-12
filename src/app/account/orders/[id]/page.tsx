@@ -211,45 +211,59 @@ export default function OrderDetailPage() {
 
       let uploadedUrl = "";
 
-      // 1. Upload to Supabase Storage bucket 'payment_slips'
-      const { data: storageData, error: storageError } = await supabase.storage
-        .from("payment_slips")
-        .upload(filePath, selectedFile, {
-          cacheControl: "3600",
-          upsert: true,
+      // 1. Upload via reliable server API route
+      try {
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        formData.append("orderId", order.id);
+
+        const uploadRes = await fetch("/api/orders/upload-slip", {
+          method: "POST",
+          body: formData,
         });
 
-      if (storageError) {
-        console.warn("Storage upload warning (bucket may be restricted or missing):", storageError);
-        // Fallback: If bucket is missing or unconfigured, store data URL in local storage cache
-        if (filePreview) {
-          uploadedUrl = filePreview;
+        const uploadData = await uploadRes.json();
+        if (uploadData.success && uploadData.slipUrl) {
+          uploadedUrl = uploadData.slipUrl;
         } else {
-          uploadedUrl = filePath;
+          throw new Error(uploadData.error || "Upload failed");
         }
-      } else {
-        // Get public URL
-        const { data: publicUrlData } = supabase.storage
+      } catch (uploadErr) {
+        console.warn("Direct upload endpoint notice, trying direct storage client fallback:", uploadErr);
+        
+        // Client storage fallback
+        const fileExt = selectedFile.name.split(".").pop() || "jpg";
+        const cleanOrderId = order.id.replace(/[^a-zA-Z0-9_-]/g, "");
+        const fileName = `${cleanOrderId}_${Date.now()}.${fileExt}`;
+        const filePath = `slips/${fileName}`;
+
+        const { error: storageError } = await supabase.storage
           .from("payment_slips")
-          .getPublicUrl(filePath);
+          .upload(filePath, selectedFile, {
+            cacheControl: "3600",
+            upsert: true,
+          });
 
-        uploadedUrl = publicUrlData?.publicUrl || filePath;
-      }
+        if (!storageError) {
+          const { data: publicUrlData } = supabase.storage
+            .from("payment_slips")
+            .getPublicUrl(filePath);
+          uploadedUrl = publicUrlData?.publicUrl || filePath;
+        } else {
+          uploadedUrl = filePreview || filePath;
+        }
 
-      // 2. Update orders table in Supabase
-      const { error: updateError } = await supabase
-        .from("orders")
-        .update({
-          slip_url: uploadedUrl,
-          order_status: "processing_verification",
-          status: "processing_verification",
-          payment_status: "processing_verification",
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", order.id);
-
-      if (updateError) {
-        console.warn("Database order status update warning:", updateError);
+        // Update orders table in Supabase
+        await supabase
+          .from("orders")
+          .update({
+            slip_url: uploadedUrl,
+            order_status: "processing_verification",
+            status: "processing_verification",
+            payment_status: "processing_verification",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", order.id);
       }
 
       // 3. Update localStorage fallback
@@ -284,6 +298,9 @@ export default function OrderDetailPage() {
       );
 
       setSelectedFile(null);
+      showNotification("Bank transfer slip uploaded successfully! Verification in progress.", "success");
+      try { audioEngine.playSuccess(); } catch {}
+
       // 5. Trigger AI Vision Slip OCR & Auto-Reconciliation pipeline
       setIsVerifyingOcr(true);
       (async () => {
@@ -706,7 +723,7 @@ export default function OrderDetailPage() {
                         Bank Transfer Instructions
                       </h2>
                       <p className="text-[11px] font-mono text-white/50">
-                        Transfer via Online Banking, CEFTS, or LankaQR to our official corporate account.
+                        Transfer via Direct Bank Transfer to our official corporate account.
                       </p>
                     </div>
                   </div>

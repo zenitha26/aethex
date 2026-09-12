@@ -10,7 +10,7 @@ export const supabase = supabaseUrl && supabaseAnonKey
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
 
-export const supabaseAdmin = isServer && supabaseUrl && supabaseServiceRoleKey
+export const supabaseAdmin = isServer && supabaseUrl && supabaseServiceRoleKey && !supabaseServiceRoleKey.includes("placeholder")
   ? createClient(supabaseUrl, supabaseServiceRoleKey, {
       auth: {
         persistSession: false,

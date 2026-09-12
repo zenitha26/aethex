@@ -48,6 +48,16 @@ export default function GoogleLoginButton({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const supabase = createClient();
 
+  const [isWebview, setIsWebview] = useState(false);
+
+  React.useEffect(() => {
+    if (typeof navigator !== "undefined") {
+      const ua = navigator.userAgent || "";
+      const inApp = /FBAN|FBAV|Instagram|WhatsApp|Line|Twitter|MicroMessenger/i.test(ua);
+      setIsWebview(inApp);
+    }
+  }, []);
+
   const handleGoogleLogin = async () => {
     if (loading) return;
     setLoading(true);
@@ -67,17 +77,26 @@ export default function GoogleLoginButton({
         throw envErr;
       }
 
-      // 2. Formulate redirect destination
-      const destination = redirectTo || `${window.location.origin}/auth/callback`;
+      // 2. Formulate canonical redirect destination
+      const origin = typeof window !== "undefined" ? window.location.origin : "https://www.aethexstore.com";
+      const destination = redirectTo || `${origin}/auth/callback`;
 
-      // 3. Initiate OAuth with Google
-      const { error } = await supabase.auth.signInWithOAuth({
+      // 3. Check for in-app browser restrictions (Google blocks webviews)
+      if (isWebview) {
+        setErrorMessage("Google sign-in is restricted inside in-app browsers (WhatsApp/Instagram). Please tap the menu button (•••) and select 'Open in Safari' or 'Open in Chrome', or proceed with Guest Checkout.");
+        setLoading(false);
+        return;
+      }
+
+      // 4. Initiate OAuth with Google
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
           redirectTo: destination,
+          skipBrowserRedirect: false,
           queryParams: {
             access_type: "offline",
-            prompt: "consent",
+            prompt: "select_account",
           },
         },
       });
@@ -86,15 +105,21 @@ export default function GoogleLoginButton({
         throw error;
       }
 
+      // 5. Force unconditional browser redirect for mobile browsers
+      if (data?.url) {
+        window.location.href = data.url;
+        return;
+      }
+
       if (onSuccess) {
         onSuccess();
       }
     } catch (err: any) {
       setLoading(false);
-      const friendlyMessage = err?.message || "Google sign-in could not be initiated.";
+      const friendlyMessage = err?.message || "Google sign-in could not be initiated on this device.";
       setErrorMessage(friendlyMessage);
 
-      // 4. Forceful Terminal/Console Logging with exact raw message, code, and stack trace
+      // 6. Forceful Terminal/Console Logging with exact raw message, code, and stack trace
       console.error("\n========================================================");
       console.error("🔴 [GOOGLE AUTH CLIENT ERROR] signInWithOAuth failed:");
       console.error("• Raw Error:", err);

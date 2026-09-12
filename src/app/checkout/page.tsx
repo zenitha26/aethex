@@ -463,17 +463,17 @@ export default function CheckoutPage() {
                 <div className="flex items-center gap-2 pb-3 border-b border-white/5">
                   <Landmark className="w-4 h-4 text-white/70" />
                   <h2 className="text-sm font-mono uppercase tracking-[0.2em] font-semibold text-white">
-                    02. Payment Settlement: Bank Transfer
+                    02. Payment Settlement: Direct Bank Transfer
                   </h2>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 font-mono">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-white/60">Official Settlement:</span>
-                    <span className="text-white font-bold uppercase tracking-wider">HNB Direct Transfer / CEFTS / LankaQR</span>
+                    <span className="text-white font-bold uppercase tracking-wider">Direct Bank Transfer</span>
                   </div>
                   <p className="text-xs text-white/60 leading-relaxed font-light">
-                    Zero credit card surcharges. After submitting this form, you will immediately receive your official order reference to upload your bank deposit slip for rapid clearance.
+                    Zero credit card surcharges. After submitting your order, you will immediately be provided with our direct bank account details and official reference to upload your payment transfer slip.
                   </p>
                 </div>
               </div>

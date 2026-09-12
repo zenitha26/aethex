@@ -52,10 +52,18 @@ export async function POST(request: Request) {
 
     if (anthropicKey) {
       try {
-        const imageRes = await fetch(slipUrl);
-        const imageArrayBuffer = await imageRes.arrayBuffer();
-        const base64Image = Buffer.from(imageArrayBuffer).toString("base64");
-        const contentType = imageRes.headers.get("content-type") || "image/jpeg";
+        let base64Image = "";
+        let contentType = "image/jpeg";
+        if (slipUrl.startsWith("data:")) {
+          const parts = slipUrl.split(";base64,");
+          contentType = parts[0].replace("data:", "") || "image/jpeg";
+          base64Image = parts[1] || "";
+        } else {
+          const imageRes = await fetch(slipUrl);
+          const imageArrayBuffer = await imageRes.arrayBuffer();
+          base64Image = Buffer.from(imageArrayBuffer).toString("base64");
+          contentType = imageRes.headers.get("content-type") || "image/jpeg";
+        }
 
         const aiResponse = await fetch("https://api.anthropic.com/v1/messages", {
           method: "POST",

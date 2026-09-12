@@ -70,18 +70,18 @@ export default function InstallationDemoPlayer({ onOpenOrder }: InstallationDemo
   };
 
   return (
-    <div className="bg-white border border-gray-200 p-6 sm:p-10 lg:p-12 space-y-8 font-sans shadow-sm">
+    <div className="bg-[#0B0B0B] border border-white/10 p-6 sm:p-10 lg:p-12 space-y-8 font-sans shadow-2xl text-white">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gray-200 pb-6">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-6">
         <div className="space-y-2">
-          <div className="text-[10px] font-mono tracking-[0.25em] text-gray-500 uppercase font-semibold">
+          <div className="text-[10px] font-mono tracking-[0.25em] text-white/50 uppercase font-semibold">
             FIELD TEST / 001
           </div>
-          <h3 className="text-2xl sm:text-4xl font-light uppercase text-[#111111] tracking-tight">
+          <h3 className="text-2xl sm:text-4xl font-light uppercase text-white tracking-tight font-mono">
             Road Test & Installation.
           </h3>
-          <p className="text-gray-600 text-xs sm:text-sm font-light max-w-xl leading-relaxed">
+          <p className="text-white/60 text-xs sm:text-sm font-light max-w-xl leading-relaxed">
             From unboxing to a rock-solid cockpit navigation station in under 30 seconds.
           </p>
         </div>
@@ -94,7 +94,7 @@ export default function InstallationDemoPlayer({ onOpenOrder }: InstallationDemo
               audioEngine.playClick();
               setIsPlaying(!isPlaying);
             }}
-            className="flex items-center gap-2 border border-gray-300 hover:border-black px-4 py-2 text-[10px] font-mono tracking-widest uppercase text-black cursor-pointer bg-white transition-all"
+            className="flex items-center gap-2 border border-white/10 hover:border-white px-4 py-2 text-[10px] font-mono tracking-widest uppercase text-white cursor-pointer bg-white/5 transition-all"
           >
             {isPlaying ? (
               <>
@@ -115,7 +115,7 @@ export default function InstallationDemoPlayer({ onOpenOrder }: InstallationDemo
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         
         {/* Left: Authentic Photography (7 Cols) */}
-        <div className="lg:col-span-7 relative aspect-[16/10] bg-[#F9F9F9] border border-gray-200 overflow-hidden">
+        <div className="lg:col-span-7 relative aspect-[16/10] bg-[#080808] border border-white/10 overflow-hidden shadow-2xl">
           <Image
             src={steps[activeStep].image}
             alt={steps[activeStep].title}
@@ -124,11 +124,11 @@ export default function InstallationDemoPlayer({ onOpenOrder }: InstallationDemo
             className="object-cover object-center transition-all duration-500"
           />
 
-          <div className="absolute top-4 left-4 bg-white/95 border border-gray-200 px-3 py-1 text-[9px] font-mono tracking-widest text-[#111111] uppercase font-semibold shadow-xs">
+          <div className="absolute top-4 left-4 bg-black/90 border border-white/20 px-3 py-1 text-[9px] font-mono tracking-widest text-white uppercase font-semibold backdrop-blur-md">
             PHASE {steps[activeStep].num} // {steps[activeStep].label}
           </div>
 
-          <div className="absolute bottom-4 right-4 bg-white/95 border border-gray-200 px-3 py-1 text-[9px] font-mono tracking-widest text-gray-600 font-semibold shadow-xs">
+          <div className="absolute bottom-4 right-4 bg-black/90 border border-white/20 px-3 py-1 text-[9px] font-mono tracking-widest text-white/70 font-semibold backdrop-blur-md">
             {steps[activeStep].time}
           </div>
         </div>
@@ -147,24 +147,24 @@ export default function InstallationDemoPlayer({ onOpenOrder }: InstallationDemo
                   onClick={() => handleSelectStep(idx)}
                   className={`w-full text-left p-4 border transition-all cursor-pointer ${
                     isActive
-                      ? "bg-white border-black text-[#111111] shadow-sm"
-                      : "bg-[#F9F9F9] border-gray-200 text-gray-600 hover:border-black hover:text-black"
+                      ? "bg-white/10 border-white text-white shadow-md"
+                      : "bg-white/5 border-white/10 text-white/70 hover:border-white/40 hover:text-white"
                   }`}
                 >
                   <div className="flex items-center justify-between text-xs font-mono">
                     <span className="font-semibold tracking-wider">{step.num} — {step.label}</span>
-                    <span className="text-[10px] text-gray-500">{step.time}</span>
+                    <span className="text-[10px] text-white/50">{step.time}</span>
                   </div>
 
                   {isActive && (
                     <div className="mt-2 space-y-2">
-                      <p className="text-xs text-gray-600 font-light leading-relaxed">
+                      <p className="text-xs text-white/70 font-light leading-relaxed">
                         {step.desc}
                       </p>
                       {/* Step Progress Line */}
-                      <div className="w-full h-0.5 bg-gray-200 overflow-hidden mt-2">
+                      <div className="w-full h-0.5 bg-white/10 overflow-hidden mt-2">
                         <div
-                          className="h-full bg-black transition-all duration-150"
+                          className="h-full bg-white transition-all duration-150"
                           style={{ width: `${progress}%` }}
                         />
                       </div>
@@ -183,7 +183,7 @@ export default function InstallationDemoPlayer({ onOpenOrder }: InstallationDemo
                 audioEngine.playAcquire();
                 if (onOpenOrder) onOpenOrder();
               }}
-              className="w-full bg-black text-white hover:bg-neutral-800 transition-all py-3.5 text-xs font-mono font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+              className="w-full bg-white text-black hover:bg-white/90 transition-all py-3.5 text-xs font-mono font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 cursor-pointer shadow-xl"
             >
               <span>ORDER ASPOR A711 (RS. 2,990)</span>
               <ArrowRight className="w-4 h-4" />

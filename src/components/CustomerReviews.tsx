@@ -107,19 +107,19 @@ export default function CustomerReviews() {
   };
 
   return (
-    <section className="py-20 px-6 sm:px-10 lg:px-12 bg-white border-b border-gray-200 font-sans text-[#111111]" id="field-logs">
+    <section className="py-20 px-6 sm:px-10 lg:px-12 bg-[#050505] border-b border-white/10 font-sans text-white" id="field-logs">
       <div className="max-w-[1500px] mx-auto space-y-12">
         
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-gray-200 pb-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-white/10 pb-6">
           <div className="space-y-2">
-            <span className="text-[10px] font-mono tracking-[0.25em] text-gray-500 uppercase block font-semibold">
+            <span className="text-[10px] font-mono tracking-[0.25em] text-white/50 uppercase block font-semibold">
               FIELD LOGS // VERIFIED REVIEWS
             </span>
-            <h3 className="text-2xl sm:text-4xl font-light uppercase text-[#111111] tracking-tight font-mono">
+            <h3 className="text-2xl sm:text-4xl font-light uppercase text-white tracking-tight font-mono">
               Real Cars. Real Drivers. Real Results.
             </h3>
-            <p className="text-gray-600 text-xs sm:text-sm font-light max-w-xl leading-relaxed">
+            <p className="text-white/60 text-xs sm:text-sm font-light max-w-xl leading-relaxed">
               Verified driver feedback from daily commutes and highway routes across Sri Lanka.
             </p>
           </div>
@@ -130,9 +130,9 @@ export default function CustomerReviews() {
               audioEngine.playClick();
               setIsSubmitOpen(true);
             }}
-            className="border border-gray-300 hover:border-black text-[#111111] px-5 py-2.5 text-xs font-mono tracking-wider uppercase transition-all flex items-center gap-2 cursor-pointer bg-white shadow-xs"
+            className="border border-white/10 hover:border-white text-white px-5 py-2.5 text-xs font-mono tracking-wider uppercase transition-all flex items-center gap-2 cursor-pointer bg-white/5 shadow-xs"
           >
-            <MessageSquarePlus className="w-3.5 h-3.5 text-black" />
+            <MessageSquarePlus className="w-3.5 h-3.5 text-white" />
             <span>SUBMIT FIELD LOG</span>
           </button>
         </div>
@@ -142,25 +142,25 @@ export default function CustomerReviews() {
           {logs.map((log) => (
             <div
               key={log.id}
-              className="bg-[#F9F9F9] border border-gray-200 p-6 flex flex-col justify-between space-y-4 shadow-xs"
+              className="bg-[#0B0B0B] border border-white/10 p-6 flex flex-col justify-between space-y-4 shadow-xl text-white"
             >
               <div className="space-y-3">
-                <div className="flex items-center justify-between text-[10px] font-mono text-gray-500 tracking-wider border-b border-gray-200 pb-2">
-                  <span className="text-black font-bold">{log.vehicle}</span>
-                  <div className="flex text-black gap-0.5">
+                <div className="flex items-center justify-between text-[10px] font-mono text-white/50 tracking-wider border-b border-white/10 pb-2">
+                  <span className="text-white font-bold">{log.vehicle}</span>
+                  <div className="flex text-white gap-0.5">
                     {[...Array(log.rating)].map((_, i) => (
-                      <Star key={i} className="w-2.5 h-2.5 fill-black text-black" />
+                      <Star key={i} className="w-2.5 h-2.5 fill-white text-white" />
                     ))}
                   </div>
                 </div>
 
-                <p className="text-xs text-gray-700 font-light leading-relaxed italic">
+                <p className="text-xs text-white/80 font-light leading-relaxed italic">
                   "{log.quote}"
                 </p>
               </div>
 
-              <div className="border-t border-gray-200 pt-3 text-[9px] font-mono text-gray-500 space-y-0.5">
-                <div className="text-black font-semibold">{log.author}</div>
+              <div className="border-t border-white/10 pt-3 text-[9px] font-mono text-white/50 space-y-0.5">
+                <div className="text-white font-semibold">{log.author}</div>
                 <div>{log.location}</div>
               </div>
             </div>
@@ -169,14 +169,14 @@ export default function CustomerReviews() {
 
         {/* Submit Field Log Modal */}
         {isSubmitOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-            <div className="w-full max-w-md bg-white border border-gray-200 p-6 space-y-4 text-[#111111] font-sans relative shadow-2xl">
-              <div className="flex items-center justify-between border-b border-gray-200 pb-3">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <div className="w-full max-w-md bg-[#0B0B0B] border border-white/10 p-6 space-y-4 text-white font-sans relative shadow-2xl">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <h4 className="text-sm font-mono uppercase tracking-wider font-bold">Submit Driver Field Log</h4>
                 <button
                   type="button"
                   onClick={() => setIsSubmitOpen(false)}
-                  className="text-gray-400 hover:text-black"
+                  className="text-white/40 hover:text-white"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -184,14 +184,14 @@ export default function CustomerReviews() {
 
               {submitted ? (
                 <div className="py-8 text-center space-y-2">
-                  <Check className="w-8 h-8 mx-auto text-black" />
+                  <Check className="w-8 h-8 mx-auto text-white" />
                   <div className="text-xs font-mono uppercase font-bold">Log Recorded</div>
-                  <p className="text-[11px] text-gray-500">Thank you for contributing to driver road test logs.</p>
+                  <p className="text-[11px] text-white/50">Thank you for contributing to driver road test logs.</p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-3 font-mono text-xs">
                   <div>
-                    <label className="block text-[10px] text-gray-500 uppercase mb-1 font-semibold">
+                    <label className="block text-[10px] text-white/50 uppercase mb-1 font-semibold">
                       Vehicle Model
                     </label>
                     <input
@@ -200,12 +200,12 @@ export default function CustomerReviews() {
                       placeholder="e.g. Honda Vezel, Toyota Aqua..."
                       value={formVehicle}
                       onChange={(e) => setFormVehicle(e.target.value)}
-                      className="w-full bg-[#F9F9F9] border border-gray-300 text-black px-3 py-2 text-xs outline-none focus:border-black"
+                      className="w-full bg-white/5 border border-white/10 text-white px-3 py-2 text-xs outline-none focus:border-white placeholder:text-white/30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] text-gray-500 uppercase mb-1 font-semibold">
+                    <label className="block text-[10px] text-white/50 uppercase mb-1 font-semibold">
                       Your Name / Handle (Optional)
                     </label>
                     <input
@@ -213,12 +213,12 @@ export default function CustomerReviews() {
                       placeholder="e.g. Ruwan P."
                       value={formAuthor}
                       onChange={(e) => setFormAuthor(e.target.value)}
-                      className="w-full bg-[#F9F9F9] border border-gray-300 text-black px-3 py-2 text-xs outline-none focus:border-black"
+                      className="w-full bg-white/5 border border-white/10 text-white px-3 py-2 text-xs outline-none focus:border-white placeholder:text-white/30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] text-gray-500 uppercase mb-1 font-semibold">
+                    <label className="block text-[10px] text-white/50 uppercase mb-1 font-semibold">
                       Your Road Feedback / Review
                     </label>
                     <textarea
@@ -227,13 +227,13 @@ export default function CustomerReviews() {
                       placeholder="Share your driving experience with the mount..."
                       value={formQuote}
                       onChange={(e) => setFormQuote(e.target.value)}
-                      className="w-full bg-[#F9F9F9] border border-gray-300 text-black px-3 py-2 text-xs outline-none focus:border-black"
+                      className="w-full bg-white/5 border border-white/10 text-white px-3 py-2 text-xs outline-none focus:border-white placeholder:text-white/30 resize-none"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full bg-black text-white hover:bg-neutral-800 py-3 text-xs font-bold uppercase tracking-wider transition-all shadow-sm cursor-pointer"
+                    className="w-full bg-white text-black hover:bg-white/90 py-3 text-xs font-bold uppercase tracking-wider transition-all shadow-xl cursor-pointer"
                   >
                     Submit Verified Review
                   </button>

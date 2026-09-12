@@ -1,39 +1,155 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!-- Core Storefront Pages -->
   <url>
-    <loc>https://aethex.store</loc>
-    <lastmod>2026-06-27</lastmod>
+    <loc>https://www.aethexstore.com</loc>
+    <lastmod>2026-09-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://www.aethexstore.com/images/a711/cockpit_matte.jpg</image:loc>
+      <image:title>AETHEX Luxury Automotive Hardware Storefront</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://aethex.store/products</loc>
-    <lastmod>2026-06-27</lastmod>
-    <changefreq>daily</changefreq>
+    <loc>https://www.aethexstore.com/checkout</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aethex.store/about-us</loc>
-    <lastmod>2026-06-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://aethex.store/contact</loc>
-    <lastmod>2026-06-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://aethex.store/policies</loc>
-    <lastmod>2026-06-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://aethex.store/track-order</loc>
-    <lastmod>2026-06-27</lastmod>
+    <loc>https://www.aethexstore.com/track-order</loc>
+    <lastmod>2026-09-13</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.4</priority>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Legal & Customer Care Policies -->
+  <url>
+    <loc>https://www.aethexstore.com/privacy-policy</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.aethexstore.com/terms-and-conditions</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.aethexstore.com/shipping-policy</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.aethexstore.com/refund-policy</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- 10 Master Hardware Catalog Products -->
+  <url>
+    <loc>https://www.aethexstore.com/product/aspor-a711</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://www.aethexstore.com/images/a711/cockpit_matte.jpg</image:loc>
+      <image:title>ASPOR A711 360° Adjustable Car Phone Holder</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.aethexstore.com/product/aethex-magdrive</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://www.aethexstore.com/images/products/magdrive-mount.jpg</image:loc>
+      <image:title>AETHEX MagDrive Pro Active Qi2 Mount</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.aethexstore.com/product/aethex-cockpit-hud</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://www.aethexstore.com/images/products/cockpit-hud.jpg</image:loc>
+      <image:title>AETHEX Cockpit HUD Telemetry Display</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.aethexstore.com/product/aethex-ep10</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://www.aethexstore.com/images/ep10/overview-1.jpg</image:loc>
+      <image:title>AETHEX EP10 Lossless Hi-Fi ANC Wireless Earbuds</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.aethexstore.com/product/aethex-apex-soundbar</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://www.aethexstore.com/images/products/soundbar.jpg</image:loc>
+      <image:title>AETHEX Apex Studio Soundbar 160W</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.aethexstore.com/product/ldnio-2500w-power-strip</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://www.aethexstore.com/images/products/power-station.jpg</image:loc>
+      <image:title>LDNIO SC3412 2500W Desktop Power Station</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.aethexstore.com/product/aspor-20000-powerbank</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://www.aethexstore.com/images/products/powerbank.jpg</image:loc>
+      <image:title>ASPOR A396PD 20,000mAh Ultra-Slim Power Bank</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.aethexstore.com/product/ldnio-65w-datacable</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://www.aethexstore.com/images/products/braided-cable.jpg</image:loc>
+      <image:title>LDNIO 65W High-Density Braided Fast Charging Cable</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.aethexstore.com/product/aethex-titanium-driver</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://www.aethexstore.com/images/products/titanium-driver.jpg</image:loc>
+      <image:title>AETHEX EDC Titanium Precision Driver Kit 48-in-1</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.aethexstore.com/product/r8-g103-mouse</loc>
+    <lastmod>2026-09-13</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://www.aethexstore.com/images/products/mouse.jpg</image:loc>
+      <image:title>R8 G103 Ergonomic Precision Optical Mouse</image:title>
+    </image:image>
   </url>
 </urlset>

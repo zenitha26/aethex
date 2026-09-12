@@ -1,5 +1,7 @@
 User-Agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /api/
 
-Sitemap: https://aethex.store/sitemap.xml
+Sitemap: https://www.aethexstore.com/sitemap.xml
+
