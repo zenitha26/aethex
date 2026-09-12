@@ -1,4 +1,10 @@
 name = "aethex-store"
-compatibility_date = "2024-05-02"
+compatibility_date = "2024-09-23"
 compatibility_flags = [ "nodejs_compat" ]
 pages_build_output_dir = ".vercel/output/static"
+
+[vars]
+NEXT_PUBLIC_SUPABASE_URL = "https://hprjdgowiisjtxzdsuqq.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY = "sb_publishable_FFRALAdy0ikr90fijh-NfQ_VUxB9R1j"
+NEXT_PUBLIC_TURNSTILE_SITE_KEY = "2x00000000000000000000AB"
+NEXT_PUBLIC_STORE_URL = "https://www.aethexstore.com"
