@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { Loader2, AlertCircle, Search } from "lucide-react";
 import { createClient } from "../../../lib/supabase/client";
 
+export const runtime = 'edge';
+
 export default function AdminCustomersPage() {
   const [customers, setCustomers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

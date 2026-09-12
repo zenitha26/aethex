@@ -27,6 +27,8 @@ import {
 } from "@/lib/loyalty/rewards";
 import { audioEngine } from "@/lib/audio";
 
+export const runtime = 'edge';
+
 interface OrderSummary {
   id: string;
   total: number;

@@ -26,6 +26,8 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { audioEngine } from "@/lib/audio";
 
+export const runtime = 'edge';
+
 interface OrderItem {
   id?: string;
   product_name: string;

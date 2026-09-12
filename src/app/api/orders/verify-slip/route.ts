@@ -5,6 +5,8 @@ import { taintServerSecrets } from "@/lib/security/taint";
 // Ensure server secrets are tainted
 taintServerSecrets();
 
+export const runtime = 'edge';
+
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();

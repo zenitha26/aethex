@@ -19,6 +19,8 @@ import {
 import ProductFormModal from "@/components/admin/ProductFormModal";
 import { audioEngine } from "@/lib/audio";
 
+export const runtime = 'edge';
+
 interface Product {
   id: string;
   title: string;

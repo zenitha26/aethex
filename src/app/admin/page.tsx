@@ -28,6 +28,8 @@ import {
 } from "recharts";
 import { createClient } from "@/lib/supabase/client";
 
+export const runtime = 'edge';
+
 interface OrderData {
   id: string;
   customer_name: string;

@@ -11,6 +11,8 @@ import {
 
 import { createClient } from "../../../lib/supabase/client";
 
+export const runtime = 'edge';
+
 export default function AdminAnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
