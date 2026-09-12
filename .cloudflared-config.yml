@@ -1,0 +1,7 @@
+tunnel: 09732e8e-6fe0-4c36-a92f-6145726c8b6d
+credentials-file: C:\Users\USER\.cloudflared\09732e8e-6fe0-4c36-a92f-6145726c8b6d.json
+
+ingress:
+  - hostname: aethexstore.com
+    service: http://127.0.0.1:3000
+  - service: http_status:404
