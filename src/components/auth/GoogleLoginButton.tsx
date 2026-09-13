@@ -48,16 +48,6 @@ export default function GoogleLoginButton({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const supabase = createClient();
 
-  const [isWebview, setIsWebview] = useState(false);
-
-  React.useEffect(() => {
-    if (typeof navigator !== "undefined") {
-      const ua = navigator.userAgent || "";
-      const inApp = /FBAN|FBAV|Instagram|WhatsApp|Line|Twitter|MicroMessenger/i.test(ua);
-      setIsWebview(inApp);
-    }
-  }, []);
-
   const handleGoogleLogin = async () => {
     if (loading) return;
     setLoading(true);
@@ -73,17 +63,26 @@ export default function GoogleLoginButton({
         if (!supabaseUrl) missing.push("NEXT_PUBLIC_SUPABASE_URL");
         if (!supabaseKey) missing.push("NEXT_PUBLIC_SUPABASE_ANON_KEY");
         const envErr = new Error(`Configuration Error: Missing required environment variable(s): ${missing.join(", ")}`);
-        (envErr as any).code = "MISSING_ENV_VARS";
+        (envErr as unknown as Record<string, unknown>).code = "MISSING_ENV_VARS";
         throw envErr;
       }
 
       // 2. Formulate canonical redirect destination
       const origin = typeof window !== "undefined" ? window.location.origin : "https://www.aethexstore.com";
-      const destination = redirectTo || `${origin}/auth/callback`;
+      let destination = `${origin}/auth/callback`;
+      if (redirectTo) {
+        if (redirectTo.startsWith("/")) {
+          destination = `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`;
+        } else {
+          destination = redirectTo;
+        }
+      }
 
       // 3. Check for in-app browser restrictions (Google blocks webviews)
+      const ua = typeof navigator !== "undefined" ? navigator.userAgent || "" : "";
+      const isWebview = /FBAN|FBAV|Instagram|WhatsApp|Line|Twitter|MicroMessenger/i.test(ua);
       if (isWebview) {
-        setErrorMessage("Google sign-in is restricted inside in-app browsers (WhatsApp/Instagram). Please tap the menu button (•••) and select 'Open in Safari' or 'Open in Chrome', or proceed with Guest Checkout.");
+        setErrorMessage("Google sign-in is restricted inside in-app browsers. Please tap the menu button (•••) and select 'Open in Safari' or 'Open in Chrome'.");
         setLoading(false);
         return;
       }
@@ -114,18 +113,19 @@ export default function GoogleLoginButton({
       if (onSuccess) {
         onSuccess();
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setLoading(false);
-      const friendlyMessage = err?.message || "Google sign-in could not be initiated on this device.";
+      const authErr = err as { message?: string; code?: string; status?: string; name?: string; stack?: string };
+      const friendlyMessage = authErr?.message || "Google sign-in could not be initiated on this device.";
       setErrorMessage(friendlyMessage);
 
       // 6. Forceful Terminal/Console Logging with exact raw message, code, and stack trace
       console.error("\n========================================================");
       console.error("🔴 [GOOGLE AUTH CLIENT ERROR] signInWithOAuth failed:");
       console.error("• Raw Error:", err);
-      console.error("• Error Code / Status:", err?.code || err?.status || err?.name || "OAUTH_INIT_ERROR");
-      console.error("• Error Message:", err?.message || String(err));
-      console.error("• Stack Trace:", err?.stack || new Error().stack);
+      console.error("• Error Code / Status:", authErr?.code || authErr?.status || authErr?.name || "OAUTH_INIT_ERROR");
+      console.error("• Error Message:", authErr?.message || String(err));
+      console.error("• Stack Trace:", authErr?.stack || new Error().stack);
       console.error("========================================================\n");
 
       if (onError) {

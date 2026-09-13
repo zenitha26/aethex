@@ -22,7 +22,6 @@ import {
 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import { createClient } from "../../lib/supabase/client";
-import { audioEngine } from "../../lib/audio";
 
 const formatLKR = (amount: number) => {
   return new Intl.NumberFormat("en-LK", {
@@ -69,7 +68,6 @@ function TrackOrderContent() {
     const raw = termToSearch.trim();
     if (!raw) return;
 
-    try { audioEngine.playSelect(); } catch {}
     setLoading(true);
     setError(null);
     setOrder(null);

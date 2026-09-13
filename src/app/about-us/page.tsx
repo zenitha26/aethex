@@ -7,7 +7,6 @@ import CategoryDrawer from "../../components/CategoryDrawer";
 import CartDrawer from "../../components/CartDrawer";
 import CartToast from "../../components/CartToast";
 import WishlistDrawer from "../../components/WishlistDrawer";
-import CompareModal from "../../components/CompareModal";
 import MobileBottomBar from "../../components/MobileBottomBar";
 import Image from "next/image";
 import Link from "next/link";
@@ -130,7 +129,6 @@ export default function AboutPage() {
       <CartDrawer />
       <CartToast />
       <WishlistDrawer />
-      <CompareModal />
 
       <main className="pt-32 md:pt-44 pb-28 px-6 sm:px-10 lg:px-16">
         <div className="max-w-[1500px] mx-auto space-y-32 md:space-y-44">

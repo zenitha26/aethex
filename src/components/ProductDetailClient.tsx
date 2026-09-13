@@ -8,7 +8,6 @@ import {
   Minus, 
   ShoppingBag, 
   Heart, 
-  Scale, 
   ShieldCheck, 
   Truck, 
   Check, 
@@ -19,18 +18,15 @@ import {
 import { Product } from "../types/product";
 import { useCartStore } from "../store/useCartStore";
 import { useWishlistStore } from "../store/useWishlistStore";
-import { useCompareStore } from "../store/useCompareStore";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import CartDrawer from "./CartDrawer";
 import CartToast from "./CartToast";
 import WishlistDrawer from "./WishlistDrawer";
-import CompareModal from "./CompareModal";
 import CategoryDrawer from "./CategoryDrawer";
 import CustomerReviews from "./CustomerReviews";
 import ProductHotspots from "./ProductHotspots";
 import MobileBottomBar from "./MobileBottomBar";
-import { audioEngine } from "../lib/audio";
 import { SITE_CONTACT } from "../constants";
 
 import DeliveryChecker from "./DeliveryChecker";
@@ -46,7 +42,6 @@ interface ProductDetailClientProps {
 export default function ProductDetailClient({ product, relatedProducts = [] }: ProductDetailClientProps) {
   const { addToCart, setCartOpen } = useCartStore();
   const { toggleWishlist, isInWishlist } = useWishlistStore();
-  const { toggleCompare, isInCompare } = useCompareStore();
 
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedVariant, setSelectedVariant] = useState<string>(
@@ -58,7 +53,6 @@ export default function ProductDetailClient({ product, relatedProducts = [] }: P
   const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
 
   const isFavorited = isInWishlist(product.id);
-  const isCompared = isInCompare(product.id);
 
   const gallery = product.gallery && product.gallery.length > 0 ? product.gallery : [product.image_url || ""];
   const discountPercent = product.original_price
@@ -66,25 +60,23 @@ export default function ProductDetailClient({ product, relatedProducts = [] }: P
     : null;
 
   const handleAddToCart = () => {
-    try { audioEngine.playAcquire(); } catch {}
     const variantObj = product.variants?.find(v => v.id === selectedVariant);
     addToCart(product, quantity, variantObj?.color, selectedVariant);
     setCartOpen(true);
   };
 
   const handleWhatsAppOrder = () => {
-    try { audioEngine.playAcquire(); } catch {}
     const total = product.price * quantity;
     const variantObj = product.variants?.find(v => v.id === selectedVariant);
     const text = encodeURIComponent(`Hello AETHEX Store, I would like to order:
 
 • Product: ${product.title}
-• Variant: ${variantObj?.color || "Standard"}
+• Option: ${variantObj?.color || "Standard"}
 • Quantity: ${quantity}
-• Total Price: Rs. ${total.toLocaleString()} LKR + Islandwide Delivery
-• Payment: Bank Transfer / COD
+• Total Price: Rs. ${total.toLocaleString()} LKR
+• Payment: Cash on Delivery / Bank Transfer
 
-Please confirm my order and dispatch.`);
+Please confirm availability and delivery.`);
     window.open(`https://wa.me/${SITE_CONTACT.WHATSAPP_NUMBER}?text=${text}`, "_blank");
   };
 
@@ -103,7 +95,6 @@ Please confirm my order and dispatch.`);
       <CartDrawer />
       <CartToast />
       <WishlistDrawer />
-      <CompareModal />
 
       {/* Breadcrumbs */}
       <div className="border-b border-white/5 bg-[#050505] py-4 px-6 sm:px-10 lg:px-12 text-xs font-mono">
@@ -274,7 +265,7 @@ Please confirm my order and dispatch.`);
                 {/* Wishlist */}
                 <button
                   onClick={() => toggleWishlist(product)}
-                  className={`border border-white/10 p-4 rounded-full transition-all ${
+                  className={`border border-white/10 p-4 rounded-full transition-all cursor-pointer ${
                     isFavorited
                       ? "border-white bg-white text-black"
                       : "text-white/60 hover:border-white hover:text-white bg-white/[0.03]"
@@ -282,19 +273,6 @@ Please confirm my order and dispatch.`);
                   title={isFavorited ? "In Wishlist" : "Add to Wishlist"}
                 >
                   <Heart className={`w-4 h-4 ${isFavorited ? "fill-black text-black" : ""}`} />
-                </button>
-
-                {/* Compare */}
-                <button
-                  onClick={() => toggleCompare(product)}
-                  className={`border border-white/10 p-4 rounded-full transition-all ${
-                    isCompared
-                      ? "border-white bg-white text-black"
-                      : "text-white/60 hover:border-white hover:text-white bg-white/[0.03]"
-                  }`}
-                  title={isCompared ? "In Compare" : "Add to Compare"}
-                >
-                  <Scale className="w-4 h-4" />
                 </button>
               </div>
 
@@ -304,7 +282,7 @@ Please confirm my order and dispatch.`);
                 className="w-full bg-white/[0.03] border border-white/10 hover:border-white/30 text-white py-3.5 rounded-full text-xs font-mono font-semibold tracking-[0.2em] uppercase flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
                 <MessageSquare className="w-4 h-4 text-emerald-400" />
-                <span>ORDER VIA WHATSAPP (INSTANT CONCIERGE)</span>
+                <span>ORDER VIA WHATSAPP</span>
               </button>
             </div>
 
@@ -320,7 +298,7 @@ Please confirm my order and dispatch.`);
               <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/[0.02] border border-white/5">
                 <ShieldCheck className="w-4 h-4 text-white" />
                 <div>
-                  <div className="text-white uppercase font-bold text-[10px]">Official Guarantee</div>
+                  <div className="text-white uppercase font-bold text-[10px]">Warranty</div>
                   <div className="text-[10px] text-white/40">7-Day Replacement</div>
                 </div>
               </div>
@@ -334,16 +312,16 @@ Please confirm my order and dispatch.`);
         </div>
       </section>
 
-      {/* Technical Specifications Section */}
+      {/* Specifications Section */}
       {product.specs && Object.keys(product.specs).length > 0 && (
         <section className="py-20 px-6 sm:px-10 lg:px-12 border-b border-white/10 bg-[#050505] font-sans">
           <div className="max-w-[1500px] mx-auto space-y-8">
             <div className="space-y-1 border-b border-white/10 pb-4">
               <span className="text-[10px] font-mono tracking-[0.3em] text-white/40 uppercase block font-semibold">
-                TECHNICAL DATA
+                OVERVIEW
               </span>
               <h2 className="text-2xl sm:text-3xl font-mono uppercase text-white font-light">
-                Specifications & Engineering
+                Specifications
               </h2>
             </div>
 
@@ -362,23 +340,23 @@ Please confirm my order and dispatch.`);
         </section>
       )}
 
-      {/* Key Features Bullet Section */}
+      {/* Key Features Section */}
       {product.features && product.features.length > 0 && (
         <section className="py-20 px-6 sm:px-10 lg:px-12 border-b border-white/10 bg-[#050505] font-sans">
           <div className="max-w-[1500px] mx-auto space-y-8">
             <div className="space-y-1 border-b border-white/10 pb-4">
               <span className="text-[10px] font-mono tracking-[0.3em] text-white/40 uppercase block font-semibold">
-                SYSTEM HIGHLIGHTS
+                HIGHLIGHTS
               </span>
               <h2 className="text-2xl sm:text-3xl font-mono uppercase text-white font-light">
-                Key Features
+                Features
               </h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-mono text-xs">
               {product.features.map((feat, i) => (
                 <div key={i} className="p-6 bg-white/[0.02] border border-white/10 rounded-3xl space-y-3 backdrop-blur-xl">
-                  <div className="text-[10px] text-white/40 tracking-widest uppercase font-semibold">FEATURE 0{i + 1}</div>
+                  <div className="text-[10px] text-white/40 tracking-widest uppercase font-semibold">0{i + 1}</div>
                   <h3 className="text-sm text-white font-bold uppercase">{feat.title}</h3>
                   <p className="text-white/60 leading-relaxed font-light">{feat.desc}</p>
                 </div>
@@ -398,24 +376,24 @@ Please confirm my order and dispatch.`);
         </section>
       )}
 
-      {/* Related Hardware Section */}
+      {/* Related Products Section */}
       {relatedProducts && relatedProducts.length > 0 && (
         <section className="py-20 px-6 sm:px-10 lg:px-12 border-b border-white/10 bg-[#050505] font-sans">
           <div className="max-w-[1500px] mx-auto space-y-8">
             <div className="space-y-1 border-b border-white/10 pb-4 flex items-end justify-between">
               <div>
                 <span className="text-[10px] font-mono tracking-[0.3em] text-white/40 uppercase block font-semibold">
-                  COMPATIBLE ECOSYSTEM
+                  RECOMMENDED
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-mono uppercase text-white font-light">
-                  Related Hardware
+                  You May Also Like
                 </h2>
               </div>
               <Link 
                 href="/products" 
                 className="text-xs font-mono uppercase text-white/60 hover:text-white flex items-center gap-1.5 transition-colors"
               >
-                <span>View Full Catalog</span>
+                <span>View All</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>

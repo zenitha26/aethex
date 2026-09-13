@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { Product } from "../types/product";
-import { audioEngine } from "../lib/audio";
 
 interface WishlistState {
   wishlist: Product[];
@@ -21,9 +20,6 @@ export const useWishlistStore = create<WishlistState>()(
       isWishlistOpen: false,
 
       addToWishlist: (product: Product) => {
-        try {
-          audioEngine.playSelect();
-        } catch {}
         set((state) => {
           if (state.wishlist.some((p) => p.id === product.id)) return state;
           return { wishlist: [...state.wishlist, product] };
@@ -31,18 +27,12 @@ export const useWishlistStore = create<WishlistState>()(
       },
 
       removeFromWishlist: (productId: string) => {
-        try {
-          audioEngine.playSelect();
-        } catch {}
         set((state) => ({
           wishlist: state.wishlist.filter((p) => p.id !== productId),
         }));
       },
 
       toggleWishlist: (product: Product) => {
-        try {
-          audioEngine.playSelect();
-        } catch {}
         const exists = get().wishlist.some((p) => p.id === product.id);
         if (exists) {
           set((state) => ({

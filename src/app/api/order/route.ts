@@ -24,6 +24,7 @@ const orderSchema = z.object({
     email: z.string().email("Invalid email").or(z.string().length(0)).optional(),
   }),
   notes: z.string().optional(),
+  payment_method: z.enum(["bank_transfer", "cod"]).default("bank_transfer"),
 });
 
 export async function POST(req: Request) {
@@ -32,6 +33,21 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { success: false, error: "Database configuration error. Please check your keys." },
         { status: 500 }
+      );
+    }
+
+    // Customer profile check & Strict User Auth Check
+    const { createClient } = await import("../../../lib/supabase/server");
+    const supabaseServer = await createClient();
+    const { data: { user } } = await supabaseServer.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: "Authentication required. You must sign in with your Google account to place an order." 
+        },
+        { status: 401 }
       );
     }
 
@@ -44,10 +60,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const { cart, customer, notes } = parsed.data;
+    const { cart, customer, notes, payment_method } = parsed.data;
 
-    // Trusting client prices for now as Shopify syncing varies and to match phase requirements
-    // Alternatively, we could fetch db products to verify price, but user instructed us not to break functionality and just store it.
     let total = 0;
     const line_items = cart.map((item) => {
       const price = item.price || 0;
@@ -63,11 +77,6 @@ export async function POST(req: Request) {
       };
     });
 
-    // Customer profile check & User Auth Check
-    const { createClient } = await import("../../../lib/supabase/server");
-    const supabaseServer = await createClient();
-    const { data: { user } } = await supabaseServer.auth.getUser();
-    
     let customerId = null;
     const { data: existingCustomer } = await supabaseAdmin
       .from("customers")
@@ -81,7 +90,7 @@ export async function POST(req: Request) {
         .from("customers")
         .update({
           name: customer.name,
-          email: customer.email || null,
+          email: user.email || customer.email || null,
           address: customer.address,
           updated_at: new Date().toISOString(),
         })
@@ -91,7 +100,7 @@ export async function POST(req: Request) {
         .from("customers")
         .insert({
           name: customer.name,
-          email: customer.email || null,
+          email: user.email || customer.email || null,
           phone: customer.phone,
           address: customer.address,
         })
@@ -104,20 +113,22 @@ export async function POST(req: Request) {
       customerId = newCustomer.id;
     }
 
-    // Create Order with line_items JSON
+    // Create Order strictly bound to authenticated Supabase user
     const { data: order, error: orderErr } = await supabaseAdmin
       .from("orders")
       .insert({
-        user_id: user?.id || null,
+        user_id: user.id,
         customer_id: customerId,
         customer_name: customer.name,
-        customer_email: customer.email || null,
+        customer_email: user.email || customer.email || null,
         customer_phone: customer.phone,
         customer_address: customer.address,
         subtotal: total,
         total: total,
-        payment_status: "pending",
+        payment_method: payment_method,
+        payment_status: payment_method === "cod" ? "pending_delivery" : "pending_payment",
         order_status: "processing",
+        status: "processing",
         notes: notes || null,
         line_items: line_items
       })

@@ -8,13 +8,11 @@ import {
   MapPin, 
   Phone, 
   Check,
-  Landmark,
-  QrCode,
+  Landmark, 
   MessageCircle,
   Truck,
   ShieldCheck
 } from "lucide-react";
-import { audioEngine } from "../lib/audio";
 import { SITE_CONTACT } from "../constants";
 import { useCartStore } from "../store/useCartStore";
 import AethexLogo from "./brand/AethexLogo";
@@ -27,12 +25,10 @@ export default function Footer() {
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
-    try { audioEngine.playAcquire(); } catch {}
     setSubscribed(true);
   };
 
   const handleCategoryClick = (catName: string) => {
-    try { audioEngine.playSelect(); } catch {}
     setSelectedCategory(catName);
     const el = document.getElementById("products-grid");
     if (el) {
@@ -43,11 +39,11 @@ export default function Footer() {
   };
 
   const departmentLinks = [
-    { name: "Automotive Hardware", filter: "Automotive Hardware" },
-    { name: "Lossless Acoustics", filter: "Lossless Acoustics" },
-    { name: "Power & Connectivity", filter: "Power & Connectivity" },
-    { name: "Precision Tools & EDC", filter: "Precision Tools & EDC" },
-    { name: "Workspace & Ergonomics", filter: "Workspace & Ergonomics" },
+    { name: "Car Accessories", filter: "Automotive Hardware" },
+    { name: "Audio & Headphones", filter: "Lossless Acoustics" },
+    { name: "Power & Cables", filter: "Power & Connectivity" },
+    { name: "Tools & EDC", filter: "Precision Tools & EDC" },
+    { name: "Workspace", filter: "Workspace & Ergonomics" },
   ];
 
   const supportLinks = [
@@ -55,43 +51,43 @@ export default function Footer() {
     { name: "Shipping & Delivery", href: "/shipping" },
     { name: "Returns & Refunds", href: "/returns" },
     { name: "Warranty Coverage", href: "/warranty" },
-    { name: "Help & FAQ", href: "/faq" },
-    { name: "Contact Concierge", href: "/contact" },
+    { name: "FAQ", href: "/faq" },
+    { name: "Contact Us", href: "/contact" },
   ];
 
   const policyLinks = [
     { name: "Privacy Policy", href: "/privacy-policy" },
     { name: "Terms & Conditions", href: "/terms" },
     { name: "Policies Hub", href: "/policies" },
-    { name: "About AETHEX", href: "/about-us" },
+    { name: "About Us", href: "/about-us" },
   ];
 
   const trustBadges = [
-    { label: "Islandwide Courier Delivery", icon: Truck },
-    { label: "Cash on Delivery (COD)", icon: ShieldCheck },
-    { label: "Bank Transfer & Slip OCR", icon: Landmark },
-    { label: "7-Day Inspection Guarantee", icon: ShieldCheck },
-    { label: "WhatsApp Concierge", icon: MessageCircle },
+    { label: "Islandwide Delivery", icon: Truck },
+    { label: "Cash on Delivery", icon: ShieldCheck },
+    { label: "Direct Bank Transfer", icon: Landmark },
+    { label: "7-Day Replacement", icon: ShieldCheck },
+    { label: "WhatsApp Support", icon: MessageCircle },
   ];
 
   return (
     <footer className="relative bg-[#050505] text-gray-300 pt-24 pb-8 overflow-hidden border-t border-white/5 font-sans">
-      {/* Subtle Background Glow Effect */}
+      {/* Background Glow Effect */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-white/[0.02] blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
-        {/* Newsletter / Droplist Section (Glassmorphism Card) */}
+        {/* Newsletter Section */}
         <div className="p-8 md:p-12 rounded-3xl bg-white/[0.02] border border-white/10 backdrop-blur-xl mb-20 flex flex-col md:flex-row items-center justify-between gap-8 hover:bg-white/[0.03] transition-colors duration-500">
           <div className="max-w-xl">
-            <h3 className="text-white text-sm font-semibold tracking-[0.2em] mb-2 font-mono">
-              AETHEX PRIORITY ACCESS
+            <h3 className="text-white text-xs font-semibold tracking-[0.2em] mb-2 font-mono uppercase text-white/50">
+              STAY UPDATED
             </h3>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
-              JOIN THE PRODUCT DROPLIST.
+              GET PRODUCT UPDATES.
             </h2>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Receive notifications for newly arrived electronics, restocks, and private promotional codes before general release.
+              Get notified about new car accessories, restocks, and special offers.
             </p>
           </div>
           
@@ -99,7 +95,7 @@ export default function Footer() {
             {subscribed ? (
               <div className="flex items-center gap-2.5 bg-white/10 border border-white/20 px-6 py-3.5 rounded-full text-white text-sm font-medium">
                 <Check className="w-4 h-4 text-white" />
-                <span>You're on the priority droplist!</span>
+                <span>You're subscribed!</span>
               </div>
             ) : (
               <form 
@@ -111,14 +107,14 @@ export default function Footer() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter email address..." 
+                  placeholder="Enter your email..." 
                   className="bg-transparent border-none text-white px-4 py-2 w-full md:w-64 focus:outline-none text-sm placeholder:text-gray-600"
                 />
                 <button 
                   type="submit" 
                   className="bg-white text-black px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-200 transition-colors flex items-center gap-2 cursor-pointer shrink-0"
                 >
-                  SUBSCRIBE <ArrowRight className="w-4 h-4" />
+                  Subscribe <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
             )}
@@ -132,7 +128,7 @@ export default function Footer() {
           <div className="col-span-1 md:col-span-1 space-y-4">
             <AethexLogo size="lg" showWordmark={true} isLink={true} />
             <p className="text-sm text-gray-400 leading-relaxed pt-1">
-              Industrial-grade consumer electronics, smart gadgets, power stations, and precision automotive hardware.
+              Practical car accessories and consumer electronics designed for everyday driving.
             </p>
             <div className="space-y-3 text-sm text-gray-400">
               <a 
@@ -156,10 +152,10 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Links - Departments */}
+          {/* Links - Categories */}
           <div>
             <h4 className="text-white text-xs font-bold tracking-[0.15em] uppercase mb-6 font-mono">
-              Departments
+              Categories
             </h4>
             <ul className="space-y-4 text-sm text-gray-400">
               {departmentLinks.map((item) => (
@@ -208,7 +204,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom Bar (Trust Badges & Copyright) */}
+        {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex flex-wrap items-center gap-2.5">
             {trustBadges.map(({ label, icon: Icon }) => (

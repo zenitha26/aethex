@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ArrowRight, ShieldCheck } from "lucide-react";
-import { audioEngine } from "../lib/audio";
 import { SITE_CONTACT } from "../constants";
 
 interface FastOrderModalProps {
@@ -87,15 +86,14 @@ export default function FastOrderModal({
       return { total: unitPrice, deliveryText: "+ Delivery (Rs. 350)", freeDelivery: false };
     }
     if (quantity === 2) {
-      return { total: unitPrice * 2 - 490, deliveryText: "FREE DELIVERY (Duo Pack Savings)", freeDelivery: true };
+      return { total: unitPrice * 2 - 490, deliveryText: "Free Delivery (Duo Pack)", freeDelivery: true };
     }
-    return { total: unitPrice * quantity - 980, deliveryText: "FREE DELIVERY (Multi-Pack Savings)", freeDelivery: true };
+    return { total: unitPrice * quantity - 980, deliveryText: "Free Delivery (Multi-Pack)", freeDelivery: true };
   };
 
   const pricing = getPricing();
 
   const handleQuantityChange = (delta: number) => {
-    audioEngine.playDetent();
     setQuantity((prev) => Math.max(1, Math.min(10, prev + delta)));
   };
 
@@ -110,8 +108,6 @@ export default function FastOrderModal({
       return;
     }
 
-    audioEngine.playAcquire();
-
     const selectedCar = vehicle === "Other Vehicle" && customVehicle.trim() ? customVehicle.trim() : vehicle;
 
     const message = `Hi AETHEX Store,
@@ -119,14 +115,14 @@ export default function FastOrderModal({
 I'd like to order:
 ${productTitle}
 Quantity: ${quantity}
-Vehicle / Spec: ${selectedCar}
+Car Model: ${selectedCar}
 Name: ${name.trim()}
 District: ${district}
 
 Total: Rs. ${pricing.total.toLocaleString()} LKR ${pricing.freeDelivery ? "(Free Delivery)" : "(+ Delivery)"}
-Payment: Direct Bank Transfer / Cash on Delivery
+Payment: Cash on Delivery / Direct Bank Transfer
 
-Please confirm availability and dispatch.`;
+Please confirm availability and delivery.`;
 
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/${SITE_CONTACT.WHATSAPP_NUMBER}?text=${encoded}`, "_blank");
@@ -147,17 +143,14 @@ Please confirm availability and dispatch.`;
           <div className="flex items-center justify-between border-b border-white/10 pb-4">
             <div>
               <div className="text-[9px] font-mono tracking-[0.25em] text-white/50 uppercase font-semibold">
-                DIRECT FAST DISPATCH
+                QUICK ORDER
               </div>
               <h2 className="text-xl sm:text-2xl font-light tracking-wide uppercase text-white font-mono mt-1">
-                Order Hardware Drop
+                Order via WhatsApp
               </h2>
             </div>
             <button
-              onClick={() => {
-                audioEngine.playClick();
-                onClose();
-              }}
+              onClick={onClose}
               className="text-white/50 hover:text-white p-1 transition-colors cursor-pointer"
               aria-label="Close order modal"
             >
@@ -197,7 +190,7 @@ Please confirm availability and dispatch.`;
                   +
                 </button>
                 <span className="text-[10px] text-white/50 pl-2">
-                  {quantity === 2 ? "Duo Pack (Free Delivery)" : quantity >= 3 ? "Fleet Pack (Free Delivery)" : "Single Unit"}
+                  {quantity === 2 ? "Duo Pack (Free Delivery)" : quantity >= 3 ? "Multi-Pack (Free Delivery)" : "Single Unit"}
                 </span>
               </div>
             </div>
@@ -205,14 +198,11 @@ Please confirm availability and dispatch.`;
             {/* Vehicle Selection */}
             <div className="space-y-1.5">
               <label className="text-[10px] uppercase text-white/50 tracking-wider block font-semibold">
-                YOUR VEHICLE / SETUP (FOR FITMENT VERIFICATION)
+                YOUR CAR MODEL (FOR FITMENT CHECK)
               </label>
               <select
                 value={vehicle}
-                onChange={(e) => {
-                  audioEngine.playDetent();
-                  setVehicle(e.target.value);
-                }}
+                onChange={(e) => setVehicle(e.target.value)}
                 className="w-full bg-[#050505] border border-white/15 text-white p-3 text-xs outline-none focus:border-white cursor-pointer"
               >
                 {POPULAR_VEHICLES.map((v) => (
@@ -236,7 +226,7 @@ Please confirm availability and dispatch.`;
             {/* Name */}
             <div className="space-y-1.5">
               <label className="text-[10px] uppercase text-white/50 tracking-wider block font-semibold">
-                CUSTOMER NAME
+                YOUR NAME
               </label>
               <input
                 type="text"
@@ -274,10 +264,7 @@ Please confirm availability and dispatch.`;
               </label>
               <select
                 value={district}
-                onChange={(e) => {
-                  audioEngine.playDetent();
-                  setDistrict(e.target.value);
-                }}
+                onChange={(e) => setDistrict(e.target.value)}
                 className="w-full bg-[#050505] border border-white/15 text-white p-3 text-xs outline-none focus:border-white cursor-pointer"
               >
                 {SRI_LANKA_DISTRICTS.map((d) => (
@@ -309,13 +296,13 @@ Please confirm availability and dispatch.`;
               type="submit"
               className="w-full bg-white text-black hover:bg-white/90 transition-all py-3.5 text-xs font-mono font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 cursor-pointer mt-4 shadow-lg"
             >
-              <span>CONFIRM ORDER VIA WHATSAPP</span>
+              <span>Order via WhatsApp</span>
               <ArrowRight className="w-4 h-4" />
             </button>
 
             <div className="flex items-center justify-center gap-2 text-[9px] text-white/40 pt-1 font-mono">
               <ShieldCheck className="w-3.5 h-3.5 text-white/60" />
-              <span>DIRECT BANK TRANSFER & COD • 7-DAY REPLACEMENT GUARANTEE</span>
+              <span>Cash on Delivery & Bank Transfer • 7-Day Replacement</span>
             </div>
           </form>
         </motion.div>

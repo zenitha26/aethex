@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Play, Pause, RotateCcw, ArrowRight } from "lucide-react";
-import { audioEngine } from "../lib/audio";
 
 interface InstallationDemoPlayerProps {
   onOpenOrder?: () => void;
@@ -64,7 +63,6 @@ export default function InstallationDemoPlayer({ onOpenOrder }: InstallationDemo
   }, [isPlaying, steps.length]);
 
   const handleSelectStep = (idx: number) => {
-    audioEngine.playDetent();
     setActiveStep(idx);
     setProgress(0);
   };
@@ -91,7 +89,6 @@ export default function InstallationDemoPlayer({ onOpenOrder }: InstallationDemo
           <button
             type="button"
             onClick={() => {
-              audioEngine.playClick();
               setIsPlaying(!isPlaying);
             }}
             className="flex items-center gap-2 border border-white/10 hover:border-white px-4 py-2 text-[10px] font-mono tracking-widest uppercase text-white cursor-pointer bg-white/5 transition-all"
@@ -180,7 +177,6 @@ export default function InstallationDemoPlayer({ onOpenOrder }: InstallationDemo
             <button
               type="button"
               onClick={() => {
-                audioEngine.playAcquire();
                 if (onOpenOrder) onOpenOrder();
               }}
               className="w-full bg-white text-black hover:bg-white/90 transition-all py-3.5 text-xs font-mono font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 cursor-pointer shadow-xl"

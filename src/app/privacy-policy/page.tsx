@@ -62,11 +62,8 @@ export default function PrivacyPolicyPage() {
           Our web application utilizes client-side browser storage (localStorage) strictly for functional performance and preference persistence:
         </p>
         <div className="border border-white/10 bg-[#0B0B0B] p-4 text-xs font-mono space-y-2 my-2">
-          <div><span className="text-white font-bold">aethex-cart:</span> Active hardware items, variants, and quantities in your bag.</div>
-          <div><span className="text-white font-bold">aethex_local_orders:</span> Local offline order recovery cache.</div>
-          <div><span className="text-white font-bold">aethex_audio_muted:</span> Audio engine mute state preference.</div>
-          <div><span className="text-white font-bold">aethex_wishlist:</span> Saved bookmark list of favorite hardware units.</div>
-          <div><span className="text-white font-bold">aethex_compare:</span> Active hardware comparison matrix queue.</div>
+          <div><span className="text-white font-bold">aethex-cart:</span> Active items and quantities in your cart.</div>
+          <div><span className="text-white font-bold">aethex_wishlist:</span> Saved list of favorite products.</div>
         </div>
         <p className="text-[11px] text-white/50">
           We do not deploy cross-site tracking cookies, third-party advertising pixels, or behavioral data broker scripts.

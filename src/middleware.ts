@@ -11,11 +11,12 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
 
   // 2. Customer Routing Protection
-  // Allow Guest Checkout on /checkout and allow guests to view their order slip on /account/orders/:id
+  // STRICT: Checkout and account sections require an authenticated Supabase session (NO guest checkout)
   const isProtectedAccountRoute = 
     url.pathname === "/account" || 
     url.pathname === "/account/orders" || 
-    url.pathname.startsWith("/account/settings");
+    url.pathname.startsWith("/account/settings") ||
+    url.pathname === "/checkout";
   const isAuthRoute = url.pathname.startsWith("/login") || url.pathname.startsWith("/register");
 
   if (isProtectedAccountRoute && !user) {
@@ -23,7 +24,8 @@ export async function middleware(request: NextRequest) {
   }
 
   if (isAuthRoute && user) {
-    return NextResponse.redirect(new URL("/account", request.url));
+    const redirectParam = url.searchParams.get("redirect");
+    return NextResponse.redirect(new URL(redirectParam || "/account", request.url));
   }
 
   // 3. Admin routing protection checks

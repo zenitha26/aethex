@@ -7,7 +7,6 @@ import { Product } from "../types/product";
 import Navbar from "./Navbar";
 import CategoryDrawer from "./CategoryDrawer";
 import WishlistDrawer from "./WishlistDrawer";
-import CompareModal from "./CompareModal";
 import QuickViewModal from "./QuickViewModal";
 import CartDrawer from "./CartDrawer";
 import CartToast from "./CartToast";
@@ -39,7 +38,6 @@ export default function ProductsCatalogClient({ products }: ProductsCatalogClien
         selectedCategory={selectedCategory}
       />
       <WishlistDrawer />
-      <CompareModal />
       <QuickViewModal
         product={quickViewProduct}
         onClose={() => setQuickViewProduct(null)}

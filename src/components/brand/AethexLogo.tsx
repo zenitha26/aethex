@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { audioEngine } from "../../lib/audio";
 
 interface AethexLogoProps {
   size?: "sm" | "md" | "lg" | "xl";
@@ -30,9 +29,6 @@ export default function AethexLogo({
   const currentSize = sizeMap[size] || sizeMap.md;
 
   const handleClick = () => {
-    try {
-      audioEngine.playSelect();
-    } catch {}
     if (onClick) onClick();
   };
 

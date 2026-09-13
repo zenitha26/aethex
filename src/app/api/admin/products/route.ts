@@ -15,10 +15,12 @@ export async function GET() {
     }
 
     // 2. Fetch all products from Supabase
-    let { data: products, error: productsError } = await supabaseAdmin
+    const { data: initialProducts, error: productsError } = await supabaseAdmin
       .from("products")
       .select("*")
       .order("created_at", { ascending: false });
+
+    let products = initialProducts;
 
     if (productsError) {
       console.error("Fetch products error:", productsError);

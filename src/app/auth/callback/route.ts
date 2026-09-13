@@ -7,7 +7,7 @@ export const runtime = 'edge';
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/account";
+  const next = searchParams.get("next") || searchParams.get("redirect") || "/account";
 
   const errorParam = searchParams.get("error");
   const errorDescription = searchParams.get("error_description");

@@ -6,36 +6,29 @@ import { useState, useEffect, Suspense } from "react";
 import { createClient } from "../../../lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Mail, Phone, Lock, User, KeyRound, AlertCircle } from "lucide-react";
-import GoogleLoginButton from "../../../components/GoogleLoginButton";
+import { ArrowLeft, AlertCircle, CheckCircle2 } from "lucide-react";
+import GoogleLoginButton from "../../../components/auth/GoogleLoginButton";
+import AethexLogo from "../../../components/brand/AethexLogo";
 
 function AuthForm() {
-  const [view, setView] = useState<"login" | "register" | "otp">("login");
-  const [method, setMethod] = useState<"email" | "phone">("email");
+  const [view, setView] = useState<"login" | "register">("login");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  // Form states
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
 
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
+  const redirectTarget = searchParams.get("redirect") || "/account";
 
-  // Detect OAuth error passed back from auth callback redirect
   useEffect(() => {
     const errorMsg = searchParams.get("error_description") || searchParams.get("error");
     if (errorMsg) {
       setError(decodeURIComponent(errorMsg));
-      console.error("\n========================================================");
-      console.error("🔴 [LOGIN PAGE] Authentication error detected from callback redirect:");
-      console.error("• Error Message:", errorMsg);
-      console.error("• Raw Query Params:", Object.fromEntries(searchParams.entries()));
-      console.error("========================================================\n");
     }
   }, [searchParams]);
 
@@ -43,6 +36,7 @@ function AuthForm() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccess(null);
 
     if (view === "register") {
       const { error } = await supabase.auth.signUp({
@@ -54,202 +48,155 @@ function AuthForm() {
       });
       if (error) setError(error.message);
       else {
-        setError("Registration successful! Please check your email to verify your account.");
+        setSuccess("Account created. Please check your email to verify your address.");
       }
     } else {
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      if (error) setError(error.message);
-      else {
-        router.push("/account");
+      if (error) {
+        setError(error.message);
+      } else {
+        router.push(redirectTarget);
         router.refresh();
-      }
-    }
-    setLoading(false);
-  };
-
-  const handlePhoneAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    if (view === "otp") {
-      const { error } = await supabase.auth.verifyOtp({
-        phone,
-        token: otp,
-        type: "sms",
-      });
-      if (error) setError(error.message);
-      else {
-        router.push("/account");
-        router.refresh();
-      }
-    } else {
-      const { error } = await supabase.auth.signInWithOtp({
-        phone,
-      });
-      if (error) setError(error.message);
-      else {
-        setView("otp");
       }
     }
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4 relative overflow-hidden font-sans">
-      <div className="w-full max-w-md relative z-10">
-        <Link href="/" className="inline-flex items-center gap-2 text-gray-500 hover:text-black mb-8 text-sm transition-colors font-semibold">
-          <ArrowLeft className="w-4 h-4" /> Back to Store
-        </Link>
+    <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center p-4 relative overflow-hidden font-sans selection:bg-white selection:text-black">
+      <div className="w-full max-w-md relative z-10 space-y-8">
+        
+        {/* Brand & Back Link */}
+        <div className="flex items-center justify-between">
+          <AethexLogo size="md" showWordmark={true} isLink={true} />
+          <Link 
+            href="/" 
+            className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-white/50 hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Store</span>
+          </Link>
+        </div>
 
-        <div className="bg-[#F9F9F9] border border-gray-200 rounded-3xl p-8 shadow-sm">
-          <h1 className="text-3xl font-display font-bold text-[#111111] mb-2">
-            {view === "register" ? "Create Account" : view === "otp" ? "Verify Phone" : "Welcome Back"}
-          </h1>
-          <p className="text-gray-600 text-sm mb-8">
-            {view === "register" ? "Join AETHEX to manage your orders." : view === "otp" ? `Enter the 6-digit code sent to ${phone}` : "Sign in to your AETHEX account."}
-          </p>
+        {/* Card */}
+        <div className="bg-[#0B0B0B] border border-white/10 rounded-3xl p-8 sm:p-10 shadow-2xl space-y-6">
+          <div className="space-y-1">
+            <span className="text-[10px] font-mono tracking-[0.25em] text-white/40 uppercase block font-semibold">
+              ACCOUNT ACCESS
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-light font-mono uppercase text-white tracking-tight">
+              {view === "register" ? "Create Account" : "Sign In"}
+            </h1>
+            <p className="text-white/60 text-xs font-mono leading-relaxed">
+              {redirectTarget === "/checkout" 
+                ? "Sign in to continue to checkout and manage your orders."
+                : "Sign in to continue."}
+            </p>
+          </div>
 
+          {/* Feedback messages */}
           {error && (
-            <div className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-start gap-3 animate-in fade-in">
-              <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+            <div className="p-3.5 rounded-xl bg-red-950/60 border border-red-500/30 text-red-200 text-xs font-mono flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
               <div className="flex-1 leading-relaxed">{error}</div>
               <button
                 type="button"
                 onClick={() => setError(null)}
-                className="text-red-400 hover:text-red-700 p-1 shrink-0 cursor-pointer"
-                title="Dismiss"
+                className="text-red-400/60 hover:text-red-200 p-0.5 shrink-0"
               >
                 ✕
               </button>
             </div>
           )}
 
-          {/* Social Auth */}
-          {view !== "otp" && (
-            <>
-              <GoogleLoginButton
-                mode={view === "register" ? "signup" : "signin"}
-                variant="white"
-                onError={(err) => setError(err.message)}
-              />
-
-              <div className="flex items-center gap-4 my-6">
-                <div className="h-px bg-gray-200 flex-1" />
-                <span className="text-gray-500 text-xs uppercase tracking-widest font-semibold">Or with {method}</span>
-                <div className="h-px bg-gray-200 flex-1" />
-              </div>
-            </>
-          )}
-
-          {/* Forms */}
-          {method === "email" && view !== "otp" ? (
-            <form onSubmit={handleEmailAuth} className="space-y-4">
-              {view === "register" && (
-                <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    required
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Full Name"
-                    className="w-full bg-white border border-gray-300 rounded-2xl py-3.5 pl-12 pr-4 text-[#111111] placeholder:text-gray-400 focus:outline-none focus:border-black transition-colors"
-                  />
-                </div>
-              )}
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Email Address"
-                  className="w-full bg-white border border-gray-300 rounded-2xl py-3.5 pl-12 pr-4 text-[#111111] placeholder:text-gray-400 focus:outline-none focus:border-black transition-colors"
-                />
-              </div>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  className="w-full bg-white border border-gray-300 rounded-2xl py-3.5 pl-12 pr-4 text-[#111111] placeholder:text-gray-400 focus:outline-none focus:border-black transition-colors"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-black hover:bg-neutral-800 text-white py-3.5 rounded-2xl font-semibold transition-colors disabled:opacity-50 mt-2 shadow-sm cursor-pointer"
-              >
-                {loading ? "Processing..." : view === "login" ? "Sign In" : "Create Account"}
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={handlePhoneAuth} className="space-y-4">
-              {view === "otp" ? (
-                <div className="relative">
-                  <KeyRound className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    required
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    placeholder="6-Digit OTP"
-                    className="w-full bg-white border border-gray-300 rounded-2xl py-3.5 pl-12 pr-4 text-[#111111] placeholder:text-gray-400 focus:outline-none focus:border-black transition-colors tracking-widest font-mono"
-                  />
-                </div>
-              ) : (
-                <div className="relative">
-                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="tel"
-                    required
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="Phone Number (e.g. +94781234567)"
-                    className="w-full bg-white border border-gray-300 rounded-2xl py-3.5 pl-12 pr-4 text-[#111111] placeholder:text-gray-400 focus:outline-none focus:border-black transition-colors font-mono"
-                  />
-                </div>
-              )}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-black hover:bg-neutral-800 text-white py-3.5 rounded-2xl font-semibold transition-colors disabled:opacity-50 mt-2 shadow-sm cursor-pointer"
-              >
-                {loading ? "Processing..." : view === "otp" ? "Verify Code" : "Send SMS Code"}
-              </button>
-            </form>
-          )}
-
-          {/* Toggles */}
-          {view !== "otp" && (
-            <div className="mt-8 space-y-4 text-center">
-              <button
-                onClick={() => setMethod(method === "email" ? "phone" : "email")}
-                className="text-gray-600 hover:text-black text-sm transition-colors cursor-pointer"
-              >
-                Use {method === "email" ? "Phone Number" : "Email"} instead
-              </button>
-              <div className="flex items-center justify-center gap-2 text-sm">
-                <span className="text-gray-500">
-                  {view === "login" ? "Don't have an account?" : "Already have an account?"}
-                </span>
-                <button
-                  onClick={() => setView(view === "login" ? "register" : "login")}
-                  className="text-black font-semibold hover:underline cursor-pointer"
-                >
-                  {view === "login" ? "Sign Up" : "Sign In"}
-                </button>
-              </div>
+          {success && (
+            <div className="p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-500/30 text-emerald-200 text-xs font-mono flex items-start gap-2.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <div className="flex-1 leading-relaxed">{success}</div>
             </div>
           )}
+
+          {/* PRIMARY: One-click Google Login */}
+          <div className="space-y-3">
+            <GoogleLoginButton
+              redirectTo={redirectTarget}
+              text={view === "register" ? "Create Account with Google" : "Continue with Google"}
+              className="w-full justify-center !bg-white !text-black hover:!bg-white/90 py-3.5 font-mono text-xs font-bold uppercase tracking-wider rounded-full shadow-lg"
+              onError={(err) => setError(err.message)}
+            />
+          </div>
+
+          <div className="flex items-center gap-3 my-4">
+            <div className="h-px bg-white/10 flex-1" />
+            <span className="text-white/40 text-[10px] uppercase font-mono tracking-widest">Or with email</span>
+            <div className="h-px bg-white/10 flex-1" />
+          </div>
+
+          {/* Email form */}
+          <form onSubmit={handleEmailAuth} className="space-y-3 font-mono">
+            {view === "register" && (
+              <div className="space-y-1">
+                <input
+                  type="text"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Full Name"
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-white/30 text-xs outline-none focus:border-white/40 transition-colors"
+                />
+              </div>
+            )}
+            <div className="space-y-1">
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email Address"
+                className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-white/30 text-xs outline-none focus:border-white/40 transition-colors"
+              />
+            </div>
+            <div className="space-y-1">
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-3 px-4 text-white placeholder:text-white/30 text-xs outline-none focus:border-white/40 transition-colors"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 text-white py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors disabled:opacity-50 mt-2 cursor-pointer"
+            >
+              {loading ? "Please wait..." : view === "login" ? "Sign In" : "Create Account"}
+            </button>
+          </form>
+
+          {/* Switch between Sign In / Sign Up */}
+          <div className="pt-2 text-center text-xs font-mono">
+            <span className="text-white/40">
+              {view === "login" ? "Don't have an account? " : "Already have an account? "}
+            </span>
+            <button
+              type="button"
+              onClick={() => { setView(view === "login" ? "register" : "login"); setError(null); }}
+              className="text-white font-bold hover:underline cursor-pointer ml-1"
+            >
+              {view === "login" ? "Sign Up" : "Sign In"}
+            </button>
+          </div>
+        </div>
+
+        {/* Footer info */}
+        <div className="text-center text-[10px] font-mono text-white/30 tracking-wider">
+          AETHEX STORE &bull; SECURE LOGIN
         </div>
       </div>
     </div>
@@ -258,9 +205,8 @@ function AuthForm() {
 
 export default function AuthPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center font-mono text-xs">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#050505] flex items-center justify-center font-mono text-xs text-white/50">Loading...</div>}>
       <AuthForm />
     </Suspense>
   );
 }
-

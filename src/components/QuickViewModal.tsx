@@ -18,7 +18,6 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { audioEngine } from "../lib/audio";
 import { SITE_CONTACT } from "../constants";
 
 interface QuickViewModalProps {
@@ -56,16 +55,14 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
     : null;
 
   const handleAddToCart = () => {
-    try { audioEngine.playAcquire(); } catch {}
     addToCart(product, quantity);
     onClose();
   };
 
   const handleWhatsAppOrder = () => {
-    try { audioEngine.playAcquire(); } catch {}
     const total = product.price * quantity;
     const text = encodeURIComponent(
-      `Hello AETHEX Store, I would like to order via Direct Bank Transfer / COD:\n\n• Product: ${product.title}\n• Quantity: ${quantity}\n• Total: Rs. ${total.toLocaleString()} LKR + Islandwide Delivery\n\nPlease confirm availability and dispatch.`
+      `Hello AETHEX Store, I would like to order:\n\n• Product: ${product.title}\n• Quantity: ${quantity}\n• Total: Rs. ${total.toLocaleString()} LKR\n• Payment: Cash on Delivery / Bank Transfer\n\nPlease confirm availability and delivery.`
     );
     window.open(`https://wa.me/${SITE_CONTACT.WHATSAPP_NUMBER}?text=${text}`, "_blank");
   };
@@ -254,7 +251,7 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
                   onClick={handleWhatsAppOrder}
                   className="w-full border border-white/15 hover:border-white text-white bg-[#050505] py-2.5 text-xs font-mono font-semibold tracking-[0.18em] uppercase flex items-center justify-center gap-2 transition-colors cursor-pointer"
                 >
-                  <span>ORDER VIA WHATSAPP (INSTANT ASSIST)</span>
+                  <span>ORDER VIA WHATSAPP</span>
                 </button>
               </div>
 
@@ -266,7 +263,7 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
                 </div>
                 <div className="flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 text-white" />
-                  <span>Warranty & Inspection</span>
+                  <span>7-Day Replacement</span>
                 </div>
               </div>
 
@@ -277,7 +274,7 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
                   onClick={onClose}
                   className="inline-flex items-center gap-2 text-xs font-mono text-white hover:text-white/80 underline underline-offset-4 uppercase tracking-[0.16em] font-semibold transition-colors"
                 >
-                  <span>VIEW FULL PRODUCT BLUEPRINT</span>
+                  <span>VIEW FULL PRODUCT</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </Link>
               </div>

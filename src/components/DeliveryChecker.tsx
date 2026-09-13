@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Truck } from "lucide-react";
-import { audioEngine } from "../lib/audio";
 
 const DISTRICT_DATA: Record<string, { time: string; fee: string }> = {
   Colombo: { time: "24–48 HOURS", fee: "Rs. 350 (Free on 2+ Units)" },
@@ -46,7 +45,6 @@ export default function DeliveryChecker() {
             <select
               value={district}
               onChange={(e) => {
-                audioEngine.playDetent();
                 setDistrict(e.target.value);
               }}
               className="w-full bg-white/5 border border-white/10 text-white p-3.5 text-xs font-mono outline-none focus:border-white cursor-pointer"

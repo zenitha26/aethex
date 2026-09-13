@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { CartItem, CartState } from "../types/cart";
-import { audioEngine } from "../lib/audio";
 
 export const useCartStore = create<CartState>()(
   persist(
@@ -14,15 +13,11 @@ export const useCartStore = create<CartState>()(
       selectedCategory: "All",
 
       addToCart: (product, quantity = 1, color?: string, variantId?: string) => {
-        try {
-          audioEngine.playAcquire();
-        } catch {}
-
         set((state) => {
           const qty = Math.max(1, quantity);
           const newItemId = `${product.id}-${color || 'standard'}`;
           const existingItemIndex = state.cart.findIndex((item) => item.id === newItemId);
-          let newCart = [...state.cart];
+          const newCart = [...state.cart];
 
           const addedItem: CartItem = {
             id: newItemId,

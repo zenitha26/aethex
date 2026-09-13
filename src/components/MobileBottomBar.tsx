@@ -9,10 +9,8 @@ import {
   Heart, 
   ShoppingBag, 
   MessageSquare,
-  ArrowRight,
-  ShieldCheck
+  ArrowRight
 } from "lucide-react";
-import { audioEngine } from "../lib/audio";
 import { SITE_CONTACT } from "../constants";
 
 interface MobileBottomBarProps {
@@ -34,7 +32,6 @@ export default function MobileBottomBar({ onOpenCategories }: MobileBottomBarPro
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const handleHome = () => {
-    try { audioEngine.playSelect(); } catch {}
     if (pathname === "/") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
@@ -43,61 +40,56 @@ export default function MobileBottomBar({ onOpenCategories }: MobileBottomBarPro
   };
 
   const handleCategories = () => {
-    try { audioEngine.playSelect(); } catch {}
     if (onOpenCategories) {
       onOpenCategories();
     } else {
-      router.push("/#products-grid");
+      router.push("/products");
     }
   };
 
   const handleWishlist = () => {
-    try { audioEngine.playSelect(); } catch {}
     setWishlistOpen(true);
   };
 
   const handleCart = () => {
-    try { audioEngine.playSelect(); } catch {}
     setCartOpen(true);
   };
 
   const handleDirectCheckout = () => {
-    try { audioEngine.playAcquire(); } catch {}
     router.push("/checkout");
   };
 
   const handleContact = () => {
-    try { audioEngine.playSelect(); } catch {}
-    const text = encodeURIComponent("Hello AETHEX Concierge, I need assistance with an order or product fitment.");
+    const text = encodeURIComponent("Hello AETHEX, I have a question about an order or product.");
     window.open(`https://wa.me/${SITE_CONTACT.WHATSAPP_NUMBER}?text=${text}`, "_blank");
   };
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#050505]/85 backdrop-blur-xl border-t border-white/10 px-3 pt-2 pb-safe font-mono shadow-2xl transition-all duration-300">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#050505]/90 backdrop-blur-xl border-t border-white/10 px-3 pt-2 pb-safe font-mono shadow-2xl transition-all duration-300">
       
-      {/* Dynamic Mobile Sticky Checkout Bar when Cart has items */}
+      {/* Sticky Cart Bar when Cart has items */}
       {totalCartCount > 0 && (
         <div className="mb-2 p-2 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-between gap-3 shadow-inner">
           <div className="pl-2 flex flex-col">
             <span className="text-[9px] text-white/40 uppercase tracking-widest">
-              {totalCartCount} {totalCartCount === 1 ? "Item" : "Items"} in Bag
+              {totalCartCount} {totalCartCount === 1 ? "Item" : "Items"} in Cart
             </span>
             <span className="text-xs font-bold text-white tracking-wider">
-              LKR {subtotal.toLocaleString()}
+              Rs. {subtotal.toLocaleString()}
             </span>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={handleCart}
-              className="p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition"
+              className="p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition cursor-pointer"
               title="View Cart"
             >
               <ShoppingBag className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={handleDirectCheckout}
-              className="py-2.5 px-5 rounded-full bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-white/90 active:scale-95 transition flex items-center gap-1.5 shadow-lg"
+              className="py-2.5 px-5 rounded-full bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-white/90 active:scale-95 transition flex items-center gap-1.5 shadow-lg cursor-pointer"
             >
               <span>Checkout</span>
               <ArrowRight className="w-3.5 h-3.5 text-black" />
@@ -111,7 +103,7 @@ export default function MobileBottomBar({ onOpenCategories }: MobileBottomBarPro
         {/* Home */}
         <button
           onClick={handleHome}
-          className={`flex flex-col items-center gap-1 py-1 px-3 transition-colors ${
+          className={`flex flex-col items-center gap-1 py-1 px-3 transition-colors cursor-pointer ${
             pathname === "/" ? "text-white font-bold" : "hover:text-white"
           }`}
         >
@@ -122,16 +114,16 @@ export default function MobileBottomBar({ onOpenCategories }: MobileBottomBarPro
         {/* Categories / Catalog */}
         <button
           onClick={handleCategories}
-          className="flex flex-col items-center gap-1 py-1 px-3 hover:text-white transition-colors"
+          className="flex flex-col items-center gap-1 py-1 px-3 hover:text-white transition-colors cursor-pointer"
         >
           <Layers className="w-4 h-4" />
-          <span>Catalog</span>
+          <span>Products</span>
         </button>
 
         {/* Wishlist */}
         <button
           onClick={handleWishlist}
-          className="flex flex-col items-center gap-1 py-1 px-3 hover:text-white transition-colors relative"
+          className="flex flex-col items-center gap-1 py-1 px-3 hover:text-white transition-colors relative cursor-pointer"
         >
           <div className="relative">
             <Heart className="w-4 h-4" />
@@ -141,13 +133,13 @@ export default function MobileBottomBar({ onOpenCategories }: MobileBottomBarPro
               </span>
             )}
           </div>
-          <span>Saved</span>
+          <span>Wishlist</span>
         </button>
 
         {/* Cart */}
         <button
           onClick={handleCart}
-          className="flex flex-col items-center gap-1 py-1 px-3 hover:text-white transition-colors relative"
+          className="flex flex-col items-center gap-1 py-1 px-3 hover:text-white transition-colors relative cursor-pointer"
         >
           <div className="relative">
             <ShoppingBag className="w-4 h-4" />
@@ -163,7 +155,7 @@ export default function MobileBottomBar({ onOpenCategories }: MobileBottomBarPro
         {/* Support */}
         <button
           onClick={handleContact}
-          className="flex flex-col items-center gap-1 py-1 px-3 hover:text-white transition-colors"
+          className="flex flex-col items-center gap-1 py-1 px-3 hover:text-white transition-colors cursor-pointer"
         >
           <MessageSquare className="w-4 h-4" />
           <span>Support</span>

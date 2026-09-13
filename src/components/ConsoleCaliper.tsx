@@ -2,7 +2,6 @@
 
 import { useState, useId } from "react";
 import { Check, Sliders, ArrowRight } from "lucide-react";
-import { audioEngine } from "../lib/audio";
 import { SITE_CONTACT } from "../constants";
 
 interface ConsoleCaliperProps {
@@ -45,7 +44,6 @@ export default function ConsoleCaliper({ onSelectVehicle }: ConsoleCaliperProps)
   const sliderId = useId();
 
   const handleSelectPreset = (preset: VehiclePreset) => {
-    audioEngine.playSelect();
     setSelectedVehicle(preset.name);
     setDiameter(preset.diameter);
   };
@@ -53,11 +51,9 @@ export default function ConsoleCaliper({ onSelectVehicle }: ConsoleCaliperProps)
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseFloat(e.target.value);
     setDiameter(val);
-    audioEngine.playDetent();
   };
 
   const handleOrder = () => {
-    audioEngine.playAcquire();
     if (onSelectVehicle) {
       onSelectVehicle(selectedVehicle);
     } else {

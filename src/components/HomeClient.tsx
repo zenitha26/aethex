@@ -4,11 +4,9 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ChevronDown, Check, ShieldCheck, Truck, ExternalLink, RotateCw, Sparkles, Layers } from "lucide-react";
-import { audioEngine } from "../lib/audio";
 import Navbar from "./Navbar";
 import CategoryDrawer from "./CategoryDrawer";
 import WishlistDrawer from "./WishlistDrawer";
-import CompareModal from "./CompareModal";
 import QuickViewModal from "./QuickViewModal";
 import CartDrawer from "./CartDrawer";
 import CartToast from "./CartToast";
@@ -119,7 +117,6 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
         selectedCategory={selectedCategory}
       />
       <WishlistDrawer />
-      <CompareModal />
       <QuickViewModal
         product={quickViewProduct}
         onClose={() => setQuickViewProduct(null)}
@@ -195,7 +192,6 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
                     <div
                       key={phase.id}
                       onClick={() => {
-                        audioEngine.playSelect();
                         setActiveMechPhase(index);
                       }}
                       className={`p-6 border transition-all cursor-pointer ${

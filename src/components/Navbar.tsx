@@ -5,23 +5,18 @@ import Link from "next/link";
 import { 
   Search, 
   Heart, 
-  Scale, 
   ShoppingBag, 
   Menu, 
   X, 
   Layers, 
   ArrowRight,
   Phone,
-  MessageSquare,
-  Volume2,
-  VolumeX
+  User as UserIcon
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { audioEngine } from "../lib/audio";
 import { SITE_CONTACT } from "../constants";
 import { useCartStore } from "../store/useCartStore";
 import { useWishlistStore } from "../store/useWishlistStore";
-import { useCompareStore } from "../store/useCompareStore";
 import { createClient } from "@/lib/supabase/client";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 import GoogleLoginButton from "./auth/GoogleLoginButton";
@@ -32,36 +27,19 @@ interface NavbarProps {
   onOpenOrder?: () => void;
 }
 
-export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
+export default function Navbar({ onOpenCategories }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState("");
   const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [isMuted, setIsMuted] = useState(false);
 
   const supabase = createClient();
-
   const { cart, setCartOpen, setSearchQuery } = useCartStore();
   const { wishlist, setWishlistOpen } = useWishlistStore();
-  const { compareList, setCompareOpen } = useCompareStore();
 
   const totalCartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-
-  useEffect(() => {
-    setIsMuted(audioEngine.getMuted());
-    const unsubscribe = audioEngine.subscribe((muted) => setIsMuted(muted));
-    return () => unsubscribe();
-  }, []);
-
-  const handleToggleAudio = () => {
-    const nextState = audioEngine.toggleMute();
-    setIsMuted(nextState);
-    if (!nextState) {
-      try { audioEngine.playClick(); } catch {}
-    }
-  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -84,16 +62,12 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
   }, [supabase]);
 
   const handleSignOut = async () => {
-    try {
-      audioEngine.playClick();
-    } catch {}
     await supabase.auth.signOut();
     setUser(null);
   };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    try { audioEngine.playSelect(); } catch {}
     setSearchQuery(localSearch);
     setMobileSearchOpen(false);
     const el = document.getElementById("products-grid");
@@ -106,15 +80,6 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
     const val = e.target.value;
     setLocalSearch(val);
     setSearchQuery(val);
-  };
-
-  const handleNavClick = (sectionId: string) => {
-    try { audioEngine.playSelect(); } catch {}
-    setMobileMenuOpen(false);
-    const el = document.getElementById(sectionId);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
   };
 
   return (
@@ -141,11 +106,10 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
             <AethexLogo size="md" showWordmark={true} isLink={true} />
           </div>
 
-          {/* Architectural Editorial Nav Links */}
+          {/* Nav Links */}
           <nav className="hidden lg:flex items-center gap-7 text-xs font-mono tracking-[0.16em] uppercase">
             <Link
               href="/products"
-              onClick={() => { try { audioEngine.playSelect(); } catch {} }}
               className="text-white/70 hover:text-white transition-colors relative py-1 hover:underline underline-offset-8"
             >
               Products
@@ -153,7 +117,6 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
 
             <Link
               href="/about-us"
-              onClick={() => { try { audioEngine.playSelect(); } catch {} }}
               className="text-white/70 hover:text-white transition-colors relative py-1 hover:underline underline-offset-8"
             >
               About
@@ -161,7 +124,6 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
 
             <Link
               href="/track-order"
-              onClick={() => { try { audioEngine.playSelect(); } catch {} }}
               className="text-white/70 hover:text-white transition-colors relative py-1 hover:underline underline-offset-8"
             >
               Track Order
@@ -169,7 +131,6 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
 
             <Link
               href="/contact"
-              onClick={() => { try { audioEngine.playSelect(); } catch {} }}
               className="text-white/70 hover:text-white transition-colors relative py-1 hover:underline underline-offset-8"
             >
               Contact
@@ -177,7 +138,7 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
           </nav>
         </div>
 
-        {/* Center: Minimalist Apple-Style Search Capsule */}
+        {/* Center: Search Capsule */}
         <form 
           onSubmit={handleSearchSubmit}
           className="hidden md:flex flex-1 max-w-md items-center bg-white/[0.03] hover:bg-white/[0.06] focus-within:bg-white/[0.08] border border-white/10 rounded-full px-4 py-2 transition-all"
@@ -185,7 +146,7 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
           <Search className="w-4 h-4 text-white/40 shrink-0 mr-2.5" />
           <input
             type="text"
-            placeholder="Search precision hardware, cockpit ergonomics..."
+            placeholder="Search car accessories, mounts, chargers..."
             value={localSearch}
             onChange={handleSearchChange}
             className="flex-1 bg-transparent text-xs text-white placeholder:text-white/30 outline-none font-mono font-normal"
@@ -213,29 +174,11 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
             <Search className="w-5 h-5" />
           </button>
 
-          {/* Audio Feedback Mute Toggle */}
+          {/* Wishlist Button */}
           <button
-            onClick={handleToggleAudio}
-            className={`flex items-center justify-center p-2 rounded-full transition-all border cursor-pointer ${
-              isMuted 
-                ? "text-white/40 border-transparent hover:text-white/70 hover:bg-white/5" 
-                : "text-white border-white/10 bg-white/[0.04] hover:bg-white/10 shadow-xs"
-            }`}
-            title={isMuted ? "Unmute Interface Audio" : "Mute Interface Audio"}
-            aria-label={isMuted ? "Unmute Interface Audio" : "Mute Interface Audio"}
-          >
-            {isMuted ? (
-              <VolumeX className="w-4 h-4 text-white/40" />
-            ) : (
-              <Volume2 className="w-4 h-4 text-white" />
-            )}
-          </button>
-
-          {/* Wishlist Pill */}
-          <button
-            onClick={() => { try { audioEngine.playSelect(); } catch {}; setWishlistOpen(true); }}
-            className="hidden sm:flex items-center gap-1.5 text-white/70 hover:text-white p-2 hover:bg-white/5 rounded-full transition-all relative border border-transparent hover:border-white/10"
-            title="View Wishlist"
+            onClick={() => setWishlistOpen(true)}
+            className="hidden sm:flex items-center gap-1.5 text-white/70 hover:text-white p-2 hover:bg-white/5 rounded-full transition-all relative border border-transparent hover:border-white/10 cursor-pointer"
+            title="Wishlist"
             aria-label="Wishlist"
           >
             <Heart className="w-4 h-4" />
@@ -246,25 +189,10 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
             )}
           </button>
 
-          {/* Compare Pill */}
+          {/* Cart Button */}
           <button
-            onClick={() => { try { audioEngine.playSelect(); } catch {}; setCompareOpen(true); }}
-            className="hidden sm:flex items-center gap-1.5 text-white/70 hover:text-white p-2 hover:bg-white/5 rounded-full transition-all relative border border-transparent hover:border-white/10"
-            title="View Compare"
-            aria-label="Compare Products"
-          >
-            <Scale className="w-4 h-4" />
-            {compareList.length > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-white text-black text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                {compareList.length}
-              </span>
-            )}
-          </button>
-
-          {/* Mini Cart Capsule */}
-          <button
-            onClick={() => { try { audioEngine.playSelect(); } catch {}; setCartOpen(true); }}
-            className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 px-3.5 sm:px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer shadow-sm text-white"
+            onClick={() => setCartOpen(true)}
+            className="flex items-center gap-2.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 px-3.5 sm:px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer shadow-xs text-white"
             aria-label="Shopping Cart"
           >
             <div className="relative flex items-center justify-center">
@@ -285,7 +213,7 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
             <div className="hidden sm:flex items-center gap-2">
               <Link
                 href="/account"
-                className="flex items-center gap-2 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 px-3 py-1.5 rounded-full text-xs font-semibold text-white transition-all shadow-sm"
+                className="flex items-center gap-2 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 px-3 py-1.5 rounded-full text-xs font-semibold text-white transition-all shadow-xs"
                 title={user.email}
               >
                 {user.user_metadata?.avatar_url ? (
@@ -313,32 +241,15 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
             </div>
           ) : (
             <div className="hidden sm:flex items-center">
-              <GoogleLoginButton
-                compact
-                text="Sign In"
-                className="!bg-white/[0.05] !text-white !border-white/10 hover:!bg-white/[0.1] shadow-xs text-xs"
-              />
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-white text-xs font-mono font-medium transition-colors"
+              >
+                <UserIcon className="w-3.5 h-3.5 text-white/70" />
+                <span>Sign In</span>
+              </Link>
             </div>
           )}
-
-          {/* Primary Action Button */}
-          <motion.button
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            onClick={() => {
-              try { audioEngine.playAcquire(); } catch {}
-              if (onOpenOrder) {
-                onOpenOrder();
-              } else {
-                window.open(`https://wa.me/${SITE_CONTACT.WHATSAPP_NUMBER}?text=Hello%20AETHEX,%20I'd%20like%20to%20place%20an%20order.`, "_blank");
-              }
-            }}
-            className="hidden xl:flex bg-white text-black hover:bg-white/90 px-5 py-2.5 rounded-full text-xs font-mono font-bold tracking-wider uppercase items-center gap-2 shadow-lg cursor-pointer transition-colors"
-          >
-            <MessageSquare className="w-3.5 h-3.5 text-black" />
-            <span>DIRECT ORDER</span>
-          </motion.button>
         </div>
       </div>
 
@@ -358,18 +269,20 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
               <Search className="w-4 h-4 text-white/40 mr-2 shrink-0" />
               <input
                 type="text"
-                placeholder="Search catalog, hardware..."
+                placeholder="Search car accessories, mounts, chargers..."
                 value={localSearch}
                 onChange={handleSearchChange}
-                autoFocus
-                className="flex-1 bg-transparent text-xs text-white placeholder:text-white/30 outline-none font-mono"
+                className="flex-1 bg-transparent text-xs text-white placeholder:text-white/30 outline-none font-mono font-normal"
               />
-              <button
-                type="submit"
-                className="text-xs font-mono font-semibold text-white px-2"
-              >
-                Go
-              </button>
+              {localSearch && (
+                <button 
+                  type="button" 
+                  onClick={() => { setLocalSearch(""); setSearchQuery(""); }} 
+                  className="text-white/40 hover:text-white text-xs px-1"
+                >
+                  ✕
+                </button>
+              )}
             </form>
           </motion.div>
         )}
@@ -429,105 +342,76 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
             {onOpenCategories && (
               <button
                 onClick={() => { setMobileMenuOpen(false); onOpenCategories(); }}
-                className="w-full flex items-center justify-between p-3.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white font-semibold"
+                className="w-full flex items-center justify-between p-3.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white font-semibold cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
                   <Layers className="w-4 h-4 text-white" />
-                  <span>Browse All Departments</span>
+                  <span>Browse Categories</span>
                 </div>
                 <ArrowRight className="w-4 h-4 text-white/40" />
               </button>
             )}
 
             <div className="flex flex-col space-y-3 pt-1 text-white/70 font-medium">
-              <button
-                onClick={() => { setMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                className="text-left hover:text-white py-1"
-              >
-                Home
-              </button>
-              <button
-                onClick={() => handleNavClick("deals-section")}
-                className="text-left hover:text-white py-1 font-semibold text-white flex items-center justify-between"
-              >
-                <span>Top Deals (Drop 01)</span>
-                <span className="text-[10px] bg-white text-black px-2 py-0.5 rounded-full font-bold">HOT</span>
-              </button>
-              <button
-                onClick={() => handleNavClick("products-grid")}
-                className="text-left hover:text-white py-1"
-              >
-                Shop Catalog
-              </button>
-              <button
-                onClick={() => handleNavClick("hardware-spotlight")}
-                className="text-left hover:text-white py-1"
-              >
-                ASPOR A711 Mount
-              </button>
               <Link
-                href="/droplist"
+                href="/products"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-left hover:text-white py-1 flex items-center justify-between"
+                className="text-left hover:text-white py-1"
               >
-                <span>Priority Droplist</span>
-                <span className="text-[10px] bg-white/10 text-white px-2 py-0.5 rounded-full border border-white/10 font-mono">VIP</span>
+                Products
               </Link>
-              <button
-                onClick={() => { setMobileMenuOpen(false); setCompareOpen(true); }}
-                className="text-left hover:text-white py-1 flex items-center justify-between"
+              <Link
+                href="/about-us"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-left hover:text-white py-1"
               >
-                <span>Compare Products</span>
-                <span className="text-xs text-white/40">({compareList.length})</span>
-              </button>
-              <button
-                onClick={() => { setMobileMenuOpen(false); setWishlistOpen(true); }}
-                className="text-left hover:text-white py-1 flex items-center justify-between"
-              >
-                <span>Wishlist</span>
-                <span className="text-xs text-white/40">({wishlist.length})</span>
-              </button>
+                About
+              </Link>
               <Link
                 href="/track-order"
                 onClick={() => setMobileMenuOpen(false)}
                 className="hover:text-white py-1 flex items-center justify-between"
               >
-                <span>Track Order Telemetry</span>
+                <span>Track Order</span>
                 <span className="text-[10px] bg-white/10 text-white px-2 py-0.5 rounded-full border border-white/10 font-mono">TRACK</span>
-              </Link>
-              <Link
-                href="/about-us"
-                onClick={() => setMobileMenuOpen(false)}
-                className="hover:text-white py-1"
-              >
-                About AETHEX
               </Link>
               <Link
                 href="/contact"
                 onClick={() => setMobileMenuOpen(false)}
                 className="hover:text-white py-1"
               >
-                Customer Support & Concierge
+                Contact
               </Link>
+              <button
+                onClick={() => { setMobileMenuOpen(false); setWishlistOpen(true); }}
+                className="text-left hover:text-white py-1 flex items-center justify-between cursor-pointer"
+              >
+                <span>Wishlist</span>
+                <span className="text-xs text-white/40">({wishlist.length})</span>
+              </button>
+              <button
+                onClick={() => { setMobileMenuOpen(false); setCartOpen(true); }}
+                className="text-left hover:text-white py-1 flex items-center justify-between cursor-pointer"
+              >
+                <span>Cart</span>
+                <span className="text-xs text-white/40">({totalCartCount})</span>
+              </button>
+              {user && (
+                <Link
+                  href="/account"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="hover:text-white py-1 text-white"
+                >
+                  Account
+                </Link>
+              )}
               <Link
                 href="/policies"
                 onClick={() => setMobileMenuOpen(false)}
                 className="hover:text-white py-1 text-white/50 text-xs"
               >
-                Policies & Legal Directory
+                Policies & Legal
               </Link>
-            </div>
-
-            {/* Mobile Audio Mute Toggle */}
-            <div className="pt-3 border-t border-white/10 flex items-center justify-between">
-              <span className="text-xs text-white/60">Interface Audio Feedback</span>
-              <button
-                onClick={handleToggleAudio}
-                className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.04] border border-white/10 text-xs font-mono text-white hover:border-white transition-all cursor-pointer"
-              >
-                {isMuted ? <VolumeX className="w-3.5 h-3.5 text-white/50" /> : <Volume2 className="w-3.5 h-3.5 text-white" />}
-                <span>{isMuted ? "SOUND OFF" : "SOUND ON"}</span>
-              </button>
             </div>
 
             <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-white/50">

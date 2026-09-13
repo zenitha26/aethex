@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { createClient } from "../lib/supabase/client";
-import { audioEngine } from "../lib/audio";
 
 export interface GoogleLoginButtonProps {
   mode?: "continue" | "signin" | "signup";
@@ -71,9 +70,6 @@ export default function GoogleLoginButton({
 
   const handleLogin = async () => {
     if (loading || disabled) return;
-    try {
-      audioEngine.playSelect();
-    } catch {}
 
     setLoading(true);
     setErrorMessage(null);
@@ -93,7 +89,15 @@ export default function GoogleLoginButton({
       }
 
       // 2. Formulate destination callback URL
-      const destination = redirectTo || `${window.location.origin}/auth/callback`;
+      const origin = typeof window !== "undefined" ? window.location.origin : "https://www.aethexstore.com";
+      let destination = `${origin}/auth/callback`;
+      if (redirectTo) {
+        if (redirectTo.startsWith("/")) {
+          destination = `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`;
+        } else {
+          destination = redirectTo;
+        }
+      }
 
       // 3. Initiate Google OAuth
       const { error } = await supabase.auth.signInWithOAuth({

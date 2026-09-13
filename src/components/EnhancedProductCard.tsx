@@ -6,15 +6,12 @@ import Link from "next/link";
 import { Product } from "../types/product";
 import { useCartStore } from "../store/useCartStore";
 import { useWishlistStore } from "../store/useWishlistStore";
-import { useCompareStore } from "../store/useCompareStore";
 import { 
   ShoppingBag, 
   Heart, 
   Eye, 
-  Scale, 
   ThumbsUp 
 } from "lucide-react";
-import { audioEngine } from "../lib/audio";
 
 interface EnhancedProductCardProps {
   product: Product;
@@ -25,10 +22,8 @@ export default function EnhancedProductCard({ product, onQuickView }: EnhancedPr
   const [isHovered, setIsHovered] = useState(false);
   const { addToCart } = useCartStore();
   const { toggleWishlist, isInWishlist } = useWishlistStore();
-  const { toggleCompare, isInCompare } = useCompareStore();
 
   const isFavorited = isInWishlist(product.id);
-  const isCompared = isInCompare(product.id);
 
   const discountPercent = product.original_price
     ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
@@ -37,28 +32,18 @@ export default function EnhancedProductCard({ product, onQuickView }: EnhancedPr
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    try { audioEngine.playAcquire(); } catch {}
     addToCart(product, 1);
   };
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    try { audioEngine.playSelect(); } catch {}
     toggleWishlist(product);
-  };
-
-  const handleToggleCompare = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try { audioEngine.playSelect(); } catch {}
-    toggleCompare(product);
   };
 
   const handleQuickView = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    try { audioEngine.playClick(); } catch {}
     if (onQuickView) onQuickView(product);
   };
 
@@ -91,12 +76,12 @@ export default function EnhancedProductCard({ product, onQuickView }: EnhancedPr
           </div>
         )}
 
-        {/* Top Right Floating Action Icons (Wishlist & Compare) */}
+        {/* Top Right Floating Action Icons (Wishlist) */}
         <div className="absolute top-3 right-3 flex flex-col gap-1.5 z-10">
           <div className="flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             <button
               onClick={handleToggleWishlist}
-              className={`p-2 rounded-full backdrop-blur-md shadow-sm transition-all border ${
+              className={`p-2 rounded-full backdrop-blur-md shadow-sm transition-all border cursor-pointer ${
                 isFavorited 
                   ? "bg-white text-black border-white" 
                   : "bg-black/70 text-white border-white/10 hover:bg-white hover:text-black hover:border-white"
@@ -105,19 +90,6 @@ export default function EnhancedProductCard({ product, onQuickView }: EnhancedPr
               aria-label="Wishlist"
             >
               <Heart className={`w-3.5 h-3.5 ${isFavorited ? "fill-black" : ""}`} />
-            </button>
-
-            <button
-              onClick={handleToggleCompare}
-              className={`p-2 rounded-full backdrop-blur-md shadow-sm transition-all border ${
-                isCompared 
-                  ? "bg-white text-black border-white" 
-                  : "bg-black/70 text-white border-white/10 hover:bg-white hover:text-black hover:border-white"
-              }`}
-              title={isCompared ? "Remove from Compare" : "Compare Product"}
-              aria-label="Compare"
-            >
-              <Scale className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -137,7 +109,7 @@ export default function EnhancedProductCard({ product, onQuickView }: EnhancedPr
         <div className="space-y-2">
           {/* Category */}
           <div className="text-[10px] font-mono text-white/50 uppercase tracking-[0.2em]">
-            {product.category || "AUTOMOTIVE HARDWARE"}
+            {product.category || "CAR ACCESSORIES"}
           </div>
 
           {/* Title */}
@@ -147,7 +119,7 @@ export default function EnhancedProductCard({ product, onQuickView }: EnhancedPr
             </h3>
           </Link>
 
-          {/* Short Technical Description or Subtitle */}
+          {/* Short Description */}
           <p className="text-[11px] text-white/60 line-clamp-2 leading-relaxed font-light">
             {product.subtitle || product.description}
           </p>
@@ -164,20 +136,19 @@ export default function EnhancedProductCard({ product, onQuickView }: EnhancedPr
             </span>
           </div>
 
-          {/* Transparent Settlement Notice */}
           <div className="text-[10px] text-white/40 truncate">
-            COD & Bank Transfer &bull; Islandwide Delivery
+            Cash on Delivery &bull; Bank Transfer &bull; Islandwide Delivery
           </div>
         </div>
 
-        {/* Primary Action Button (Solid White Precision Button) */}
+        {/* Primary Action Button (Add to Cart) */}
         <div className="pt-2">
           <button
             onClick={handleAddToCart}
             className="w-full bg-white text-black hover:bg-white/90 py-3 text-xs font-mono font-bold tracking-[0.16em] uppercase flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-md"
           >
             <ShoppingBag className="w-3.5 h-3.5 text-black" />
-            <span>ACQUIRE HARDWARE</span>
+            <span>ADD TO CART</span>
           </button>
         </div>
       </div>
