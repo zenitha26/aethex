@@ -221,7 +221,7 @@ export default function StoreHero({ onOpenOrder, onExploreProducts }: StoreHeroP
               whileTap={{ scale: 0.98 }}
             >
               <Link
-                href={`/product/${slide.productId}`}
+                href={`/products/${slide.productId}`}
                 className="bg-transparent border border-white/20 hover:border-white text-white px-8 py-4 text-xs font-mono font-semibold tracking-[0.18em] uppercase flex items-center gap-2.5 transition-all"
               >
                 <span>EXPLORE BLUEPRINT</span>

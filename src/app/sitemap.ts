@@ -5,7 +5,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.aethexstore.com';
 
   const productEntries: MetadataRoute.Sitemap = mockProducts.map((product) => ({
-    url: `${baseUrl}/product/${product.id}`,
+    url: `${baseUrl}/products/${product.id}`,
     lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: 0.9,

@@ -27,7 +27,7 @@ export default function ProductsCatalogClient({ products }: ProductsCatalogClien
   const { selectedCategory, setSelectedCategory } = useCartStore();
 
   return (
-    <div className="bg-[#F9F9F9] text-[#111111] min-h-screen font-sans selection:bg-black selection:text-white">
+    <div className="bg-[#050505] text-white min-h-screen font-sans selection:bg-white selection:text-black">
       {/* Floating Unified Navbar */}
       <Navbar onOpenCategories={() => setIsCategoryDrawerOpen(true)} />
 
@@ -49,19 +49,19 @@ export default function ProductsCatalogClient({ products }: ProductsCatalogClien
       <MobileBottomBar onOpenCategories={() => setIsCategoryDrawerOpen(true)} />
 
       {/* Breadcrumb Header */}
-      <div className="border-b border-gray-200 bg-white py-4 px-6 sm:px-10 lg:px-12 text-xs font-mono">
+      <div className="border-b border-white/10 bg-[#0B0B0B] py-4 px-6 sm:px-10 lg:px-12 text-xs font-mono">
         <div className="max-w-[1500px] mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2 text-gray-500">
-            <Link href="/" className="hover:text-black transition-colors flex items-center gap-1">
+          <div className="flex items-center gap-2 text-white/50">
+            <Link href="/" className="hover:text-white transition-colors flex items-center gap-1">
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Home</span>
+              <span>HOME</span>
             </Link>
             <span>/</span>
-            <span className="text-black uppercase font-bold">Catalog</span>
+            <span className="text-white uppercase font-bold tracking-widest">HARDWARE CATALOG</span>
           </div>
 
-          <span className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">
-            ALL HARDWARE & GADGETS
+          <span className="text-[10px] uppercase tracking-[0.25em] text-white/40 font-semibold hidden sm:inline-block">
+            AUTHENTIC SPECIFICATION // ALL UNITS
           </span>
         </div>
       </div>

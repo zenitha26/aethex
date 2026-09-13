@@ -7,6 +7,7 @@ import { Product } from "../types/product";
 import { Heart, X, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { audioEngine } from "../lib/audio";
 
 export default function WishlistDrawer() {
@@ -115,7 +116,11 @@ export default function WishlistDrawer() {
                 wishlist.map((item) => (
                   <div key={item.id} className="py-4 flex gap-4 items-center justify-between">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-16 h-16 bg-[#050505] border border-white/10 shrink-0 relative overflow-hidden flex items-center justify-center">
+                      <Link
+                        href={`/products/${item.id}`}
+                        onClick={() => setWishlistOpen(false)}
+                        className="w-16 h-16 bg-[#050505] border border-white/10 shrink-0 relative overflow-hidden flex items-center justify-center hover:border-white transition-colors"
+                      >
                         {item.image_url ? (
                           <Image
                             src={item.image_url}
@@ -127,11 +132,17 @@ export default function WishlistDrawer() {
                         ) : (
                           <div className="w-full h-full bg-[#111111]" />
                         )}
-                      </div>
+                      </Link>
                       <div className="min-w-0">
-                        <h4 className="text-white text-xs font-mono uppercase truncate font-semibold">
-                          {item.title}
-                        </h4>
+                        <Link
+                          href={`/products/${item.id}`}
+                          onClick={() => setWishlistOpen(false)}
+                          className="hover:underline"
+                        >
+                          <h4 className="text-white text-xs font-mono uppercase truncate font-semibold">
+                            {item.title}
+                          </h4>
+                        </Link>
                         <div className="text-white text-xs font-mono font-bold mt-1">
                           Rs. {item.price.toLocaleString()} LKR
                         </div>

@@ -24,7 +24,7 @@ export default function CommandPalette() {
     { name: "Full Hardware Catalog", path: "/products", icon: Compass, category: "Catalog" },
     ...mockProducts.map((p) => ({
       name: `${p.title} (${p.category})`,
-      path: `/product/${p.id}`,
+      path: `/products/${p.id}`,
       icon: Cpu,
       category: "Hardware"
     })),

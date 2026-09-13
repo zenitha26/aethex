@@ -33,11 +33,17 @@ import MobileBottomBar from "./MobileBottomBar";
 import { audioEngine } from "../lib/audio";
 import { SITE_CONTACT } from "../constants";
 
+import DeliveryChecker from "./DeliveryChecker";
+import ConsoleCaliper from "./ConsoleCaliper";
+import InstallationDemoPlayer from "./InstallationDemoPlayer";
+import EnhancedProductCard from "./EnhancedProductCard";
+
 interface ProductDetailClientProps {
   product: Product;
+  relatedProducts?: Product[];
 }
 
-export default function ProductDetailClient({ product }: ProductDetailClientProps) {
+export default function ProductDetailClient({ product, relatedProducts = [] }: ProductDetailClientProps) {
   const { addToCart, setCartOpen } = useCartStore();
   const { toggleWishlist, isInWishlist } = useWishlistStore();
   const { toggleCompare, isInCompare } = useCompareStore();
@@ -104,10 +110,14 @@ Please confirm my order and dispatch.`);
         <div className="max-w-[1500px] mx-auto flex items-center gap-2 text-white/40">
           <Link href="/" className="hover:text-white transition-colors flex items-center gap-1">
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Store Home</span>
+            <span>AETHEX</span>
           </Link>
           <span>/</span>
-          <span>{product.category || "Hardware"}</span>
+          <Link href="/products" className="hover:text-white transition-colors">
+            HARDWARE
+          </Link>
+          <span>/</span>
+          <span>{product.category || "Automotive"}</span>
           <span>/</span>
           <span className="text-white font-bold truncate max-w-xs sm:max-w-md">{product.title}</span>
         </div>
@@ -372,6 +382,47 @@ Please confirm my order and dispatch.`);
                   <h3 className="text-sm text-white font-bold uppercase">{feat.title}</h3>
                   <p className="text-white/60 leading-relaxed font-light">{feat.desc}</p>
                 </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* District Logistics Estimator Integration */}
+      <DeliveryChecker />
+
+      {/* Vehicle Fitment Section for Automotive Mounts */}
+      {(product.id.includes("a711") || product.category === "Automotive Hardware") && (
+        <section id="product-fitment" className="border-b border-white/10">
+          <ConsoleCaliper />
+        </section>
+      )}
+
+      {/* Related Hardware Section */}
+      {relatedProducts && relatedProducts.length > 0 && (
+        <section className="py-20 px-6 sm:px-10 lg:px-12 border-b border-white/10 bg-[#050505] font-sans">
+          <div className="max-w-[1500px] mx-auto space-y-8">
+            <div className="space-y-1 border-b border-white/10 pb-4 flex items-end justify-between">
+              <div>
+                <span className="text-[10px] font-mono tracking-[0.3em] text-white/40 uppercase block font-semibold">
+                  COMPATIBLE ECOSYSTEM
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-mono uppercase text-white font-light">
+                  Related Hardware
+                </h2>
+              </div>
+              <Link 
+                href="/products" 
+                className="text-xs font-mono uppercase text-white/60 hover:text-white flex items-center gap-1.5 transition-colors"
+              >
+                <span>View Full Catalog</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {relatedProducts.map((rel) => (
+                <EnhancedProductCard key={rel.id} product={rel} />
               ))}
             </div>
           </div>

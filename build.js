@@ -57,6 +57,85 @@ if (process.platform === 'win32') {
     });
   };
 
+  // Readdir monkey-patches for locked/ghosted directories
+  const origReaddirSync = fs.readdirSync;
+  fs.readdirSync = function (path, options) {
+    try {
+      return origReaddirSync.call(fs, path, options);
+    } catch (err) {
+      if (err && (err.code === 'EPERM' || err.code === 'EACCES') && String(path).includes('aspor-a711')) {
+        return [];
+      }
+      throw err;
+    }
+  };
+
+  const origReaddir = fs.readdir;
+  fs.readdir = function (path, options, callback) {
+    let actualOptions = options;
+    let actualCallback = callback;
+    if (typeof options === 'function') {
+      actualCallback = options;
+      actualOptions = undefined;
+    }
+    return origReaddir.call(fs, path, actualOptions, (err, files) => {
+      if (err && (err.code === 'EPERM' || err.code === 'EACCES') && String(path).includes('aspor-a711')) {
+        if (actualCallback) actualCallback(null, []);
+        return;
+      }
+      if (actualCallback) actualCallback(err, files);
+    });
+  };
+
+  if (fs.promises && fs.promises.readdir) {
+    const origPromisesReaddir = fs.promises.readdir;
+    fs.promises.readdir = async function (path, options) {
+      try {
+        return await origPromisesReaddir.call(fs.promises, path, options);
+      } catch (err) {
+        if (err && (err.code === 'EPERM' || err.code === 'EACCES') && String(path).includes('aspor-a711')) {
+          return [];
+        }
+        throw err;
+      }
+    };
+  }
+
+  // opendir monkey-patch (Next.js 15 uses fs.promises.opendir / fs.opendirSync)
+  if (fs.promises && fs.promises.opendir) {
+    const origPromisesOpendir = fs.promises.opendir;
+    fs.promises.opendir = async function (path, options) {
+      try {
+        return await origPromisesOpendir.call(fs.promises, path, options);
+      } catch (err) {
+        if (err && (err.code === 'EPERM' || err.code === 'EACCES') && String(path).includes('aspor-a711')) {
+          return {
+            async *[Symbol.asyncIterator]() {},
+            close: async () => {}
+          };
+        }
+        throw err;
+      }
+    };
+  }
+
+  if (fs.opendirSync) {
+    const origOpendirSync = fs.opendirSync;
+    fs.opendirSync = function (path, options) {
+      try {
+        return origOpendirSync.call(fs, path, options);
+      } catch (err) {
+        if (err && (err.code === 'EPERM' || err.code === 'EACCES') && String(path).includes('aspor-a711')) {
+          return {
+            *[Symbol.iterator]() {},
+            closeSync: () => {}
+          };
+        }
+        throw err;
+      }
+    };
+  }
+
   // Promises readlink monkey-patch
   if (fs.promises && fs.promises.readlink) {
     const origPromisesReadlink = fs.promises.readlink;

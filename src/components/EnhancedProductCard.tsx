@@ -70,7 +70,7 @@ export default function EnhancedProductCard({ product, onQuickView }: EnhancedPr
     >
       {/* Top Media Container */}
       <div className="relative aspect-square w-full bg-[#080808] overflow-hidden">
-        <Link href={`/product/${product.id}`} className="block w-full h-full">
+        <Link href={`/products/${product.id}`} className="block w-full h-full">
           {product.image_url ? (
             <Image
               src={product.image_url}
@@ -141,7 +141,7 @@ export default function EnhancedProductCard({ product, onQuickView }: EnhancedPr
           </div>
 
           {/* Title */}
-          <Link href={`/product/${product.id}`} className="block">
+          <Link href={`/products/${product.id}`} className="block">
             <h3 className="text-white text-sm font-medium hover:text-white/80 line-clamp-2 leading-snug font-sans">
               {product.title}
             </h3>

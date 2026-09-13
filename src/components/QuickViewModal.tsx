@@ -273,12 +273,12 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
               {/* View Full Product Page */}
               <div className="pt-2 text-right">
                 <Link
-                  href={`/product/${product.id}`}
+                  href={`/products/${product.id}`}
                   onClick={onClose}
-                  className="inline-flex items-center gap-1.5 text-[11px] font-mono text-white/60 hover:text-white underline underline-offset-4 uppercase tracking-wider transition-colors"
+                  className="inline-flex items-center gap-2 text-xs font-mono text-white hover:text-white/80 underline underline-offset-4 uppercase tracking-[0.16em] font-semibold transition-colors"
                 >
-                  <span>View Full Technical Specifications</span>
-                  <ExternalLink className="w-3 h-3" />
+                  <span>VIEW FULL PRODUCT BLUEPRINT</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
                 </Link>
               </div>
             </div>

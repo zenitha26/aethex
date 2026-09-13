@@ -26,6 +26,7 @@ import DeliveryChecker from "./DeliveryChecker";
 import AboutManifesto from "./AboutManifesto";
 import CustomerReviews from "./CustomerReviews";
 import FastOrderModal from "./FastOrderModal";
+import HomeSystemBento from "./bento/HomeSystemBento";
 import Footer from "./Footer";
 import { Product } from "../types/product";
 import { SITE_CONTACT } from "../constants";
@@ -138,18 +139,21 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
       {/* 03 — TRUST & VALUE PROPOSITION BAR */}
       <ValueProps />
 
-      {/* 04 — "PERFECT FOR EVERY SPACE" CURATED DEPARTMENTS */}
+      {/* 04 — THE AETHEX SYSTEM // EDITORIAL AUTOMOTIVE BENTO GRID */}
+      <HomeSystemBento />
+
+      {/* 05 — "PERFECT FOR EVERY SPACE" CURATED DEPARTMENTS */}
       <CategoryGrid 
         onSelectCategory={handleSelectCategory}
         selectedCategory={selectedCategory}
       />
 
-      {/* 05 — FLASH DEALS / TOP DEALS COUNTDOWN BANNER */}
+      {/* 06 — FLASH DEALS / TOP DEALS COUNTDOWN BANNER */}
       <div id="deals-section">
         <DealsBanner onShopDeals={handleScrollToGrid} />
       </div>
 
-      {/* 06 — MULTI-TAB PRODUCT CATALOG (All Products, Top Deals, Fast Moving) */}
+      {/* 07 — MULTI-TAB PRODUCT CATALOG (All Products, Top Deals, Fast Moving) */}
       <StoreProductGrid
         products={initialProducts}
         onQuickView={(p) => setQuickViewProduct(p)}
