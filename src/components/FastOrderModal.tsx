@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, ArrowRight, ShieldCheck } from "lucide-react";
+import { X, ArrowRight, ShieldCheck } from "lucide-react";
 import { audioEngine } from "../lib/audio";
 import { SITE_CONTACT } from "../constants";
 
@@ -15,7 +15,6 @@ interface FastOrderModalProps {
   unitPrice?: number;
   productImage?: string;
 }
-
 
 const SRI_LANKA_DISTRICTS = [
   "Colombo",
@@ -61,6 +60,8 @@ export default function FastOrderModal({
   onClose,
   initialVehicle = "Honda Vezel / HR-V",
   initialQuantity = 1,
+  productTitle = "ASPOR A711 360° Console Mount",
+  unitPrice = 2990,
 }: FastOrderModalProps) {
   const [quantity, setQuantity] = useState(initialQuantity);
   const [vehicle, setVehicle] = useState(initialVehicle);
@@ -83,12 +84,12 @@ export default function FastOrderModal({
   // Pricing calculation
   const getPricing = () => {
     if (quantity === 1) {
-      return { total: 2990, deliveryText: "+ Delivery (Rs. 350)", freeDelivery: false };
+      return { total: unitPrice, deliveryText: "+ Delivery (Rs. 350)", freeDelivery: false };
     }
     if (quantity === 2) {
-      return { total: 5490, deliveryText: "FREE DELIVERY (Duo Pack Savings)", freeDelivery: true };
+      return { total: unitPrice * 2 - 490, deliveryText: "FREE DELIVERY (Duo Pack Savings)", freeDelivery: true };
     }
-    return { total: 7990 + (quantity - 3) * 2600, deliveryText: "FREE DELIVERY (Family/Fleet Savings)", freeDelivery: true };
+    return { total: unitPrice * quantity - 980, deliveryText: "FREE DELIVERY (Multi-Pack Savings)", freeDelivery: true };
   };
 
   const pricing = getPricing();
@@ -113,20 +114,19 @@ export default function FastOrderModal({
 
     const selectedCar = vehicle === "Other Vehicle" && customVehicle.trim() ? customVehicle.trim() : vehicle;
 
-    // Clean, courteous WhatsApp message format matching Section 16
-    const message = `Hi AETHEX,
+    const message = `Hi AETHEX Store,
 
 I'd like to order:
-ASPOR A711
+${productTitle}
 Quantity: ${quantity}
-Vehicle: ${selectedCar}
+Vehicle / Spec: ${selectedCar}
 Name: ${name.trim()}
 District: ${district}
 
 Total: Rs. ${pricing.total.toLocaleString()} LKR ${pricing.freeDelivery ? "(Free Delivery)" : "(+ Delivery)"}
-Payment: Cash on Delivery
+Payment: Direct Bank Transfer / Cash on Delivery
 
-Please confirm availability and delivery.`;
+Please confirm availability and dispatch.`;
 
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/${SITE_CONTACT.WHATSAPP_NUMBER}?text=${encoded}`, "_blank");
@@ -135,22 +135,22 @@ Please confirm availability and delivery.`;
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-sm">
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.96 }}
           transition={{ duration: 0.2 }}
-          className="w-full max-w-lg bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 space-y-6 text-[#111111] font-sans relative shadow-2xl"
+          className="w-full max-w-lg bg-[#0B0B0B] border border-white/10 p-6 sm:p-8 space-y-6 text-white font-sans relative shadow-2xl"
         >
           {/* Modal Header */}
-          <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
             <div>
-              <div className="text-[9px] font-mono tracking-[0.25em] text-gray-500 uppercase font-semibold">
-                DIRECT WHATSAPP DISPATCH
+              <div className="text-[9px] font-mono tracking-[0.25em] text-white/50 uppercase font-semibold">
+                DIRECT FAST DISPATCH
               </div>
-              <h2 className="text-xl sm:text-2xl font-light tracking-wide uppercase text-[#111111] mt-1">
-                Order ASPOR A711
+              <h2 className="text-xl sm:text-2xl font-light tracking-wide uppercase text-white font-mono mt-1">
+                Order Hardware Drop
               </h2>
             </div>
             <button
@@ -158,7 +158,7 @@ Please confirm availability and delivery.`;
                 audioEngine.playClick();
                 onClose();
               }}
-              className="text-gray-400 hover:text-black p-1 transition-colors cursor-pointer"
+              className="text-white/50 hover:text-white p-1 transition-colors cursor-pointer"
               aria-label="Close order modal"
             >
               <X className="w-5 h-5" />
@@ -168,35 +168,35 @@ Please confirm availability and delivery.`;
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4 text-xs font-mono">
             {error && (
-              <div className="text-red-700 bg-red-50 border border-red-200 p-2.5 text-[11px]">
+              <div className="text-red-400 bg-red-950/40 border border-red-800/60 p-2.5 text-[11px]">
                 {error}
               </div>
             )}
 
             {/* Quantity Selector */}
             <div className="space-y-1.5">
-              <label className="text-[10px] uppercase text-gray-500 tracking-wider block font-semibold">
+              <label className="text-[10px] uppercase text-white/50 tracking-wider block font-semibold">
                 QUANTITY
               </label>
               <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={() => handleQuantityChange(-1)}
-                  className="w-10 h-10 border border-gray-300 hover:border-black flex items-center justify-center text-base font-bold bg-white text-black transition-colors cursor-pointer"
+                  className="w-10 h-10 border border-white/20 hover:border-white flex items-center justify-center text-base font-bold bg-[#050505] text-white transition-colors cursor-pointer"
                 >
                   −
                 </button>
-                <span className="w-12 text-center text-base font-mono text-[#111111] font-semibold">
+                <span className="w-12 text-center text-base font-mono text-white font-semibold">
                   {quantity}
                 </span>
                 <button
                   type="button"
                   onClick={() => handleQuantityChange(1)}
-                  className="w-10 h-10 border border-gray-300 hover:border-black flex items-center justify-center text-base font-bold bg-white text-black transition-colors cursor-pointer"
+                  className="w-10 h-10 border border-white/20 hover:border-white flex items-center justify-center text-base font-bold bg-[#050505] text-white transition-colors cursor-pointer"
                 >
                   +
                 </button>
-                <span className="text-[10px] text-gray-600 pl-2">
+                <span className="text-[10px] text-white/50 pl-2">
                   {quantity === 2 ? "Duo Pack (Free Delivery)" : quantity >= 3 ? "Fleet Pack (Free Delivery)" : "Single Unit"}
                 </span>
               </div>
@@ -204,8 +204,8 @@ Please confirm availability and delivery.`;
 
             {/* Vehicle Selection */}
             <div className="space-y-1.5">
-              <label className="text-[10px] uppercase text-gray-500 tracking-wider block font-semibold">
-                YOUR VEHICLE (FOR FITMENT VERIFICATION)
+              <label className="text-[10px] uppercase text-white/50 tracking-wider block font-semibold">
+                YOUR VEHICLE / SETUP (FOR FITMENT VERIFICATION)
               </label>
               <select
                 value={vehicle}
@@ -213,10 +213,10 @@ Please confirm availability and delivery.`;
                   audioEngine.playDetent();
                   setVehicle(e.target.value);
                 }}
-                className="w-full bg-white border border-gray-300 text-[#111111] p-3 text-xs outline-none focus:border-black cursor-pointer"
+                className="w-full bg-[#050505] border border-white/15 text-white p-3 text-xs outline-none focus:border-white cursor-pointer"
               >
                 {POPULAR_VEHICLES.map((v) => (
-                  <option key={v} value={v} className="bg-white text-black">
+                  <option key={v} value={v} className="bg-[#050505] text-white">
                     {v}
                   </option>
                 ))}
@@ -228,14 +228,14 @@ Please confirm availability and delivery.`;
                   placeholder="Enter your vehicle make & model"
                   value={customVehicle}
                   onChange={(e) => setCustomVehicle(e.target.value)}
-                  className="w-full bg-white border border-gray-300 text-[#111111] p-3 text-xs outline-none focus:border-black mt-2"
+                  className="w-full bg-[#050505] border border-white/15 text-white p-3 text-xs outline-none focus:border-white mt-2"
                 />
               )}
             </div>
 
             {/* Name */}
             <div className="space-y-1.5">
-              <label className="text-[10px] uppercase text-gray-500 tracking-wider block font-semibold">
+              <label className="text-[10px] uppercase text-white/50 tracking-wider block font-semibold">
                 CUSTOMER NAME
               </label>
               <input
@@ -246,13 +246,13 @@ Please confirm availability and delivery.`;
                   setError("");
                   setName(e.target.value);
                 }}
-                className="w-full bg-white border border-gray-300 text-[#111111] p-3 text-xs outline-none focus:border-black"
+                className="w-full bg-[#050505] border border-white/15 text-white p-3 text-xs outline-none focus:border-white"
               />
             </div>
 
             {/* Phone */}
             <div className="space-y-1.5">
-              <label className="text-[10px] uppercase text-gray-500 tracking-wider block font-semibold">
+              <label className="text-[10px] uppercase text-white/50 tracking-wider block font-semibold">
                 PHONE / WHATSAPP NUMBER
               </label>
               <input
@@ -263,13 +263,13 @@ Please confirm availability and delivery.`;
                   setError("");
                   setPhone(e.target.value);
                 }}
-                className="w-full bg-white border border-gray-300 text-[#111111] p-3 text-xs outline-none focus:border-black"
+                className="w-full bg-[#050505] border border-white/15 text-white p-3 text-xs outline-none focus:border-white"
               />
             </div>
 
             {/* District */}
             <div className="space-y-1.5">
-              <label className="text-[10px] uppercase text-gray-500 tracking-wider block font-semibold">
+              <label className="text-[10px] uppercase text-white/50 tracking-wider block font-semibold">
                 DELIVERY DISTRICT
               </label>
               <select
@@ -278,10 +278,10 @@ Please confirm availability and delivery.`;
                   audioEngine.playDetent();
                   setDistrict(e.target.value);
                 }}
-                className="w-full bg-white border border-gray-300 text-[#111111] p-3 text-xs outline-none focus:border-black cursor-pointer"
+                className="w-full bg-[#050505] border border-white/15 text-white p-3 text-xs outline-none focus:border-white cursor-pointer"
               >
                 {SRI_LANKA_DISTRICTS.map((d) => (
-                  <option key={d} value={d} className="bg-white text-black">
+                  <option key={d} value={d} className="bg-[#050505] text-white">
                     {d}
                   </option>
                 ))}
@@ -289,16 +289,16 @@ Please confirm availability and delivery.`;
             </div>
 
             {/* Total Summary */}
-            <div className="border-t border-gray-200 pt-4 space-y-1">
+            <div className="border-t border-white/10 pt-4 space-y-1">
               <div className="flex justify-between text-xs">
-                <span className="text-gray-600">TOTAL:</span>
-                <span className="text-[#111111] font-bold text-sm">
+                <span className="text-white/60">TOTAL:</span>
+                <span className="text-white font-bold text-sm">
                   Rs. {pricing.total.toLocaleString()} LKR
                 </span>
               </div>
-              <div className="flex justify-between text-[10px] text-gray-500">
+              <div className="flex justify-between text-[10px] text-white/50">
                 <span>DELIVERY:</span>
-                <span className={pricing.freeDelivery ? "text-emerald-700 font-medium" : "text-gray-700"}>
+                <span className={pricing.freeDelivery ? "text-emerald-400 font-medium" : "text-white/70"}>
                   {pricing.deliveryText}
                 </span>
               </div>
@@ -307,15 +307,15 @@ Please confirm availability and delivery.`;
             {/* Submit Action */}
             <button
               type="submit"
-              className="w-full bg-black text-white hover:bg-neutral-800 transition-all py-3.5 rounded-full text-xs font-mono font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 cursor-pointer mt-4 shadow-md hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full bg-white text-black hover:bg-white/90 transition-all py-3.5 text-xs font-mono font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 cursor-pointer mt-4 shadow-lg"
             >
-              <span>CONTINUE TO WHATSAPP</span>
+              <span>CONFIRM ORDER VIA WHATSAPP</span>
               <ArrowRight className="w-4 h-4" />
             </button>
 
-            <div className="flex items-center justify-center gap-2 text-[9px] text-gray-500 pt-1">
-              <ShieldCheck className="w-3 h-3 text-black" />
-              <span>CASH ON DELIVERY • PRE-PAYMENT UNBOXING INSPECTION</span>
+            <div className="flex items-center justify-center gap-2 text-[9px] text-white/40 pt-1 font-mono">
+              <ShieldCheck className="w-3.5 h-3.5 text-white/60" />
+              <span>DIRECT BANK TRANSFER & COD • 7-DAY REPLACEMENT GUARANTEE</span>
             </div>
           </form>
         </motion.div>

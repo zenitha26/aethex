@@ -1,5 +1,24 @@
 const fs = require('fs');
 
+// Prevent crashes from Windows stdout/stderr pipe write drops
+if (process.stdout && process.stdout.on) {
+  process.stdout.on('error', (err) => {
+    if (err && (err.code === 'EPIPE' || err.code === 'UNKNOWN' || err.code === 'EOF')) return;
+  });
+}
+if (process.stderr && process.stderr.on) {
+  process.stderr.on('error', (err) => {
+    if (err && (err.code === 'EPIPE' || err.code === 'UNKNOWN' || err.code === 'EOF')) return;
+  });
+}
+process.on('uncaughtException', (err) => {
+  if (err && (err.code === 'UNKNOWN' || err.code === 'EPIPE') && err.syscall === 'write') {
+    return;
+  }
+  console.error('Uncaught Exception:', err);
+  process.exit(1);
+});
+
 if (process.platform === 'win32') {
   // Sync readlink monkey-patch
   const origReadlinkSync = fs.readlinkSync;

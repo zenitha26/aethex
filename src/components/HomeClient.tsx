@@ -23,6 +23,7 @@ import InstallationDemoPlayer from "./InstallationDemoPlayer";
 import ProductHotspots from "./ProductHotspots";
 import BundleOffers from "./BundleOffers";
 import DeliveryChecker from "./DeliveryChecker";
+import AboutManifesto from "./AboutManifesto";
 import CustomerReviews from "./CustomerReviews";
 import FastOrderModal from "./FastOrderModal";
 import Footer from "./Footer";
@@ -262,7 +263,10 @@ export default function HomeClient({ initialProducts }: HomeClientProps) {
       {/* 11 — ISLANDWIDE COURIER DELIVERY CHECKER */}
       <DeliveryChecker />
 
-      {/* 12 — VERIFIED CUSTOMER REVIEWS & SOCIAL PROOF */}
+      {/* 12 — EDITORIAL ABOUT & ENGINEERING MANIFESTO */}
+      <AboutManifesto />
+
+      {/* 13 — VERIFIED CUSTOMER REVIEWS & SOCIAL PROOF */}
       <CustomerReviews />
 
       {/* 13 — COMPREHENSIVE FOOTER */}

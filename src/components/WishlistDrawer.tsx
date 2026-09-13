@@ -48,11 +48,11 @@ export default function WishlistDrawer() {
         <>
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.5 }}
+            animate={{ opacity: 0.7 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
             onClick={() => setWishlistOpen(false)}
-            className="fixed inset-0 bg-black/40 z-[100]"
+            className="fixed inset-0 bg-black/80 z-[100] backdrop-blur-sm"
           />
 
           <motion.div
@@ -61,14 +61,14 @@ export default function WishlistDrawer() {
             animate="visible"
             exit="exit"
             role="dialog"
-            className="fixed right-0 top-0 bottom-0 w-full max-w-[440px] bg-white border-l border-gray-200 z-[101] shadow-2xl flex flex-col justify-between font-sans text-[#111111]"
+            className="fixed right-0 top-0 bottom-0 w-full max-w-[440px] bg-[#0B0B0B] border-l border-white/10 z-[101] shadow-2xl flex flex-col justify-between font-sans text-white"
           >
             {/* Header */}
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between bg-[#F9F9F9]">
+            <div className="p-6 border-b border-white/10 flex items-center justify-between bg-[#050505]">
               <div className="flex items-center gap-3">
-                <Heart className="w-4 h-4 text-black fill-black" />
-                <h2 className="text-[#111111] text-sm font-mono tracking-[0.2em] uppercase font-bold">
-                  WISHLIST <span className="text-gray-500">({wishlist.length})</span>
+                <Heart className="w-4 h-4 text-white fill-white" />
+                <h2 className="text-white text-sm font-mono tracking-[0.2em] uppercase font-bold">
+                  WISHLIST <span className="text-white/40">({wishlist.length})</span>
                 </h2>
               </div>
               
@@ -76,14 +76,14 @@ export default function WishlistDrawer() {
                 {wishlist.length > 0 && (
                   <button
                     onClick={clearWishlist}
-                    className="text-[10px] font-mono text-gray-500 hover:text-black uppercase transition-colors"
+                    className="text-[10px] font-mono text-white/40 hover:text-white uppercase transition-colors cursor-pointer"
                   >
                     Clear All
                   </button>
                 )}
                 <button 
                   onClick={() => setWishlistOpen(false)} 
-                  className="text-gray-500 hover:text-black p-1 transition-colors"
+                  className="text-white/50 hover:text-white p-1 transition-colors cursor-pointer"
                   aria-label="Close wishlist"
                 >
                   <X className="h-5 w-5" />
@@ -92,21 +92,21 @@ export default function WishlistDrawer() {
             </div>
 
             {/* List */}
-            <div className="flex-grow overflow-y-auto px-6 py-4 flex flex-col divide-y divide-gray-100 bg-white">
+            <div className="flex-grow overflow-y-auto px-6 py-4 flex flex-col divide-y divide-white/10 bg-[#0B0B0B]">
               {wishlist.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center py-20">
-                  <div className="w-12 h-12 border border-gray-300 flex items-center justify-center mb-4 text-gray-400">
+                  <div className="w-12 h-12 border border-white/10 flex items-center justify-center mb-4 text-white/40">
                     <Heart className="w-5 h-5" />
                   </div>
-                  <p className="text-[#111111] text-xs font-mono uppercase tracking-wider mb-2 font-bold">
+                  <p className="text-white text-xs font-mono uppercase tracking-wider mb-2 font-bold">
                     Your Wishlist Is Empty
                   </p>
-                  <p className="text-gray-500 text-xs font-light max-w-xs mb-6">
+                  <p className="text-white/50 text-xs font-light max-w-xs mb-6">
                     Tap the heart icon on any product card to save items for later.
                   </p>
                   <button
                     onClick={() => setWishlistOpen(false)}
-                    className="border border-gray-300 text-[#111111] px-6 py-2.5 text-xs font-mono uppercase tracking-widest hover:border-black transition-colors shadow-xs"
+                    className="border border-white/20 text-white px-6 py-2.5 text-xs font-mono uppercase tracking-widest hover:border-white transition-colors cursor-pointer"
                   >
                     Browse Catalog
                   </button>
@@ -115,27 +115,27 @@ export default function WishlistDrawer() {
                 wishlist.map((item) => (
                   <div key={item.id} className="py-4 flex gap-4 items-center justify-between">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-16 h-16 bg-[#F9F9F9] border border-gray-200 shrink-0 relative overflow-hidden">
+                      <div className="w-16 h-16 bg-[#050505] border border-white/10 shrink-0 relative overflow-hidden flex items-center justify-center">
                         {item.image_url ? (
                           <Image
                             src={item.image_url}
                             alt={item.title}
                             fill
                             sizes="64px"
-                            className="object-cover p-1"
+                            className="object-contain p-1"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gray-100" />
+                          <div className="w-full h-full bg-[#111111]" />
                         )}
                       </div>
                       <div className="min-w-0">
-                        <h4 className="text-[#111111] text-xs font-mono uppercase truncate font-semibold">
+                        <h4 className="text-white text-xs font-mono uppercase truncate font-semibold">
                           {item.title}
                         </h4>
-                        <div className="text-black text-xs font-mono font-bold mt-1">
-                          Rs. {item.price.toLocaleString()}
+                        <div className="text-white text-xs font-mono font-bold mt-1">
+                          Rs. {item.price.toLocaleString()} LKR
                         </div>
-                        <div className="text-[10px] font-mono text-gray-500">
+                        <div className="text-[10px] font-mono text-white/40">
                           In Stock • Fast Dispatch
                         </div>
                       </div>
@@ -144,14 +144,14 @@ export default function WishlistDrawer() {
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={() => handleAddToCart(item)}
-                        className="bg-black text-white hover:bg-neutral-800 p-2 text-xs font-mono uppercase transition-colors shadow-xs"
+                        className="bg-white text-black hover:bg-white/90 p-2 text-xs font-mono uppercase transition-colors cursor-pointer"
                         title="Add to Cart"
                       >
                         <ShoppingBag className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => removeFromWishlist(item.id)}
-                        className="text-gray-400 hover:text-black p-2 transition-colors"
+                        className="text-white/40 hover:text-white p-2 transition-colors cursor-pointer"
                         title="Remove"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -164,10 +164,10 @@ export default function WishlistDrawer() {
 
             {/* Footer */}
             {wishlist.length > 0 && (
-              <div className="p-6 border-t border-gray-200 bg-[#F9F9F9]">
+              <div className="p-6 border-t border-white/10 bg-[#050505]">
                 <button
                   onClick={handleMoveAllToCart}
-                  className="w-full bg-black text-white hover:bg-neutral-800 transition-all py-3.5 text-xs font-mono font-bold tracking-[0.18em] uppercase flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                  className="w-full bg-white text-black hover:bg-white/90 transition-all py-3.5 text-xs font-mono font-bold tracking-[0.18em] uppercase flex items-center justify-center gap-2 cursor-pointer shadow-lg"
                 >
                   <span>MOVE ALL TO CART</span>
                   <ArrowRight className="w-3.5 h-3.5" />

@@ -1,13 +1,17 @@
-export const runtime = 'edge';
-
 import { getProductById } from '../../../lib/products';
+import { mockProducts } from '../../../lib/mockData';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, ShieldCheck, Truck } from 'lucide-react';
 import ProductDetailClient from '../../../components/ProductDetailClient';
-import AsporA711Client from '../../../components/AsporA711Client';
 import { Metadata, ResolvingMetadata } from 'next';
+
+export function generateStaticParams() {
+  return mockProducts.map((product) => ({
+    id: product.id,
+  }));
+}
 
 export async function generateMetadata(
   { params }: { params: Promise<{ id: string }> },
@@ -77,11 +81,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {product.id === "aspor-a711" ? (
-        <AsporA711Client product={product} />
-      ) : (
-        <ProductDetailClient product={product} />
-      )}
+      <ProductDetailClient product={product} />
     </>
   );
 }

@@ -1,5 +1,3 @@
-export const runtime = 'edge';
-
 import { getProducts } from "@/lib/products";
 import ProductsCatalogClient from "../../components/ProductsCatalogClient";
 import { Metadata } from "next";

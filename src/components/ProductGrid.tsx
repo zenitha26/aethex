@@ -60,7 +60,7 @@ export default function ProductGrid({ initialProducts = [] }: ProductGridProps) 
                       data-cursor="view"
                     >
                       <Link 
-                        href={product.id === "aspor-a711" ? "/products/aspor-a711" : `/product/${encodeURIComponent(product.id)}`}
+                        href={`/product/${encodeURIComponent(product.id)}`}
                         onClick={playSelect}
                         onMouseEnter={playHover}
                         className="relative w-full h-full max-w-lg aspect-square flex items-center justify-center"
@@ -99,7 +99,7 @@ export default function ProductGrid({ initialProducts = [] }: ProductGridProps) 
 
                       <div className="pt-4">
                         <Link 
-                          href={product.id === "aspor-a711" ? "/products/aspor-a711" : `/product/${encodeURIComponent(product.id)}`}
+                          href={`/product/${encodeURIComponent(product.id)}`}
                           onClick={playSelect}
                           onMouseEnter={playHover}
                           className="editorial-link"
