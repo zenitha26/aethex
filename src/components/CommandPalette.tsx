@@ -2,8 +2,9 @@
 
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Compass, Shield, HelpCircle, FileText, Settings, X, Terminal } from "lucide-react";
+import { Search, Compass, Shield, HelpCircle, FileText, Settings, X, Terminal, Cpu, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { mockProducts } from "../lib/mockData";
 
 interface RouteItem {
   name: string;
@@ -20,16 +21,23 @@ export default function CommandPalette() {
 
   const routes: RouteItem[] = [
     { name: "Overview / Home", path: "/", icon: Compass, category: "Navigation" },
-    { name: "Curated 10-Piece Catalog", path: "/products", icon: Compass, category: "Products" },
+    { name: "Full Hardware Catalog", path: "/products", icon: Compass, category: "Catalog" },
+    ...mockProducts.map((p) => ({
+      name: `${p.title} (${p.category})`,
+      path: `/product/${p.id}`,
+      icon: Cpu,
+      category: "Hardware"
+    })),
+    { name: "Fitment Caliper Tool", path: "/#fitment-caliper", icon: Settings, category: "Tools" },
     { name: "Brand Manifesto & Engineering", path: "/about-us", icon: Settings, category: "About" },
-    { name: "Track Order Status", path: "/track-order", icon: Terminal, category: "Account" },
-    { name: "Policies & Integrity", path: "/policies", icon: Shield, category: "Legal" },
-    { name: "Contact Concierge", path: "/contact", icon: HelpCircle, category: "Support" },
-    { name: "System Analytics", path: "/admin/analytics", icon: FileText, category: "Admin" }
+    { name: "Track Order Status", path: "/track-order", icon: Terminal, category: "Telemetry" },
+    { name: "Policies & Legal Hub", path: "/policies", icon: Shield, category: "Legal" },
+    { name: "Contact Concierge Desk", path: "/contact", icon: HelpCircle, category: "Support" },
   ];
 
   const filtered = routes.filter((item) =>
-    item.name.toLowerCase().includes(query.toLowerCase())
+    item.name.toLowerCase().includes(query.toLowerCase()) ||
+    item.category.toLowerCase().includes(query.toLowerCase())
   );
 
   useEffect(() => {

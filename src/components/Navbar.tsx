@@ -149,55 +149,38 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
             </Link>
           </div>
 
-          {/* Clean Integrated Nav Links */}
-          <nav className="hidden lg:flex items-center gap-6 text-xs font-mono text-white/60 tracking-wider">
-            {onOpenCategories && (
-              <button
-                onClick={() => onOpenCategories()}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white text-white/80 hover:text-black transition-all duration-200 cursor-pointer font-semibold border border-white/10"
-              >
-                <Layers className="w-3.5 h-3.5" />
-                <span>Departments</span>
-              </button>
-            )}
-
-            <button
-              onClick={() => handleNavClick("deals-section")}
-              className="hover:text-white transition-colors flex items-center gap-1.5 text-white/80"
+          {/* Architectural Editorial Nav Links */}
+          <nav className="hidden lg:flex items-center gap-7 text-xs font-mono tracking-[0.16em] uppercase">
+            <Link
+              href="/products"
+              onClick={() => { try { audioEngine.playSelect(); } catch {} }}
+              className="text-white/70 hover:text-white transition-colors relative py-1 hover:underline underline-offset-8"
             >
-              <span>Top Deals</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-            </button>
-
-            <button
-              onClick={() => handleNavClick("products-grid")}
-              className="hover:text-white transition-colors"
-            >
-              Catalog
-            </button>
-
-            <button
-              onClick={() => handleNavClick("hardware-spotlight")}
-              className="hover:text-white transition-colors"
-            >
-              A711 Mount
-            </button>
-
-            <Link href="/droplist" className="hover:text-white transition-colors flex items-center gap-1.5">
-              <span>Droplist</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              Products
             </Link>
 
-            <Link href="/track-order" className="hover:text-white transition-colors">
-              Tracking
-            </Link>
-
-            <Link href="/about-us" className="hover:text-white transition-colors">
+            <Link
+              href="/about-us"
+              onClick={() => { try { audioEngine.playSelect(); } catch {} }}
+              className="text-white/70 hover:text-white transition-colors relative py-1 hover:underline underline-offset-8"
+            >
               About
             </Link>
 
-            <Link href="/contact" className="hover:text-white transition-colors">
-              Support
+            <Link
+              href="/track-order"
+              onClick={() => { try { audioEngine.playSelect(); } catch {} }}
+              className="text-white/70 hover:text-white transition-colors relative py-1 hover:underline underline-offset-8"
+            >
+              Track Order
+            </Link>
+
+            <Link
+              href="/contact"
+              onClick={() => { try { audioEngine.playSelect(); } catch {} }}
+              className="text-white/70 hover:text-white transition-colors relative py-1 hover:underline underline-offset-8"
+            >
+              Contact
             </Link>
           </nav>
         </div>

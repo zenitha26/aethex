@@ -96,19 +96,19 @@ export default function WishlistDrawer() {
               {wishlist.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center py-20">
                   <div className="w-12 h-12 border border-white/10 flex items-center justify-center mb-4 text-white/40">
-                    <Heart className="w-5 h-5" />
+                    <Heart className="w-4 h-4" />
                   </div>
-                  <p className="text-white text-xs font-mono uppercase tracking-wider mb-2 font-bold">
-                    Your Wishlist Is Empty
+                  <p className="text-white text-xs font-mono uppercase tracking-[0.2em] mb-2 font-semibold">
+                    YOUR SAVED HARDWARE
                   </p>
-                  <p className="text-white/50 text-xs font-light max-w-xs mb-6">
-                    Tap the heart icon on any product card to save items for later.
+                  <p className="text-white/40 text-xs font-mono max-w-xs mb-6 font-light">
+                    Hardware items you save during inspection will appear here.
                   </p>
                   <button
                     onClick={() => setWishlistOpen(false)}
-                    className="border border-white/20 text-white px-6 py-2.5 text-xs font-mono uppercase tracking-widest hover:border-white transition-colors cursor-pointer"
+                    className="border border-white/20 hover:border-white text-white px-6 py-2.5 text-xs font-mono uppercase tracking-[0.16em] transition-colors cursor-pointer"
                   >
-                    Browse Catalog
+                    EXPLORE HARDWARE
                   </button>
                 </div>
               ) : (

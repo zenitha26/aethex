@@ -393,8 +393,8 @@ export default function CartDrawer() {
                     <ArrowRight className="w-3.5 h-3.5 text-black" />
                   </button>
                   
-                  <p className="text-center text-[9px] font-mono text-white/30 tracking-widest uppercase">
-                    Bank Transfer • Instant Ceylon Express Clearance
+                  <p className="text-center text-[9px] font-mono text-white/40 tracking-widest uppercase">
+                    Cash On Delivery &bull; Direct Bank Transfer &bull; 7-Day Replacement
                   </p>
                 </div>
               </div>

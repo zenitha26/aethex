@@ -17,12 +17,26 @@ interface VehiclePreset {
 
 const VEHICLE_PRESETS: VehiclePreset[] = [
   { name: "Honda Vezel / HR-V", diameter: 72, depth: "Deep (85mm)" },
+  { name: "Honda Grace / City", diameter: 71, depth: "Standard (75mm)" },
+  { name: "Honda Fit / Jazz GP5", diameter: 70, depth: "Standard (70mm)" },
   { name: "Toyota Premio / Allion", diameter: 75, depth: "Standard (75mm)" },
-  { name: "Toyota Aqua / Prius", diameter: 70, depth: "Standard (70mm)" },
-  { name: "Suzuki Swift / RS", diameter: 68, depth: "Compact (65mm)" },
-  { name: "Suzuki Wagon R", diameter: 67, depth: "Compact (62mm)" },
-  { name: "Toyota Hilux / D-Max", diameter: 82, depth: "Extra Deep (95mm)" },
-  { name: "Nissan Leaf", diameter: 74, depth: "Standard (72mm)" },
+  { name: "Toyota Aqua / Prius C", diameter: 70, depth: "Standard (70mm)" },
+  { name: "Toyota Corolla Axio / Fielder", diameter: 73, depth: "Standard (72mm)" },
+  { name: "Toyota Prius 3rd/4th Gen", diameter: 74, depth: "Deep (80mm)" },
+  { name: "Toyota Raize / Daihatsu Rocky", diameter: 72, depth: "Standard (74mm)" },
+  { name: "Toyota Hilux Revo / Rocco", diameter: 84, depth: "Extra Deep (95mm)" },
+  { name: "Toyota Land Cruiser Prado", diameter: 82, depth: "Deep (90mm)" },
+  { name: "Suzuki Swift / RS Hybrid", diameter: 68, depth: "Compact (65mm)" },
+  { name: "Suzuki Wagon R FX/FZ/Stingray", diameter: 67, depth: "Compact (62mm)" },
+  { name: "Suzuki Spacia / Hustler", diameter: 68, depth: "Compact (64mm)" },
+  { name: "Suzuki Alto / 800", diameter: 66, depth: "Compact (60mm)" },
+  { name: "Nissan Leaf ZE0 / ZE1", diameter: 74, depth: "Standard (72mm)" },
+  { name: "Nissan X-Trail T32", diameter: 78, depth: "Deep (88mm)" },
+  { name: "Mitsubishi Montero / Pajero Sport", diameter: 80, depth: "Deep (90mm)" },
+  { name: "Hyundai Grand i10 / Tucson", diameter: 72, depth: "Standard (75mm)" },
+  { name: "Kia Sorento / Sportage", diameter: 76, depth: "Deep (82mm)" },
+  { name: "Mercedes-Benz C-Class / E-Class", diameter: 75, depth: "Standard (75mm)" },
+  { name: "BMW 3-Series / 5-Series / X3", diameter: 76, depth: "Deep (80mm)" },
 ];
 
 export default function ConsoleCaliper({ onSelectVehicle }: ConsoleCaliperProps) {

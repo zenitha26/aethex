@@ -179,14 +179,13 @@ Please confirm my order and dispatch.`);
               )}
             </div>
 
-            {/* Rating & In-Stock */}
+            {/* Engineering Status & Inventory */}
             <div className="flex items-center gap-3 text-xs font-mono text-white/70">
-              <span className="font-bold text-white">★ {product.rating || "4.9"}</span>
-              <span className="text-white/40">({product.reviewCount || "64"} verified owner telemetry)</span>
-              <span className="text-white/20">•</span>
-              <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                <Check className="w-3.5 h-3.5" /> In Stock (Direct Dispatch)
+              <span className="text-emerald-400 font-semibold flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5" /> Direct Islandwide Dispatch
               </span>
+              <span className="text-white/20">&bull;</span>
+              <span className="text-white/50">Colombo Ready</span>
             </div>
 
             {/* Pricing Section */}
@@ -200,14 +199,9 @@ Please confirm my order and dispatch.`);
                     Rs. {product.original_price.toLocaleString()} LKR
                   </span>
                 )}
-                {discountPercent && (
-                  <span className="border border-white/20 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-white/5">
-                    Save {discountPercent}%
-                  </span>
-                )}
               </div>
               <div className="text-xs text-white/50">
-                Complimentary Express Courier islandwide • Bank Transfer & Instant Verification
+                Rs. 350 Flat Courier Delivery &bull; Cash on Delivery & Direct Bank Transfer Available
               </div>
             </div>
 
