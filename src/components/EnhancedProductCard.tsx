@@ -162,7 +162,7 @@ export default function EnhancedProductCard({ product, onQuickView }: EnhancedPr
           </div>
         </div>
 
-        {/* Price & Installment */}
+        {/* Price & Settlement */}
         <div className="space-y-1 pt-2 border-t border-white/10">
           <div className="flex items-baseline gap-2">
             <span className="text-base sm:text-lg font-bold text-white font-mono">

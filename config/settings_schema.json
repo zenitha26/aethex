@@ -1751,12 +1751,6 @@
       },
       {
         "type": "checkbox",
-        "id": "show_installments",
-        "label": "t:settings.installments",
-        "default": true
-      },
-      {
-        "type": "checkbox",
         "id": "show_accelerated_checkout_buttons",
         "label": "t:settings.checkout_buttons",
         "info": "t:info.checkout_buttons",
