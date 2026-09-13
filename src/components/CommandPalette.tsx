@@ -20,10 +20,11 @@ export default function CommandPalette() {
 
   const routes: RouteItem[] = [
     { name: "Overview / Home", path: "/", icon: Compass, category: "Navigation" },
-    { name: "Custom Lab Configurator", path: "/custom-lab", icon: Settings, category: "Features" },
+    { name: "Curated 10-Piece Catalog", path: "/products", icon: Compass, category: "Products" },
+    { name: "Brand Manifesto & Engineering", path: "/about-us", icon: Settings, category: "About" },
     { name: "Track Order Status", path: "/track-order", icon: Terminal, category: "Account" },
     { name: "Policies & Integrity", path: "/policies", icon: Shield, category: "Legal" },
-    { name: "Contact Engineering", path: "/contact", icon: HelpCircle, category: "Support" },
+    { name: "Contact Concierge", path: "/contact", icon: HelpCircle, category: "Support" },
     { name: "System Analytics", path: "/admin/analytics", icon: FileText, category: "Admin" }
   ];
 

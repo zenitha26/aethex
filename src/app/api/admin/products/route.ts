@@ -120,22 +120,7 @@ export async function PUT(request: Request) {
     if (stock !== undefined) updatePayload.stock = parseInt(stock, 10);
     updatePayload.updated_at = new Date().toISOString();
 
-    // If it's a Shopify product, update Shopify first!
-    if (id.includes('gid://shopify/Product/')) {
-      const { addProductImage, setProductStock } = require("../../../../lib/shopify-admin");
-      
-      try {
-        if (image_url) {
-          await addProductImage(id, image_url);
-        }
-        if (stock !== undefined) {
-          await setProductStock(id, parseInt(stock, 10));
-        }
-      } catch (shopifyErr: any) {
-        console.error("Failed to update Shopify:", shopifyErr);
-        return NextResponse.json({ error: "Failed to update Shopify: " + shopifyErr.message }, { status: 500 });
-      }
-    }
+    // Update product in database
 
     const { error: updateError } = await supabaseAdmin
       .from("products")
