@@ -21,8 +21,8 @@ export default function ValueProps() {
     },
     {
       icon: <Clock className="w-5 h-5 text-white" />,
-      title: "3X 0% INTEREST INSTALLMENTS",
-      desc: "Split payments seamlessly with Koko & Mintpay."
+      title: "LIVE ORDER TELEMETRY",
+      desc: "Live order status lookup via phone number or order reference."
     }
   ];
 

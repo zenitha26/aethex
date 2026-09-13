@@ -175,9 +175,9 @@ export default function EnhancedProductCard({ product, onQuickView }: EnhancedPr
             )}
           </div>
 
-          {/* 3X Installment breakdown */}
+          {/* Payment indicator */}
           <div className="text-[10px] font-mono text-white/50 truncate">
-            or 3 × <span className="text-white font-bold">Rs. {Math.round(product.price / 3).toLocaleString()}</span> with Koko
+            Cash on Delivery & Bank Transfer Available
           </div>
         </div>
 

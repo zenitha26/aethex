@@ -114,13 +114,13 @@ export default function CustomerReviews() {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-white/10 pb-6">
           <div className="space-y-2">
             <span className="text-[10px] font-mono tracking-[0.25em] text-white/50 uppercase block font-semibold">
-              FIELD LOGS // VERIFIED REVIEWS
+              FIELD LOGS // COMMUNITY DRIVER NOTES
             </span>
             <h3 className="text-2xl sm:text-4xl font-light uppercase text-white tracking-tight font-mono">
-              Real Cars. Real Drivers. Real Results.
+              Real Cars. Sri Lankan Road Tests.
             </h3>
             <p className="text-white/60 text-xs sm:text-sm font-light max-w-xl leading-relaxed">
-              Verified driver feedback from daily commutes and highway routes across Sri Lanka.
+              Driver feedback and fitment notes across Western Province and islandwide routes.
             </p>
           </div>
 

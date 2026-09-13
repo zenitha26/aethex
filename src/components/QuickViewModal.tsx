@@ -197,7 +197,7 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
                   )}
                 </div>
                 <div className="text-[11px] text-white/50">
-                  Or 3 interest-free installments of <span className="text-white font-bold">Rs. {Math.round(product.price / 3).toLocaleString()}</span> with Koko / Mintpay
+                  Cash on Delivery & Direct Bank Transfer Available Across Sri Lanka
                 </div>
               </div>
 
@@ -266,7 +266,7 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
                 </div>
                 <div className="flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 text-white" />
-                  <span>Official Warranty</span>
+                  <span>Warranty & Inspection</span>
                 </div>
               </div>
 

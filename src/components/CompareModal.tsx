@@ -167,12 +167,12 @@ export default function CompareModal() {
                     ))}
                   </div>
 
-                  {/* Installments Row */}
+                  {/* Payment Options Row */}
                   <div className="grid grid-cols-5 gap-4 py-4 items-center">
-                    <div className="text-[10px] uppercase text-gray-500">3X Installments</div>
+                    <div className="text-[10px] uppercase text-gray-500">Payment</div>
                     {compareList.map((p) => (
-                      <div key={p.id} className="text-gray-600 text-[11px]">
-                        3 × <span className="text-black font-bold">Rs. {Math.round(p.price / 3).toLocaleString()}</span> with Koko
+                      <div key={p.id} className="text-gray-400 text-[11px]">
+                        COD / Bank Transfer
                       </div>
                     ))}
                   </div>
