@@ -18,7 +18,7 @@ export default function FAQAccordion({ items }: FAQAccordionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const toggle = (idx: number) => {
-    audioEngine.playDetent();
+    try { audioEngine.playClick(); } catch {}
     setOpenIndex(openIndex === idx ? null : idx);
   };
 
@@ -29,7 +29,7 @@ export default function FAQAccordion({ items }: FAQAccordionProps) {
         return (
           <div
             key={idx}
-            className="border border-gray-200 bg-white transition-colors shadow-xs"
+            className="border border-white/10 bg-[#0B0B0B] transition-all hover:border-white/20 shadow-xl"
           >
             <button
               type="button"
@@ -39,23 +39,23 @@ export default function FAQAccordion({ items }: FAQAccordionProps) {
             >
               <div className="space-y-1">
                 {item.tag && (
-                  <span className="text-[9px] font-mono tracking-widest text-gray-500 uppercase block font-semibold">
+                  <span className="text-[9px] font-mono tracking-widest text-white/40 uppercase block font-semibold">
                     {item.tag}
                   </span>
                 )}
-                <span className="text-sm sm:text-base font-mono uppercase text-[#111111] font-semibold tracking-wide">
+                <span className="text-sm sm:text-base font-mono uppercase text-white font-medium tracking-wide">
                   {item.question}
                 </span>
               </div>
               <ChevronDown
-                className={`w-4 h-4 text-gray-500 transition-transform duration-200 mt-1 flex-shrink-0 ${
-                  isOpen ? "rotate-180 text-black" : ""
+                className={`w-4 h-4 text-white/40 transition-transform duration-300 mt-1 flex-shrink-0 ${
+                  isOpen ? "rotate-180 text-white" : ""
                 }`}
               />
             </button>
 
             {isOpen && (
-              <div className="px-5 pb-5 sm:px-6 sm:pb-6 pt-1 text-xs sm:text-sm font-light text-gray-600 leading-relaxed border-t border-gray-100">
+              <div className="px-5 pb-5 sm:px-6 sm:pb-6 pt-2 text-xs sm:text-sm font-light text-white/70 leading-relaxed border-t border-white/5">
                 {item.answer}
               </div>
             )}

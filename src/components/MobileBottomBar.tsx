@@ -68,7 +68,8 @@ export default function MobileBottomBar({ onOpenCategories }: MobileBottomBarPro
 
   const handleContact = () => {
     try { audioEngine.playSelect(); } catch {}
-    window.open(`https://wa.me/${SITE_CONTACT.WHATSAPP_NUMBER}`, "_blank");
+    const text = encodeURIComponent("Hello AETHEX Concierge, I need assistance with an order or product fitment.");
+    window.open(`https://wa.me/${SITE_CONTACT.WHATSAPP_NUMBER}?text=${text}`, "_blank");
   };
 
   return (

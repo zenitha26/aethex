@@ -36,37 +36,41 @@ export default function Footer() {
     const el = document.getElementById("products-grid");
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
+    } else {
+      window.location.href = `/#products-grid`;
     }
   };
 
   const departmentLinks = [
-    { name: "Mobile & Tablets", filter: "Mobile & Tablets" },
-    { name: "Computers & Accessories", filter: "Computers & Accessories" },
-    { name: "TV & Entertainment", filter: "TV & Entertainment" },
-    { name: "Home Appliances", filter: "Home Appliances" },
     { name: "Automotive Hardware", filter: "Automotive Hardware" },
+    { name: "Lossless Acoustics", filter: "Lossless Acoustics" },
+    { name: "Power & Connectivity", filter: "Power & Connectivity" },
+    { name: "Precision Tools & EDC", filter: "Precision Tools & EDC" },
+    { name: "Workspace & Ergonomics", filter: "Workspace & Ergonomics" },
   ];
 
   const supportLinks = [
     { name: "Track Order", href: "/track-order" },
-    { name: "Warranty Claim", href: "/warranty" },
-    { name: "Shipping Rates", href: "/policies" },
+    { name: "Shipping & Delivery", href: "/shipping" },
+    { name: "Returns & Refunds", href: "/returns" },
+    { name: "Warranty Coverage", href: "/warranty" },
     { name: "Help & FAQ", href: "/faq" },
-    { name: "Contact Desk", href: "/contact" },
+    { name: "Contact Concierge", href: "/contact" },
   ];
 
   const policyLinks = [
-    { name: "Privacy Policy", href: "/policies" },
+    { name: "Privacy Policy", href: "/privacy-policy" },
     { name: "Terms & Conditions", href: "/terms" },
-    { name: "Refund & Returns", href: "/policies" },
+    { name: "Policies Hub", href: "/policies" },
+    { name: "About AETHEX", href: "/about-us" },
   ];
 
   const trustBadges = [
-    { label: "Direct Bank Transfer", icon: Landmark },
-    { label: "Instant QR Payment", icon: QrCode },
-    { label: "WhatsApp Verification", icon: MessageCircle },
-    { label: "24h Express Dispatch", icon: Truck },
-    { label: "7-Day Guarantee", icon: ShieldCheck },
+    { label: "Islandwide Courier Delivery", icon: Truck },
+    { label: "Cash on Delivery (COD)", icon: ShieldCheck },
+    { label: "Bank Transfer & Slip OCR", icon: Landmark },
+    { label: "7-Day Inspection Guarantee", icon: ShieldCheck },
+    { label: "WhatsApp Concierge", icon: MessageCircle },
   ];
 
   return (

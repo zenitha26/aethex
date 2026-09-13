@@ -3,60 +3,67 @@ export const runtime = 'edge';
 import { Metadata } from "next";
 import LegalPageLayout from "../../components/legal/LegalPageLayout";
 import PolicySection from "../../components/legal/PolicySection";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Returns & Refunds Policy | AETHEX STORE",
-  description: "Guidelines on our 7-day replacement guarantee, exchange procedures, and return conditions at AETHEX STORE.",
+  description: "Guidelines on our 7-day replacement guarantee, doorstep courier exchanges, and bank transfer refund terms at AETHEX STORE.",
 };
 
 export default function ReturnsPage() {
   return (
     <LegalPageLayout
       title="Returns & Refunds"
-      subtitle="Clear, honest terms regarding product replacements, transit damages, and refund conditions at AETHEX STORE."
+      subtitle="Clear, honest terms regarding product replacements, transit damages, and refund conditions at AETHEX STORE in Sri Lanka."
       lastUpdated="September 2026"
     >
       <PolicySection index="01 //" title="7-Day Replacement Guarantee">
         <p>
-          We stand behind the physical condition of every product we dispatch. If your ASPOR A711 arrives damaged in transit, with manufacturing flaws, or does not match the product described, you are entitled to a <strong>free replacement within 7 calendar days</strong> of receiving the package.
+          We stand firmly behind the build quality and functionality of every hardware unit we dispatch. If your purchase arrives damaged during courier transit, exhibits an out-of-the-box manufacturing flaw, or fails to operate as described, you are entitled to a <strong>1-to-1 replacement within 7 calendar days</strong> of receiving your doorstep delivery.
         </p>
       </PolicySection>
 
       <PolicySection index="02 //" title="Eligibility Criteria">
-        <p>To be eligible for an exchange or replacement:</p>
-        <ul className="list-disc pl-5 space-y-1 text-white/80">
-          <li>You must report the issue to our WhatsApp support within 7 days of doorstep delivery.</li>
-          <li>The item must be in its original packaging including all original parts (mount base, articulating arm, ball socket clamp, knurled dial).</li>
-          <li>The product must not exhibit signs of user-inflicted physical damage, forced breakage, or unauthorized alterations.</li>
+        <p>To qualify for a complimentary exchange or replacement:</p>
+        <ul className="list-disc pl-5 space-y-1.5 text-white/80">
+          <li>You must notify our Colombo concierge team within 7 calendar days of confirmed courier delivery.</li>
+          <li>The hardware must be in its original product packaging with all standard accessories (base mounts, articulating arms, ball pivots, USB-C cables, documentation).</li>
+          <li>The product must not exhibit user-inflicted physical damage, forced overtightening cracks, or unauthorized disassembly.</li>
         </ul>
       </PolicySection>
 
-      <PolicySection index="03 //" title="How to Initiate an Exchange">
+      <PolicySection index="03 //" title="Step-by-Step Exchange Procedure">
         <ol className="list-decimal pl-5 space-y-2 text-white/80">
           <li>
-            <strong>Contact WhatsApp:</strong> Send a message to <span className="text-white">+94 78 234 9954</span> stating your name, phone number, and brief description of the issue.
+            <strong>Contact WhatsApp Concierge:</strong> Message <span className="text-white font-medium">+94 78 234 9954</span> or email <span className="text-white font-medium">support@aethexstore.com</span> with your Order ID or phone number.
           </li>
           <li>
-            <strong>Share Photos / Video:</strong> Attach a quick photo or short video showing the defect or transit damage so our technical team can verify the issue immediately.
+            <strong>Photo / Video Verification:</strong> Share a quick photo or short video demonstrating the defect, transit damage, or mechanical issue so our technical staff can verify the claim immediately.
           </li>
           <li>
-            <strong>Replacement Dispatch:</strong> Upon verification, we will dispatch a brand-new replacement unit to your address via courier and coordinate the return handover of the defective piece.
+            <strong>Doorstep Courier Handover:</strong> Upon claim approval, our dispatch desk will arrange a replacement parcel via courier. The courier agent will hand over your brand-new unit and collect the defective unit at your doorstep.
           </li>
         </ol>
       </PolicySection>
 
-      <PolicySection index="04 //" title="Refund Conditions">
+      <PolicySection index="04 //" title="Direct Bank Reimbursement">
         <p>
-          As an automotive hardware retailer operating primarily on Cash on Delivery, our primary resolution for valid claims is a prompt replacement or exchange with an equivalent, brand-new unit.
+          As an independent electronics retailer, our standard resolution for valid claims is a swift, brand-new replacement unit.
         </p>
         <p>
-          If a replacement unit is temporarily out of stock or we are unable to resolve the hardware defect, a full refund of the product purchase price will be issued to your designated Sri Lankan bank account via direct bank transfer within 3 to 5 business days.
+          In the event that an identical replacement model is temporarily out of stock or cannot be fulfilled, a <strong>100% full refund</strong> of the purchase price will be remitted directly to your designated Sri Lankan commercial bank account (Commercial Bank, BOC, Sampath Bank, HNB, Seylan, etc.) via wire transfer within 3 to 5 business days.
         </p>
       </PolicySection>
 
-      <PolicySection index="05 //" title="Return Shipping Costs">
+      <PolicySection index="05 //" title="Return Courier Costs">
         <p>
-          If the exchange is due to a verifiable manufacturing defect, transit damage, or an error on our part (e.g. incorrect model shipped), AETHEX STORE covers all return courier and replacement dispatch costs.
+          If the exchange is due to a verifiable manufacturing defect, transit damage, or an incorrect item dispatched by our fulfillment team, <strong>AETHEX STORE covers all return courier and replacement dispatch expenses</strong>. There are no restocking fees or return shipping charges assessed to the customer.
+        </p>
+      </PolicySection>
+
+      <PolicySection index="06 //" title="Assistance & Claims Contact">
+        <p>
+          For questions regarding an ongoing exchange or warranty assessment, contact our support team directly via WhatsApp at <span className="text-white">+94 78 234 9954</span> (9:00 AM – 8:00 PM Daily) or visit our <Link href="/contact" className="text-white underline">Contact Desk</Link>.
         </p>
       </PolicySection>
     </LegalPageLayout>

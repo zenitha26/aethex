@@ -188,8 +188,16 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
             </Link>
 
+            <Link href="/track-order" className="hover:text-white transition-colors">
+              Tracking
+            </Link>
+
             <Link href="/about-us" className="hover:text-white transition-colors">
               About
+            </Link>
+
+            <Link href="/contact" className="hover:text-white transition-colors">
+              Support
             </Link>
           </nav>
         </div>
@@ -505,6 +513,14 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
                 <span className="text-xs text-white/40">({wishlist.length})</span>
               </button>
               <Link
+                href="/track-order"
+                onClick={() => setMobileMenuOpen(false)}
+                className="hover:text-white py-1 flex items-center justify-between"
+              >
+                <span>Track Order Telemetry</span>
+                <span className="text-[10px] bg-white/10 text-white px-2 py-0.5 rounded-full border border-white/10 font-mono">TRACK</span>
+              </Link>
+              <Link
                 href="/about-us"
                 onClick={() => setMobileMenuOpen(false)}
                 className="hover:text-white py-1"
@@ -516,7 +532,14 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
                 onClick={() => setMobileMenuOpen(false)}
                 className="hover:text-white py-1"
               >
-                Contact & Showroom
+                Customer Support & Concierge
+              </Link>
+              <Link
+                href="/policies"
+                onClick={() => setMobileMenuOpen(false)}
+                className="hover:text-white py-1 text-white/50 text-xs"
+              >
+                Policies & Legal Directory
               </Link>
             </div>
 

@@ -3,52 +3,140 @@ export const runtime = 'edge';
 import { Metadata } from "next";
 import LegalPageLayout from "../../components/legal/LegalPageLayout";
 import FAQAccordion from "../../components/legal/FAQAccordion";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Frequently Asked Questions (FAQ) | AETHEX STORE",
-  description: "Find answers to common questions about the ASPOR A711 car cup-holder phone mount, vehicle fitment, Cash on Delivery, and delivery timeframes in Sri Lanka.",
+  description: "Answers to common inquiries regarding our hardware catalog, vehicle console fitment, Cash on Delivery, Bank Transfer with Slip OCR, and express delivery across Sri Lanka.",
 };
 
 const FAQ_DATA = [
   {
+    tag: "PAYMENT PROTOCOLS",
+    question: "What payment methods are supported for orders?",
+    answer: (
+      <div className="space-y-2">
+        <p>
+          We support two reliable, transparent payment methods for customers across Sri Lanka:
+        </p>
+        <ul className="list-disc pl-5 space-y-1 text-white/80">
+          <li>
+            <strong>Cash on Delivery (COD):</strong> Pay in cash directly to the courier officer upon receiving your sealed package at your doorstep. No card numbers or advance payments required.
+          </li>
+          <li>
+            <strong>Direct Bank Transfer & Instant QR:</strong> Transfer the exact order total directly to our official corporate account (Commercial Bank of Ceylon / Bank of Ceylon). Upload your deposit slip or digital transaction screenshot on your dedicated order page for rapid automated AI OCR verification.
+          </li>
+        </ul>
+        <p className="text-white/50 text-[11px]">
+          Note: We do not process direct credit card numbers on-site, ensuring zero card credential exposure.
+        </p>
+      </div>
+    ),
+  },
+  {
+    tag: "TELEMETRY TRACKING",
+    question: "How can I track my order status?",
+    answer: (
+      <div className="space-y-2">
+        <p>
+          You can track your order at any time using our live <Link href="/track-order" className="text-white underline font-medium">Order Telemetry Portal</Link>. You can look up your order using either:
+        </p>
+        <ul className="list-disc pl-5 space-y-1 text-white/80">
+          <li><strong>Your Sri Lankan Phone Number</strong> (e.g. 0771234567 or +94771234567) used during checkout.</li>
+          <li><strong>Your Unique Order UUID Hash</strong> generated upon checkout submission.</li>
+        </ul>
+        <p>
+          Additionally, our Colombo dispatch desk will send your domestic courier tracking consignment reference directly via WhatsApp or SMS once the package is handed over to the courier.
+        </p>
+      </div>
+    ),
+  },
+  {
     tag: "VEHICLE FITMENT",
-    question: "Does the ASPOR A711 fit my vehicle's cup holder?",
-    answer: "The ASPOR A711 features a knurled expansion base that adjusts continuously from approximately 65mm to 95mm in diameter. This fits the vast majority of circular console cup holders found in Sri Lankan vehicles, including the Honda Vezel / HR-V, Toyota Premio / Allion, Toyota Aqua / Prius, Suzuki Swift / RS, Suzuki Wagon R, Toyota Hilux / D-Max, and Nissan Leaf. If you are uncertain about an irregular or square cup-holder, you can message us a photo of your center console on WhatsApp (+94 78 234 9954) for instant fitment verification.",
+    question: "Does the ASPOR A711 or MagDrive mount fit my vehicle's cup holder?",
+    answer: (
+      <div className="space-y-2">
+        <p>
+          The ASPOR A711 features a precision mechanical expansion base that expands continuously from <strong>65mm to 95mm in diameter</strong> via an internal knurled dial. This fits virtually all circular console cup wells across Japanese, European, and American vehicle makes in Sri Lanka, including:
+        </p>
+        <ul className="list-disc pl-5 space-y-1 text-white/80">
+          <li><strong>Honda:</strong> Vezel, HR-V, Fit GP5, Civic, Grace</li>
+          <li><strong>Toyota:</strong> Premio, Allion, Aqua, Prius, Axio, Hilux, Land Cruiser Prado</li>
+          <li><strong>Suzuki:</strong> Swift (RS/Sport), Wagon R, Spacia, Alto</li>
+          <li><strong>Nissan:</strong> Leaf, X-Trail, Note e-Power</li>
+          <li><strong>European:</strong> BMW 3/5 Series, Mercedes-Benz C/E Class, Audi A4/A6</li>
+        </ul>
+        <p>
+          If your cup holder has an irregular rectangular profile or unusual depth, use our <Link href="/#products-grid" className="text-white underline">Console Caliper tool</Link> or send a quick photo of your center console to our WhatsApp concierge (+94 78 234 9954) for instant engineering fitment confirmation.
+        </p>
+      </div>
+    ),
   },
   {
-    tag: "SMARTPHONE COMPATIBILITY",
-    question: "Which phone models and sizes are supported?",
-    answer: "The cradle clamp opens to accommodate smartphones from 4.0 inches up to 7.0 inches in diagonal screen size. This includes all standard and Max/Plus models such as iPhone 11 through 16 Pro Max, Samsung Galaxy S21 through S25 Ultra, Google Pixel, Xiaomi, and OnePlus devices, even when used with standard protective phone cases.",
+    tag: "DELIVERY & LOGISTICS",
+    question: "How long will it take for my order to arrive in Sri Lanka?",
+    answer: (
+      <div className="space-y-2">
+        <p>
+          We dispatch daily from our Colombo fulfillment hub via registered domestic courier networks:
+        </p>
+        <ul className="list-disc pl-5 space-y-1 text-white/80">
+          <li><strong>Western Province (Colombo, Gampaha, Kalutara):</strong> 24 to 48 hours.</li>
+          <li><strong>Central, Southern & North Western (Kandy, Galle, Kurunegala, Matara):</strong> 2 to 3 business days.</li>
+          <li><strong>Northern, Eastern & Deep Outstations (Jaffna, Batticaloa, Anuradhapura):</strong> 3 to 4 business days.</li>
+        </ul>
+        <p>
+          Delivery is a flat Rs. 350 LKR islandwide, or <strong>100% Free</strong> on hardware bundles containing 2 or more units.
+        </p>
+      </div>
+    ),
   },
   {
-    tag: "PAYMENT & COD",
-    question: "How does Cash on Delivery (COD) work?",
-    answer: "You do not need to enter credit card numbers or make an advance payment online. When you place an order, our Colombo team confirms your details and dispatches the parcel. When the domestic courier arrives at your doorstep, you simply hand the exact cash amount in Sri Lankan Rupees to the delivery officer.",
+    tag: "WARRANTY & REPLACEMENT",
+    question: "What warranties and replacement guarantees apply to my purchase?",
+    answer: (
+      <div className="space-y-2">
+        <p>
+          Every item dispatched from AETHEX STORE undergoes a pre-packaging physical inspection and is backed by clear warranty terms:
+        </p>
+        <ul className="list-disc pl-5 space-y-1 text-white/80">
+          <li><strong>7-Day Inspection Replacement Guarantee:</strong> Applies to all products. If an item arrives with transit damage or out-of-the-box functional faults, we arrange an immediate doorstep 1-to-1 replacement via courier.</li>
+          <li><strong>AETHEX Flagship Line (MagDrive, HUD Gauge, EP10, Studio Soundbar):</strong> 1-Year Official Hardware Warranty.</li>
+          <li><strong>LDNIO Power Stations & Fast Cables:</strong> 1-Year / 6-Month Official Replacement Warranty.</li>
+          <li><strong>AETHEX Titanium EDC Screwdriver:</strong> Lifetime Craftsmanship Guarantee on the Grade-5 titanium handle.</li>
+        </ul>
+        <p>
+          Read the full terms on our <Link href="/warranty" className="text-white underline">Warranty Policy</Link> page.
+        </p>
+      </div>
+    ),
   },
   {
-    tag: "DELIVERY TIMEFRAMES",
-    question: "How long will it take for my order to arrive?",
-    answer: "Deliveries within the Western Province (Colombo, Gampaha, Kalutara) typically arrive in 24 to 48 hours. Deliveries to Central, Southern, North Western, and other outstation districts arrive in 2 to 3 business days. Northern and Eastern provinces generally take 3 to 4 business days.",
+    tag: "DEVICE COMPATIBILITY",
+    question: "Which smartphones and tablets work with AETHEX mounts?",
+    answer: (
+      <p>
+        The mechanical clamping arms support all mobile devices from <strong>4.0 inches up to 7.0 inches</strong> in screen width, including the iPhone 11 through iPhone 16 Pro Max, Samsung Galaxy S20 through S25 Ultra, Google Pixel, Xiaomi, and OnePlus models, even when fitted with rugged protective cases (e.g. UAG, Spigen, Otterbox). For MagSafe and magnetic mounts, we provide an ultra-thin adhesive alignment ring for non-magnetic phones.
+      </p>
+    ),
   },
   {
-    tag: "ORDER PROCESS",
-    question: "How do I place an order?",
-    answer: "You can click the 'Order A711' button on our website to fill in your name, delivery district, and vehicle model, which will pre-format a clean WhatsApp order message. Alternatively, you can message our official WhatsApp support directly at +94 78 234 9954 with your name, address, and desired quantity.",
+    tag: "ORDER MODIFICATIONS",
+    question: "Can I cancel or change my delivery address after placing an order?",
+    answer: (
+      <p>
+        Yes. As long as your parcel has not yet been handed over to our courier partner (orders placed before 2:00 PM are packaged the same day), you can modify your delivery address, change your recipient phone number, or cancel your order without penalty by messaging our WhatsApp concierge desk (+94 78 234 9954) with your Order ID.
+      </p>
+    ),
   },
   {
-    tag: "RETURNS & EXCHANGES",
-    question: "Can I return or exchange the product if it arrives damaged?",
-    answer: "Yes. Every AETHEX purchase comes with a 7-day replacement guarantee. If your mount arrives damaged during courier transit or exhibits any manufacturing defect, simply send a photo or video to our WhatsApp within 7 days and we will arrange a brand-new replacement unit.",
-  },
-  {
-    tag: "TEMPERATURE & ROAD STABILITY",
-    question: "Will the mount shake loose or melt under direct sunlight?",
-    answer: "No. Unlike suction cups that rely on sticky gel pads that soften and unstick under 40°C+ solar heat, the A711 locks mechanically using expanding high-friction silicone pads anchored into your structural center console. It produces zero windshield blindspots and holds your phone firmly over expressway expansion joints and uneven roads.",
-  },
-  {
-    tag: "AC VENT COMPARISON",
-    question: "Why choose a console cup mount over an AC vent clip?",
-    answer: "Modern smartphones often weigh between 200g to 240g. Clamping that weight onto 1mm plastic air-conditioning vent louvers frequently snaps the internal directional fins and obstructs cold air circulation. The console cup well provides an unshakeable, non-invasive mounting point that leaves all dashboard vents completely unhindered.",
+    tag: "GENUINE HARDWARE",
+    question: "Are products original and factory-sealed?",
+    answer: (
+      <p>
+        Yes. Every device is sourced directly from certified hardware manufacturers or engineered under the proprietary AETHEX specifications. Units arrive in authentic manufacturer packaging with protective seals intact, accompanied by all factory accessories, cables, and hardware mounts.
+      </p>
+    ),
   }
 ];
 
@@ -56,7 +144,7 @@ export default function FAQPage() {
   return (
     <LegalPageLayout
       title="Frequently Asked Questions"
-      subtitle="Helpful answers about vehicle compatibility, smartphone sizes, Cash on Delivery, and courier dispatch."
+      subtitle="Clear answers on vehicle console fitment, Cash on Delivery, Bank Transfer slip verification, express courier transit times, and warranty coverage across Sri Lanka."
       category="HELP & SUPPORT"
       lastUpdated="September 2026"
     >

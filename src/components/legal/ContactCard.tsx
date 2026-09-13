@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { MessageSquare, Mail, MapPin, Clock, ArrowRight, Check } from "lucide-react";
+import { MessageSquare, Mail, MapPin, Clock, ArrowRight, Check, Send, Sparkles } from "lucide-react";
 import { audioEngine } from "../../lib/audio";
 import { SITE_CONTACT } from "../../constants";
 
@@ -12,7 +12,7 @@ export default function ContactCard() {
   const [submitted, setSubmitted] = useState(false);
 
   const handleWhatsApp = () => {
-    audioEngine.playAcquire();
+    try { audioEngine.playAcquire(); } catch {}
     const text = encodeURIComponent(
       "Hello AETHEX Store, I am inquiring about product support / order assistance."
     );
@@ -23,7 +23,7 @@ export default function ContactCard() {
     e.preventDefault();
     if (!name.trim() || !message.trim()) return;
 
-    audioEngine.playAcquire();
+    try { audioEngine.playAcquire(); } catch {}
     setSubmitted(true);
 
     // Form submission opens WhatsApp with the formatted inquiry
@@ -45,88 +45,96 @@ ${message.trim()}`;
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start font-sans">
       
       {/* Contact Channels (5 Cols) */}
-      <div className="lg:col-span-5 bg-white border border-gray-200 p-6 sm:p-8 space-y-6 shadow-sm">
-        <div className="space-y-1 border-b border-gray-200 pb-4">
-          <div className="text-[10px] font-mono tracking-[0.25em] text-gray-500 uppercase font-semibold">
-            COMMUNICATION DESK
+      <div className="lg:col-span-5 bg-[#0B0B0B] border border-white/10 p-6 sm:p-8 space-y-6 shadow-2xl relative">
+        <div className="space-y-1.5 border-b border-white/10 pb-5">
+          <div className="text-[10px] font-mono tracking-[0.25em] text-white/40 uppercase font-semibold">
+            TELEMETRY DESK // DIRECT CHANNELS
           </div>
-          <h2 className="text-xl font-mono uppercase text-[#111111] font-semibold">
-            Direct Channels
+          <h2 className="text-xl font-mono uppercase text-white font-semibold">
+            Direct Concierge
           </h2>
-          <p className="text-xs text-gray-600 font-light leading-relaxed">
-            For fastest response regarding existing orders, fitment verification, or dispatch status.
+          <p className="text-xs text-white/60 font-light leading-relaxed">
+            For fastest resolution regarding existing orders, fitment verification, or dispatch status in Sri Lanka.
           </p>
         </div>
 
-        <div className="space-y-4 text-xs font-mono text-gray-600">
-          <div className="space-y-1">
-            <span className="text-[#111111] font-semibold block uppercase">WHATSAPP (RECOMMENDED):</span>
+        <div className="space-y-5 text-xs font-mono text-white/70">
+          <div className="space-y-1.5">
+            <span className="text-white/40 text-[10px] tracking-widest font-semibold block uppercase">WHATSAPP (RECOMMENDED):</span>
             <button
               type="button"
               onClick={handleWhatsApp}
-              className="text-[#111111] hover:underline text-sm font-bold flex items-center gap-1.5 cursor-pointer"
+              className="text-white hover:text-white/80 text-sm font-bold flex items-center gap-2 cursor-pointer transition-colors"
             >
-              <MessageSquare className="w-4 h-4 text-black" />
-              <span>+94 78 234 9954</span>
+              <MessageSquare className="w-4 h-4 text-white" />
+              <span>{SITE_CONTACT.WHATSAPP_FORMATTED}</span>
             </button>
-            <span className="text-[10px] text-gray-500 block">Instant messaging & dispatch updates</span>
+            <span className="text-[10px] text-white/40 block">Instant messaging, slip verification & courier updates</span>
           </div>
 
-          <div className="space-y-1 pt-2 border-t border-gray-100">
-            <span className="text-[#111111] font-semibold block uppercase">EMAIL:</span>
+          <div className="space-y-1.5 pt-3 border-t border-white/10">
+            <span className="text-white/40 text-[10px] tracking-widest font-semibold block uppercase">EMAIL SUPPORT:</span>
             <a
-              href="mailto:support@aethexstore.com"
-              className="text-[#111111] hover:underline text-xs"
+              href={`mailto:${SITE_CONTACT.EMAIL}`}
+              className="text-white hover:underline text-xs block font-mono"
             >
-              support@aethexstore.com
+              {SITE_CONTACT.EMAIL}
             </a>
+            <span className="text-[10px] text-white/40 block">Response window: 1–2 hours during support hours</span>
           </div>
 
-          <div className="space-y-1 pt-2 border-t border-gray-100">
-            <span className="text-[#111111] font-semibold block uppercase">SUPPORT HOURS:</span>
-            <div className="text-gray-800 font-medium">9:00 AM – 8:00 PM (Daily)</div>
-            <div className="text-[10px] text-gray-500">Sri Lanka Time (UTC+5:30)</div>
+          <div className="space-y-1.5 pt-3 border-t border-white/10">
+            <span className="text-white/40 text-[10px] tracking-widest font-semibold block uppercase">OPERATING HOURS:</span>
+            <div className="text-white font-medium">{SITE_CONTACT.HOURS}</div>
+            <div className="text-[10px] text-white/40">Sri Lanka Standard Time (UTC+5:30)</div>
           </div>
 
-          <div className="space-y-1 pt-2 border-t border-gray-100">
-            <span className="text-[#111111] font-semibold block uppercase">LOCATION:</span>
-            <div className="text-gray-800 font-medium">Colombo, Sri Lanka</div>
-            <div className="text-[10px] text-gray-500">06°55'38"N, 79°51'40"E</div>
+          <div className="space-y-1.5 pt-3 border-t border-white/10">
+            <span className="text-white/40 text-[10px] tracking-widest font-semibold block uppercase">FULFILLMENT HUB:</span>
+            <div className="text-white font-medium">{SITE_CONTACT.LOCATION}</div>
+            <div className="text-[10px] text-white/40">Islandwide Courier Dispatch across all 25 Districts</div>
           </div>
         </div>
       </div>
 
       {/* Message Form (7 Cols) */}
-      <div className="lg:col-span-7 bg-white border border-gray-200 p-6 sm:p-8 space-y-6 shadow-sm">
-        <div className="space-y-1 border-b border-gray-200 pb-4">
-          <div className="text-[10px] font-mono tracking-[0.25em] text-gray-500 uppercase font-semibold">
-            SEND INQUIRY
+      <div className="lg:col-span-7 bg-[#0B0B0B] border border-white/10 p-6 sm:p-8 space-y-6 shadow-2xl relative">
+        <div className="space-y-1.5 border-b border-white/10 pb-5">
+          <div className="text-[10px] font-mono tracking-[0.25em] text-white/40 uppercase font-semibold">
+            INQUIRY DISPATCH // DIRECT TO SUPPORT
           </div>
-          <h2 className="text-xl font-mono uppercase text-[#111111] font-semibold">
-            Customer Message Desk
+          <h2 className="text-xl font-mono uppercase text-white font-semibold">
+            Customer Dispatch Desk
           </h2>
-          <p className="text-xs text-gray-600 font-light leading-relaxed">
-            Submit your query below. Our team will review and respond directly to your WhatsApp or email.
+          <p className="text-xs text-white/60 font-light leading-relaxed">
+            Submit your vehicle details, order reference, or technical question. Our Colombo support engineers will respond immediately.
           </p>
         </div>
 
         {submitted ? (
-          <div className="py-10 text-center space-y-3 bg-[#F9F9F9] border border-gray-200 p-6">
-            <div className="w-10 h-10 border border-black flex items-center justify-center mx-auto text-black">
-              <Check className="w-5 h-5" />
+          <div className="py-12 text-center space-y-4 bg-white/[0.02] border border-white/10 p-6">
+            <div className="w-12 h-12 border border-white flex items-center justify-center mx-auto text-white">
+              <Check className="w-6 h-6" />
             </div>
-            <div className="text-sm font-mono uppercase text-[#111111] font-semibold">
-              Inquiry Dispatched
+            <div className="text-sm font-mono uppercase text-white font-semibold">
+              Inquiry Formulated
             </div>
-            <p className="text-xs text-gray-600 max-w-xs mx-auto">
-              Connecting you with our support desk on WhatsApp.
+            <p className="text-xs text-white/60 max-w-sm mx-auto leading-relaxed">
+              Redirecting you to our official WhatsApp support channel (+94 78 234 9954) with your formatted inquiry...
             </p>
+            <button
+              type="button"
+              onClick={handleWhatsApp}
+              className="mt-4 px-6 py-2.5 bg-white text-black text-xs font-mono font-bold tracking-widest uppercase hover:bg-white/90 transition-all cursor-pointer"
+            >
+              OPEN WHATSAPP NOW
+            </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 text-xs font-mono">
             <div>
-              <label className="text-[10px] uppercase text-gray-600 font-semibold block mb-1.5">
-                YOUR NAME
+              <label className="text-[10px] uppercase text-white/60 font-semibold block mb-1.5 tracking-wider">
+                YOUR NAME *
               </label>
               <input
                 type="text"
@@ -134,12 +142,12 @@ ${message.trim()}`;
                 placeholder="e.g. Sanjeewa Mendis"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-white border border-gray-300 text-[#111111] p-3 text-xs outline-none focus:border-black"
+                className="w-full bg-[#050505] border border-white/10 text-white p-3 text-xs outline-none focus:border-white transition-colors"
               />
             </div>
 
             <div>
-              <label className="text-[10px] uppercase text-gray-600 font-semibold block mb-1.5">
+              <label className="text-[10px] uppercase text-white/60 font-semibold block mb-1.5 tracking-wider">
                 EMAIL ADDRESS (OPTIONAL)
               </label>
               <input
@@ -147,29 +155,29 @@ ${message.trim()}`;
                 placeholder="e.g. sanjeewa@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white border border-gray-300 text-[#111111] p-3 text-xs outline-none focus:border-black"
+                className="w-full bg-[#050505] border border-white/10 text-white p-3 text-xs outline-none focus:border-white transition-colors"
               />
             </div>
 
             <div>
-              <label className="text-[10px] uppercase text-gray-600 font-semibold block mb-1.5">
-                MESSAGE / VEHICLE FITMENT QUESTION
+              <label className="text-[10px] uppercase text-white/60 font-semibold block mb-1.5 tracking-wider">
+                MESSAGE / VEHICLE FITMENT QUESTION / ORDER ID *
               </label>
               <textarea
                 required
                 rows={4}
-                placeholder="Describe your inquiry, order status question, or vehicle fitment details..."
+                placeholder="Describe your inquiry, order status question, or vehicle fitment details (e.g. Honda Vezel cup holder size)..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="w-full bg-white border border-gray-300 text-[#111111] p-3 text-xs outline-none focus:border-black"
+                className="w-full bg-[#050505] border border-white/10 text-white p-3 text-xs outline-none focus:border-white transition-colors"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-black text-white hover:bg-neutral-800 transition-all py-3.5 text-xs font-mono font-bold tracking-[0.18em] uppercase flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+              className="w-full bg-white text-black hover:bg-white/90 transition-all py-3.5 text-xs font-mono font-bold tracking-[0.18em] uppercase flex items-center justify-center gap-2 cursor-pointer shadow-xl"
             >
-              <span>SEND TO SUPPORT VIA WHATSAPP</span>
+              <span>DISPATCH INQUIRY VIA WHATSAPP</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
