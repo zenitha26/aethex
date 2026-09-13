@@ -12,7 +12,9 @@ import {
   Layers, 
   ArrowRight,
   Phone,
-  MessageSquare
+  MessageSquare,
+  Volume2,
+  VolumeX
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { audioEngine } from "../lib/audio";
@@ -35,6 +37,7 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState("");
   const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [isMuted, setIsMuted] = useState(false);
 
   const supabase = createClient();
 
@@ -44,6 +47,20 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
 
   const totalCartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+  useEffect(() => {
+    setIsMuted(audioEngine.getMuted());
+    const unsubscribe = audioEngine.subscribe((muted) => setIsMuted(muted));
+    return () => unsubscribe();
+  }, []);
+
+  const handleToggleAudio = () => {
+    const nextState = audioEngine.toggleMute();
+    setIsMuted(nextState);
+    if (!nextState) {
+      try { audioEngine.playClick(); } catch {}
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -211,6 +228,24 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
             aria-label="Toggle search"
           >
             <Search className="w-5 h-5" />
+          </button>
+
+          {/* Audio Feedback Mute Toggle */}
+          <button
+            onClick={handleToggleAudio}
+            className={`flex items-center justify-center p-2 rounded-full transition-all border cursor-pointer ${
+              isMuted 
+                ? "text-white/40 border-transparent hover:text-white/70 hover:bg-white/5" 
+                : "text-white border-white/10 bg-white/[0.04] hover:bg-white/10 shadow-xs"
+            }`}
+            title={isMuted ? "Unmute Interface Audio" : "Mute Interface Audio"}
+            aria-label={isMuted ? "Unmute Interface Audio" : "Mute Interface Audio"}
+          >
+            {isMuted ? (
+              <VolumeX className="w-4 h-4 text-white/40" />
+            ) : (
+              <Volume2 className="w-4 h-4 text-white" />
+            )}
           </button>
 
           {/* Wishlist Pill */}
@@ -483,6 +518,18 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
               >
                 Contact & Showroom
               </Link>
+            </div>
+
+            {/* Mobile Audio Mute Toggle */}
+            <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+              <span className="text-xs text-white/60">Interface Audio Feedback</span>
+              <button
+                onClick={handleToggleAudio}
+                className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.04] border border-white/10 text-xs font-mono text-white hover:border-white transition-all cursor-pointer"
+              >
+                {isMuted ? <VolumeX className="w-3.5 h-3.5 text-white/50" /> : <Volume2 className="w-3.5 h-3.5 text-white" />}
+                <span>{isMuted ? "SOUND OFF" : "SOUND ON"}</span>
+              </button>
             </div>
 
             <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-white/50">

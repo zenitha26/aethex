@@ -2,8 +2,22 @@
 
 class AudioEngine {
   private ctx: AudioContext | null = null;
-  private isMuted: boolean = true;
+  private isMuted: boolean = false;
   private humNodes: { osc1: OscillatorNode; osc2: OscillatorNode; gain: GainNode } | null = null;
+  private listeners: Set<(muted: boolean) => void> = new Set();
+
+  constructor() {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("aethex_audio_muted");
+        if (saved !== null) {
+          this.isMuted = saved === "true";
+        } else {
+          this.isMuted = false;
+        }
+      } catch {}
+    }
+  }
 
   private init() {
     if (this.ctx) return;
@@ -19,29 +33,58 @@ class AudioEngine {
     }
   }
 
+  public subscribe(fn: (muted: boolean) => void): () => void {
+    this.listeners.add(fn);
+    return () => this.listeners.delete(fn);
+  }
+
+  private notify() {
+    this.listeners.forEach((fn) => {
+      try { fn(this.isMuted); } catch {}
+    });
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("aethex:audio-toggle", { detail: { isMuted: this.isMuted } }));
+    }
+  }
+
   public toggleMute(forceState?: boolean): boolean {
     this.init();
-    if (!this.ctx) return true;
 
     const nextMuted = forceState !== undefined ? forceState : !this.isMuted;
     this.isMuted = nextMuted;
 
-    if (nextMuted) {
-      this.stopHum();
-      if (this.ctx.state === "running") {
-        this.ctx.suspend();
-      }
-    } else {
-      if (this.ctx.state === "suspended") {
-        this.ctx.resume();
-      }
-      this.startHum();
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("aethex_audio_muted", String(this.isMuted));
+      } catch {}
     }
 
+    if (this.ctx) {
+      if (nextMuted) {
+        this.stopHum();
+        if (this.ctx.state === "running") {
+          this.ctx.suspend();
+        }
+      } else {
+        if (this.ctx.state === "suspended") {
+          this.ctx.resume();
+        }
+      }
+    }
+
+    this.notify();
     return this.isMuted;
   }
 
   public getMuted(): boolean {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("aethex_audio_muted");
+        if (saved !== null) {
+          this.isMuted = saved === "true";
+        }
+      } catch {}
+    }
     return this.isMuted;
   }
 
