@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { AlertCircle, RotateCcw } from "lucide-react";
+import Link from "next/link";
+import { AlertCircle, RotateCcw, Compass } from "lucide-react";
+import { audioEngine } from "../lib/audio";
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -10,30 +12,75 @@ interface ErrorProps {
 
 export default function ErrorBoundary({ error, reset }: ErrorProps) {
   useEffect(() => {
-    // Log error to tracking service
-    console.error("ErrorBoundary captured error:", error);
+    // Log error to telemetry
+    console.error("AETHEX ErrorBoundary captured error:", error);
   }, [error]);
 
+  const handleReset = () => {
+    try { audioEngine.playAcquire(); } catch {}
+    reset();
+  };
+
   return (
-    <main className="min-h-screen bg-white text-[#111111] flex items-center justify-center p-6 text-center">
-      <div className="max-w-md w-full bg-[#F9F9F9] rounded-2xl p-8 border border-gray-200 space-y-6 shadow-sm">
-        <div className="w-12 h-12 bg-red-50 border border-red-200 rounded-full flex items-center justify-center mx-auto text-red-600">
-          <AlertCircle className="h-6 w-6" />
-        </div>
-        
-        <div className="space-y-2">
-          <h1 className="text-xl font-bold font-display tracking-tight text-[#111111]">Unexpected Error</h1>
-          <p className="text-gray-600 text-xs font-light max-w-xs mx-auto leading-relaxed">
-            The page encountered an unexpected issue while rendering. Try reloading the module.
+    <main className="min-h-screen bg-[#050505] text-white flex items-center justify-center p-6 text-center font-sans selection:bg-white selection:text-black relative overflow-hidden">
+      {/* Ambient optical flare */}
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white/[0.02] rounded-full blur-3xl pointer-events-none -z-0" 
+      />
+
+      <div className="max-w-md w-full bg-[#0B0B0B] p-8 sm:p-10 border border-white/10 space-y-8 relative z-10 shadow-2xl">
+        {/* Viewfinder corner tick marks */}
+        <div className="absolute top-3 left-3 w-3 h-3 border-t border-l border-white/30 pointer-events-none" />
+        <div className="absolute top-3 right-3 w-3 h-3 border-t border-r border-white/30 pointer-events-none" />
+        <div className="absolute bottom-3 left-3 w-3 h-3 border-b border-l border-white/30 pointer-events-none" />
+        <div className="absolute bottom-3 right-3 w-3 h-3 border-b border-r border-white/30 pointer-events-none" />
+
+        {/* Header Badge */}
+        <div className="space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/[0.04] border border-white/10 text-[9px] font-mono tracking-[0.25em] uppercase text-white/60">
+            <AlertCircle className="w-3.5 h-3.5 text-white" />
+            <span>SYSTEM TELEMETRY FAULT</span>
+          </div>
+
+          <h1 className="text-3xl sm:text-4xl font-light font-mono tracking-tight text-white uppercase leading-none">
+            RUNTIME INTERRUPT
+          </h1>
+
+          <p className="text-white/60 text-xs font-light max-w-xs mx-auto leading-relaxed">
+            The application pipeline encountered an unexpected exception while rendering this module.
           </p>
+
+          {error?.digest && (
+            <div className="text-[10px] font-mono text-white/30 bg-black/40 border border-white/5 py-1.5 px-3 truncate">
+              FAULT_DIGEST: {error.digest}
+            </div>
+          )}
         </div>
 
-        <button
-          onClick={reset}
-          className="w-full bg-black text-white hover:bg-neutral-800 transition-all py-3.5 px-6 rounded-xl text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-sm"
-        >
-          <RotateCcw className="h-3.5 w-3.5 text-white" /> Reload Page
-        </button>
+        {/* Action Controls */}
+        <div className="space-y-3 font-mono text-xs">
+          <button
+            onClick={handleReset}
+            className="w-full bg-white text-black hover:bg-white/90 transition-all py-3.5 px-6 font-bold uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer shadow-md"
+          >
+            <RotateCcw className="h-3.5 w-3.5 text-black" />
+            <span>RE-INITIALIZE VIEW</span>
+          </button>
+
+          <Link
+            href="/"
+            onClick={() => { try { audioEngine.playClick(); } catch {} }}
+            className="w-full border border-white/15 hover:border-white text-white/80 hover:text-white transition-all py-3 px-6 uppercase tracking-widest flex items-center justify-center gap-2"
+          >
+            <Compass className="h-3.5 w-3.5 text-white/70" />
+            <span>RETURN TO STOREFRONT</span>
+          </Link>
+        </div>
+
+        {/* Footer info */}
+        <div className="pt-2 border-t border-white/10 text-[9px] font-mono tracking-[0.2em] text-white/40 uppercase">
+          AETHEX STORE // HARDWARE PLATFORM
+        </div>
       </div>
     </main>
   );

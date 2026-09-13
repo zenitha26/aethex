@@ -33,7 +33,7 @@ export default function FloatingWhatsApp() {
   return (
     <aside 
       aria-label="Direct Concierge Support" 
-      className="fixed bottom-6 right-6 z-40 sm:bottom-8 sm:right-8 flex items-center gap-3 font-sans"
+      className="fixed bottom-22 right-4 z-40 sm:bottom-8 sm:right-8 flex items-center gap-3 font-sans"
     >
       {/* Sleek Tooltip Label on Hover */}
       <div 
