@@ -13,6 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { audioEngine } from "../../lib/audio";
+import AethexLogo from "../../components/brand/AethexLogo";
 import { 
   ArrowRight, 
   ShieldCheck, 
@@ -143,13 +144,16 @@ export default function AboutPage() {
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="space-y-8 max-w-5xl border-b border-white/10 pb-20"
           >
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="text-[10px] font-mono tracking-[0.3em] text-white/70 uppercase bg-white/[0.04] border border-white/10 px-3.5 py-1.5 rounded-full font-semibold">
-                01 // ARCHITECTURAL MANIFESTO
-              </span>
-              <span className="text-[10px] font-mono tracking-widest text-white/40 uppercase font-semibold">
-                AETHEX AUTOMOTIVE & HARDWARE LABS
-              </span>
+            <div className="flex flex-wrap items-center gap-4">
+              <AethexLogo size="lg" showWordmark={false} isLink={false} />
+              <div className="flex flex-col">
+                <span className="text-[10px] font-mono tracking-[0.3em] text-white/70 uppercase font-semibold">
+                  01 // ARCHITECTURAL MANIFESTO
+                </span>
+                <span className="text-[10px] font-mono tracking-widest text-white/40 uppercase font-semibold">
+                  AETHEX AUTOMOTIVE & HARDWARE LABS
+                </span>
+              </div>
             </div>
 
             <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-light tracking-[-0.03em] leading-[0.96] uppercase text-white font-mono">

@@ -23,6 +23,7 @@ import { useCartStore } from "../../store/useCartStore";
 import { audioEngine } from "../../lib/audio";
 import { createClient } from "../../lib/supabase/client";
 import GoogleLoginButton from "@/components/auth/GoogleLoginButton";
+import AethexLogo from "@/components/brand/AethexLogo";
 import { motion } from "framer-motion";
 
 export default function CheckoutPage() {
@@ -207,15 +208,18 @@ export default function CheckoutPage() {
         
         {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between border-b border-white/5 pb-6">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-white/50 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Return to Catalog</span>
-          </Link>
+          <div className="flex items-center gap-6">
+            <AethexLogo size="sm" showWordmark={true} isLink={true} />
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-white/50 hover:text-white transition-colors"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Return to Catalog</span>
+            </Link>
+          </div>
           <div className="flex items-center gap-2 text-xs font-mono tracking-widest uppercase text-white/40">
-            <span>AETHEX RAPID CHECKOUT</span>
+            <span>RAPID DISPATCH MANIFEST</span>
           </div>
         </div>
 

@@ -41,8 +41,11 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.aethexstore.com"),
   manifest: "/manifest.json",
   icons: {
-    icon: "/favicon.ico",
-    apple: "/icon-192.png",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/images/aethex-logo.png", type: "image/png" },
+    ],
+    apple: "/images/aethex-logo.png",
   },
   alternates: {
     canonical: "/",

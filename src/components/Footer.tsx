@@ -17,6 +17,7 @@ import {
 import { audioEngine } from "../lib/audio";
 import { SITE_CONTACT } from "../constants";
 import { useCartStore } from "../store/useCartStore";
+import AethexLogo from "./brand/AethexLogo";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
@@ -128,11 +129,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           
           {/* Brand Info */}
-          <div className="col-span-1 md:col-span-1">
-            <h1 className="text-2xl font-bold text-white tracking-widest mb-6 font-mono">
-              AETHEX
-            </h1>
-            <p className="text-sm text-gray-400 leading-relaxed mb-6">
+          <div className="col-span-1 md:col-span-1 space-y-4">
+            <AethexLogo size="lg" showWordmark={true} isLink={true} />
+            <p className="text-sm text-gray-400 leading-relaxed pt-1">
               Industrial-grade consumer electronics, smart gadgets, power stations, and precision automotive hardware.
             </p>
             <div className="space-y-3 text-sm text-gray-400">

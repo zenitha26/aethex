@@ -25,6 +25,7 @@ import { useCompareStore } from "../store/useCompareStore";
 import { createClient } from "@/lib/supabase/client";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 import GoogleLoginButton from "./auth/GoogleLoginButton";
+import AethexLogo from "./brand/AethexLogo";
 
 interface NavbarProps {
   onOpenCategories?: () => void;
@@ -137,16 +138,7 @@ export default function Navbar({ onOpenCategories, onOpenOrder }: NavbarProps) {
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
 
-            <Link
-              href="/"
-              onClick={() => { try { audioEngine.playSelect(); } catch {} }}
-              className="flex items-center gap-2 group"
-            >
-              <span className="text-white text-xl font-bold tracking-[0.25em] uppercase font-mono group-hover:opacity-80 transition-opacity">
-                AETHEX
-              </span>
-              <span className="hidden sm:inline-block w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-            </Link>
+            <AethexLogo size="md" showWordmark={true} isLink={true} />
           </div>
 
           {/* Architectural Editorial Nav Links */}
